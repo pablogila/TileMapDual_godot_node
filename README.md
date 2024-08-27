@@ -25,6 +25,8 @@ You just need to quickly sketch your level with the fully filled tile, indicated
 Then, create a `TileMapDual` node and assign the `TileMapLayer` to it. Just click the `Update in Editor` checkbox, and the dual grid will be automatically configured and generated in real-time.  
 Any change in the `TileMapLayer` will be updated by simply clicking the checkbox again!
 
+![](docs/demo.gif)
+
 An in-game implementation can be activated by ckecking the `Update in Game` setting. This will update the dual grid in real-time during gameplay, thanks to the `TileMapLayer.changed` signal.
 
 ## Why?
