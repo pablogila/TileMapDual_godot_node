@@ -1,10 +1,14 @@
 @tool
-extends Node2D
+class_name TileMapDual
+extends TileMapLayer
 
-@onready var dual = $Dual
-@onready var world = $World
+## World TileMapLayer.
+## An offset of (-0.5,-0.5) tiles will be applied
+## with respect to the World grid.
+@export var world_tilemap: TileMapLayer
 
-## Bit-wise logic: summing over all neighbours provides the proper tile
+## Bit-wise logic: summing over all neighbours
+## provides the proper tile from the Atlas
 enum direction {
 	TOP_LEFT  = 1,
 	LOW_LEFT  = 2,
@@ -41,3 +45,16 @@ const NEIGHBOURS_TO_ATLAS: Dictionary = {
 	}
 
 # TO-DO: implement dual-grid tileset system
+
+func _ready() -> void:
+	world_tilemap.changed.connect(_update_tilemap)
+
+func _update_tilemap() -> void:
+	self.tile_set = world_tilemap.tile_set
+	self.position.x = - self.tile_set.tile_size.x * 0.5
+	self.position.y = - self.tile_set.tile_size.y * 0.5
+
+func set_display_tile(pos: Vector2i) -> void:
+	for i in range(NEIGHBOURS.size()):
+		var new_pos = pos + NEIGHBOURS[i]
+		#offset_tilemap.set_cell(0, new_pos, 0, calculate_display_tile(new_pos))
