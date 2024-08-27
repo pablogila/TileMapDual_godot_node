@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://d1jd016p0ux1v"]
+[gd_scene load_steps=5 format=4 uid="uid://d1jd016p0ux1v"]
 
 [ext_resource type="Texture2D" uid="uid://bf4w5mevhwikw" path="res://maps/autotile_15.svg" id="1_nvspa"]
 [ext_resource type="Script" path="res://maps/TileMapDual.gd" id="2_m0o5n"]
@@ -84,14 +84,14 @@ sources/0 = SubResource("TileSetAtlasSource_lgr5h")
 [node name="Test" type="Node2D"]
 
 [node name="WorldTileMap" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray(0, 0, 3, 0, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 2, 0, 0, 0, 2, 0, 1, 0, 0, 0)
+tile_map_data = PackedByteArray("AAABAAEAAAACAAEAAAACAAEAAAACAAEAAAADAAEAAAACAAEAAAAEAAEAAAACAAEAAAAFAAEAAAACAAEAAAAGAAEAAAACAAEAAAAHAAEAAAACAAEAAAA=")
 tile_set = SubResource("TileSet_sdm3y")
 
 [node name="TileMapDual" type="TileMapLayer" parent="." node_paths=PackedStringArray("world_tilemap")]
 position = Vector2(-16, -16)
 tile_set = SubResource("TileSet_sdm3y")
 script = ExtResource("2_m0o5n")
+debug = true
 world_tilemap = NodePath("../WorldTileMap")
-sketch_atlas_coord = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
