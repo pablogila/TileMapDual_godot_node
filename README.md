@@ -7,13 +7,13 @@ which greatly speeds up your dev journey.
 
 ## Why?
 Previous implementations of a dual-grid tileset system in Godot
-(by [GlitchedInOrbit]((https://github.com/GlitchedinOrbit/dual-grid-tilemap-system-godot-gdscript)
-and [jess-hammer]((https://github.com/jess-hammer/dual-grid-tilemap-system-godot))
+by [GlitchedInOrbit](https://github.com/GlitchedinOrbit/dual-grid-tilemap-system-godot-gdscript)
+and [jess-hammer](https://github.com/jess-hammer/dual-grid-tilemap-system-godot)
 used an inverted version of the official 16-tile template.
-This is a potential source of headaches, and this release corrects that inversion.
-This version also implements modern TileMapLayers instead of the deprecated TileMap node.
+This is a potential source of headaches, and this release corrects that inversion.  
+This version also implements modern TileMapLayers instead of the deprecated TileMap node.  
 Finally, and most importantly, this release introduces the dual-grid system as a custom node
-that runs within the editor, making it easy to integrate into your own projects.
+that runs within the editor, making it easy to integrate into your own projects.  
 
 ## TO-DO
 - STILL IN DEVELOPMENT
