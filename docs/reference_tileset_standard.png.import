@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bf4w5mevhwikw"
-path="res://.godot/imported/autotile_15.svg-89557b8c6c4f8eb3b87938bc60e2b10a.ctex"
+uid="uid://cmqntrudmshbh"
+path="res://.godot/imported/reference_tileset_standard.png-00060cd3b2fad51332c716b8f98854c2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://maps/autotile_15.svg"
-dest_files=["res://.godot/imported/autotile_15.svg-89557b8c6c4f8eb3b87938bc60e2b10a.ctex"]
+source_file="res://docs/reference_tileset_standard.png"
+dest_files=["res://.godot/imported/reference_tileset_standard.png-00060cd3b2fad51332c716b8f98854c2.ctex"]
 
 [params]
 
@@ -32,6 +32,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false
