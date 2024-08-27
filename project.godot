@@ -10,6 +10,6 @@ config_version=5
 
 [application]
 
-config/name="real-time-dual-grid-tileset"
+config/name="Godot-TileMapDual"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
