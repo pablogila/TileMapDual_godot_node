@@ -36,6 +36,5 @@ position = Vector2(-8, -8)
 tile_set = SubResource("TileSet_sweay")
 script = ExtResource("2_blexy")
 sketch_tilemap = NodePath("../TileMapLayer")
-clean = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
