@@ -55,7 +55,6 @@ const NEIGHBOURS_TO_ATLAS: Dictionary = {
 
 func _ready() -> void:
 	world_tilemap.changed.connect(_update_tilemap)
-	_update_tiles()
 
 
 func _update_tilemap() -> void:
@@ -67,41 +66,67 @@ func _update_tilemap() -> void:
 
 func _update_tiles() -> void:
 	if debug:
-		print('Updating tiles...')
-	
+		print('Updating tiles....................')
 	for _world_cell in world_tilemap.get_used_cells():
-		if _is_world_tile_sketched(_world_cell):
-			_update_tiles_around_world_tile(_world_cell)
+		_update_tiles_around_world_cell(_world_cell)
+
+
+func _update_tiles_around_world_cell(_world_cell: Vector2i) -> void:
+	if debug:
+		print('  Updating displayed cells around world cell ' + str(_world_cell) + '...')
+	var _top_left = _world_cell + NEIGHBOURS[location.TOP_LEFT]
+	var _low_left = _world_cell + NEIGHBOURS[location.LOW_LEFT]
+	var _top_right = _world_cell + NEIGHBOURS[location.TOP_RIGHT]
+	var _low_right = _world_cell + NEIGHBOURS[location.LOW_RIGHT]
+	_update_tile_at_coords(_top_left)
+	_update_tile_at_coords(_low_left)
+	_update_tile_at_coords(_top_right)
+	_update_tile_at_coords(_low_right)
+
+
+func _update_tile_at_coords(_coords: Vector2i) -> void:
+	
+	if debug:
+		print('    Checking display tile ' + str(_coords) + '...')
+	
+	var _coords_atlas: Vector2i
+	var _tile_key: int = 0
+	
+	var _top_left = _coords - NEIGHBOURS[location.LOW_RIGHT]
+	var _low_left = _coords - NEIGHBOURS[location.TOP_RIGHT]
+	var _top_right = _coords - NEIGHBOURS[location.LOW_LEFT]
+	var _low_right = _coords - NEIGHBOURS[location.TOP_LEFT]
+	
+	if _is_world_tile_sketched(_top_left):
+		_tile_key += location.TOP_LEFT
+	if _is_world_tile_sketched(_low_left):
+		_tile_key += location.LOW_LEFT
+	if _is_world_tile_sketched(_top_right):
+		_tile_key += location.TOP_RIGHT
+	if _is_world_tile_sketched(_low_right):
+		_tile_key += location.LOW_RIGHT
+	
+	#for _key in NEIGHBOURS:
+	#	var _world_cell = _coords + NEIGHBOURS[_key]
+	#	if _is_world_tile_sketched(_world_cell):
+	#		_tile_key += _key
+	
+	_coords_atlas = NEIGHBOURS_TO_ATLAS[_tile_key]
+	self.set_cell(_coords, 0, _coords_atlas)
+	if debug:
+		print('    Display tile ' + str(_coords) + ' updated with key ' + str(_tile_key))
 
 
 func _is_world_tile_sketched(_coords: Vector2i) -> bool:
 	var _atlas_coords = world_tilemap.get_cell_atlas_coords(_coords)
 	if _atlas_coords == sketch_atlas_coords:
 		if debug:
-			print(str(_coords) + ' with atlas coords ' + str(_atlas_coords) + ' IS sketched')
+			print('      World cell ' + str(_coords) + ' IS sketched with atlas coords ' + str(_atlas_coords))
 		return true
 	else:
+		if Vector2(_atlas_coords) == Vector2(-1,-1):
+			print('      World cell ' + str(_coords) + ' Is NOT sketched')
+			return false
 		if debug:
-			print(str(_coords) + ' with atlas coords ' + str(_atlas_coords) + ' Is NOT sketched')
+			print('      World cell ' + str(_coords) + ' Is NOT sketched with atlas coords ' + str(_atlas_coords))
 		return false
-
-
-func _update_tiles_around_world_tile(_coords: Vector2i) -> void:
-	for _key in NEIGHBOURS:
-		var _displaced_tile: Vector2i = _coords + NEIGHBOURS[_key]
-		_update_tile_at_coords(_displaced_tile)
-		if debug:
-			print('Updated cells around ' + str(_coords))
-
-
-func _update_tile_at_coords(_coords: Vector2i) -> void:
-	var _coords_atlas: Vector2i
-	var _tile_key: int = 0
-	
-	for _key in NEIGHBOURS:
-		var _world_tile = _coords - NEIGHBOURS[_key]
-		if _is_world_tile_sketched(_world_tile):
-			_tile_key += _key
-	
-	_coords_atlas = NEIGHBOURS_TO_ATLAS[_tile_key]
-	self.set_cell(_coords, 0, _coords_atlas)
