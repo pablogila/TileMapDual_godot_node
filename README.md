@@ -29,9 +29,14 @@ You can also freeze the tileset by activating the `Freeze` checkbox, to avoid ac
 
 ![](Docs/demo.gif)
 
-You can modify the dual tileset by calling one the following methods: 
+You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node, based on Jess's implementation.
 
-- `update_tile(world_tile)`: Update the displayed tiles around `world_tile`. This is the fastest method, and you can use it with an in-game tool. An example `CursorDual` node based on Jess's implementation is included.
+- `fill_tile(world_cell)`: Fill the corresponding world tile and update the corresponding dual tiles.
+- `erase_tile(world_cell)`: Erase the corresponding world tile and update the corresponding dual tiles.
+
+Two more public methods are available if needed:
+
+- `update_tile(world_cell)`: Update the displayed tiles around `world_tile`. This is the fastest method to upgrade specific cells.  
 - `update_tileset()`: Update the entire tileset, offsetting itself by half a grid, and updating all tiles at once. This is what happens when you click the `Update in Editor` button.  
 
 To achieve the best performance, only the fully-filled tile used for sketching in the World grid is used for autotiling in the `TileMapDual`. This approach allows the World tileset to be used for other purposes, such as having an extended tileset with rocks, etc.  

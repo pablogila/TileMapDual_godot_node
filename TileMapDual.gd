@@ -147,7 +147,8 @@ func _update_tiles() -> void:
 	# We must skip this check when updating tiles individually
 	checked_cells = [false]
 
-## Takes a world cell, and updates the overlapping tiles from the dual grid accordingly.
+## Takes a world cell, and updates the
+## overlapping tiles from the dual grid accordingly.
 func update_tile(world_cell: Vector2i) -> void:
 	if freeze:
 		return
@@ -224,3 +225,19 @@ func _is_world_tile_sketched(_world_cell: Vector2i) -> bool:
 		if debug:
 			print('      World cell ' + str(_world_cell) + ' Is NOT sketched with atlas coords ' + str(_atlas_coords))
 		return false
+
+
+## Public method to add a tile in a given World cell
+func fill_tile(world_cell) -> void:
+	if freeze:
+		return
+	world_tilemap.set_cell(world_cell, 0, full_tile)
+	update_tile(world_cell)
+
+
+## Public method to erase a tile in a given World cell
+func erase_tile(world_cell) -> void:
+	if freeze:
+		return
+	world_tilemap.set_cell(world_cell, 0, empty_tile)
+	update_tile(world_cell)

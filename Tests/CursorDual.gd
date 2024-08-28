@@ -13,13 +13,9 @@ func _process(_delta: float) -> void:
 	coords = world_tilemap.local_to_map(position)
 	
 	if Input.is_action_pressed("left_click"):
-		if not dual_tilemap.freeze:
-			world_tilemap.set_cell(coords, 0, dual_tilemap.full_tile)
-			dual_tilemap.update_tile(coords)
+		dual_tilemap.fill_tile(coords)
 	elif Input.is_action_pressed("right_click"):
-		if not dual_tilemap.freeze:
-			world_tilemap.set_cell(coords, 0, dual_tilemap.empty_tile)
-			dual_tilemap.update_tile(coords)
+		dual_tilemap.erase_tile(coords)
 
 
 func _physics_process(_delta: float) -> void:
