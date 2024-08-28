@@ -1,10 +1,10 @@
 [gd_scene load_steps=5 format=4 uid="uid://d1jd016p0ux1v"]
 
-[ext_resource type="Texture2D" uid="uid://bbi5cp4lwhgeo" path="res://TileMapDual/tileset_standard.png" id="1_pqe1g"]
-[ext_resource type="Script" path="res://TileMapDual/TileMapDual.gd" id="2_ptv8w"]
+[ext_resource type="Texture2D" uid="uid://bbi5cp4lwhgeo" path="res://Tests/tileset_standard.png" id="1_mpn4c"]
+[ext_resource type="Script" path="res://TileMapDual.gd" id="2_tjvbb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fufiq"]
-texture = ExtResource("1_pqe1g")
+texture = ExtResource("1_mpn4c")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 1:0/0 = 0
@@ -27,9 +27,7 @@ texture_region_size = Vector2i(64, 64)
 tile_size = Vector2i(64, 64)
 sources/0 = SubResource("TileSetAtlasSource_fufiq")
 
-[node name="Test_standard" type="Node2D"]
-
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Standard" type="Node2D"]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAD+/wIAAAACAAEAAAD//wIAAAACAAEAAAAAAAIAAAACAAEAAAABAAIAAAACAAEAAAACAAEAAAACAAEAAAD9/wEAAAACAAEAAAD9//3/AAACAAEAAAD9//7/AAACAAEAAAACAP3/AAACAAEAAAACAP7/AAACAAEAAAD3//v/AAACAAEAAAD4//v/AAACAAEAAAD3//z/AAACAAEAAAD3//3/AAACAAEAAAD3//7/AAACAAEAAAD3////AAACAAEAAAD3/wAAAAACAAEAAAD3/wEAAAACAAEAAAD3/wIAAAACAAEAAAD3/wMAAAACAAEAAAD3/wQAAAACAAEAAAD4/wQAAAACAAEAAAD5/wQAAAACAAEAAAD6/wQAAAACAAEAAAD7/wQAAAACAAEAAAD8/wQAAAACAAEAAAD9/wQAAAACAAEAAAD+/wQAAAACAAEAAAD//wQAAAACAAEAAAAAAAQAAAACAAEAAAABAAQAAAACAAEAAAACAAQAAAACAAEAAAADAAQAAAACAAEAAAAEAAQAAAACAAEAAAAFAAQAAAACAAEAAAAGAAQAAAACAAEAAAAHAAQAAAACAAEAAAAIAAQAAAACAAEAAAD5//v/AAACAAEAAAD6//v/AAACAAEAAAD7//v/AAACAAEAAAD8//v/AAACAAEAAAD9//v/AAACAAEAAAD+//v/AAACAAEAAAD///v/AAACAAEAAAAAAPv/AAACAAEAAAABAPv/AAACAAEAAAACAPv/AAACAAEAAAADAPv/AAACAAEAAAAEAPv/AAACAAEAAAAFAPv/AAACAAEAAAAGAPv/AAACAAEAAAAHAPv/AAACAAEAAAAIAPv/AAACAAEAAAAIAPz/AAACAAEAAAAIAP3/AAACAAEAAAAIAP7/AAACAAEAAAAIAP//AAACAAEAAAAIAAAAAAACAAEAAAAIAAEAAAACAAEAAAAIAAIAAAACAAEAAAAIAAMAAAACAAEAAAD4/wMAAAACAAEAAAD4//z/AAACAAEAAAAHAPz/AAACAAEAAAAHAAMAAAACAAEAAAD4//3/AAACAAEAAAD4//7/AAACAAEAAAD4////AAACAAEAAAD4/wAAAAACAAEAAAD4/wEAAAACAAEAAAD4/wIAAAACAAEAAAAHAP3/AAACAAEAAAAHAP7/AAACAAEAAAAHAP//AAACAAEAAAAHAAAAAAACAAEAAAAHAAEAAAACAAEAAAAHAAIAAAACAAEAAAA=")
@@ -38,6 +36,7 @@ tile_set = SubResource("TileSet_d0l1c")
 [node name="TileMapDual" type="TileMapLayer" parent="." node_paths=PackedStringArray("sketch_tilemap")]
 position = Vector2(-32, -32)
 tile_set = SubResource("TileSet_d0l1c")
-script = ExtResource("2_ptv8w")
+script = ExtResource("2_tjvbb")
 sketch_tilemap = NodePath("../TileMapLayer")
-clean = null
+
+[node name="Camera2D" type="Camera2D" parent="."]

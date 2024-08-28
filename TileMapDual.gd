@@ -7,6 +7,10 @@ extends TileMapLayer
 ## with respect to the World grid.
 ## Sketch with the corresponding sketch_atlas_coord.
 @export var sketch_tilemap: TileMapLayer = null
+## Clean all the tiles from the TileMapDual node.
+@export var clean: bool = false:
+	set(value):
+		self.clear()
 ## Click to update the tilemap inside the editor.
 @export var update_in_editor: bool = false:
 	set(value):
@@ -14,16 +18,8 @@ extends TileMapLayer
 ## Update and modify the tileset in-game via sketch_tilemap.changed() signal.
 ## Disable it to freeze the tilemap in its current state.
 @export var update_in_game: bool = false
-## Clean all the tiles from the TileMapDual node.
-@export var clean: bool = false:
-	set(value):
-		self.clear()
 ## Print debug messages. Lots of them.
 @export var debug: bool = false
-## Coordinates for the tile in the Atlas
-## that will be used to sketch in-editor in the World TileMapLayer.
-## Defaults to the one in the standard Godot template.
-@export var sketch_atlas_coords: Vector2i = Vector2i(2,1)
 
 ## Bit-wise logic: summing over all neighbours
 ## provides the proper tile from the Atlas.
@@ -65,7 +61,15 @@ const NEIGHBOURS_TO_ATLAS: Dictionary = {
 	15: Vector2i(2,1)
 	}
 
+## Coordinates for the tile in the Atlas
+## that will be used to sketch in-editor in the World TileMapLayer.
+## Defaults to the one in the standard Godot template.
+## Only this tile will be used for autotiling.
+var sketch_atlas_coords: Vector2i = Vector2i(2,1)
+## Prevents checking the cells more than once
 var checked_cells: Array = []
+## Isometric or not
+var is_isometric = false
 
 
 func _ready() -> void:
@@ -77,9 +81,18 @@ func _ready() -> void:
 
 
 func _update_tilemap() -> void:
+	if debug:
+		print('tile_set.tile_shape = ' + str(sketch_tilemap.tile_set.tile_shape))
+	
 	self.tile_set = sketch_tilemap.tile_set
-	self.position.x = - self.tile_set.tile_size.x * 0.5
-	self.position.y = - self.tile_set.tile_size.y * 0.5
+	if sketch_tilemap.tile_set.tile_shape == 1:  # Isself.position.y = - self.tile_set.tile_size.y * 0.5ometric tiles
+		is_isometric = true
+		self.position.x = - self.tile_set.tile_size.x * 0
+		self.position.y = - self.tile_set.tile_size.y * 0.5
+	else:
+		is_isometric = false
+		self.position.x = - self.tile_set.tile_size.x * 0.5
+		self.position.y = - self.tile_set.tile_size.y * 0.5
 	self.clear()
 	_update_tiles()
 
@@ -89,8 +102,17 @@ func _update_tiles() -> void:
 	if debug:
 		print('Updating tiles....................')
 	for _world_cell in sketch_tilemap.get_used_cells():
-		_update_tiles_around_world_cell(_world_cell)
+		if _is_world_tile_sketched(_world_cell):
+			if is_isometric:
+				_update_tiles_around_world_cell_isometric(_world_cell)
+			else:
+				_update_tiles_around_world_cell(_world_cell)
 
+
+## TO-IMPLEMENT
+func _update_tiles_around_world_cell_isometric(_world_cell: Vector2i) -> void:
+	_update_tiles_around_world_cell(_world_cell)
+	# _update_cell_isometric()
 
 func _update_tiles_around_world_cell(_world_cell: Vector2i) -> void:
 	if debug:
