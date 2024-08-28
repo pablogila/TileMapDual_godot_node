@@ -14,7 +14,7 @@ extends TileMapLayer
 ## Click to update the tilemap inside the editor.
 @export var update_in_editor: bool = false:
 	set(value):
-		_update_tilemap()
+		update_tilemap()
 ## Update and modify the tileset in-game via sketch_tilemap.changed() signal.
 ## Disable it to freeze the tilemap in its current state.
 @export var update_in_game: bool = false
@@ -66,6 +66,9 @@ const NEIGHBOURS_TO_ATLAS: Dictionary = {
 ## Defaults to the one in the standard Godot template.
 ## Only this tile will be used for autotiling.
 var sketch_atlas_coords: Vector2i = Vector2i(2,1)
+## The opposed of sketch_atlas_coords.
+## Used in-game to erase sketched tiles.
+var empty_atlas_coords: Vector2i = Vector2i(0,3)
 ## Prevents checking the cells more than once
 var checked_cells: Array = []
 ## Isometric or not
@@ -76,11 +79,11 @@ func _ready() -> void:
 	if update_in_game:
 		if debug:
 			print('Updating in-game is activated')
-		sketch_tilemap.changed.connect(_update_tilemap)
-		_update_tilemap()
+		sketch_tilemap.changed.connect(update_tilemap)
+		update_tilemap()
 
 
-func _update_tilemap() -> void:
+func update_tilemap() -> void:
 	if debug:
 		print('tile_set.tile_shape = ' + str(sketch_tilemap.tile_set.tile_shape))
 	

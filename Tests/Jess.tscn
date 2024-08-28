@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=4 uid="uid://deghq0uhw45c4"]
+[gd_scene load_steps=10 format=4 uid="uid://deghq0uhw45c4"]
 
 [ext_resource type="Texture2D" uid="uid://bdjwbiojstx4k" path="res://Tests/tileset_jess.png" id="1_qi28g"]
 [ext_resource type="Script" path="res://TileMapDual.gd" id="2_blexy"]
+[ext_resource type="Script" path="res://Tests/Cursor.gd" id="3_ed5ee"]
+[ext_resource type="Texture2D" uid="uid://xarbtk8x4ftk" path="res://Tests/cursor_indicator.png" id="3_hx6fs"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l0o8u"]
 texture = ExtResource("1_qi28g")
@@ -25,6 +27,28 @@ texture = ExtResource("1_qi28g")
 [sub_resource type="TileSet" id="TileSet_sweay"]
 sources/0 = SubResource("TileSetAtlasSource_l0o8u")
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_hbe70"]
+atlas = ExtResource("3_hx6fs")
+region = Rect2(0, 0, 17, 17)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1qp84"]
+atlas = ExtResource("3_hx6fs")
+region = Rect2(17, 0, 17, 17)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jpgjx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hbe70")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1qp84")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Jess" type="Node2D"]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
@@ -36,5 +60,11 @@ position = Vector2(-8, -8)
 tile_set = SubResource("TileSet_sweay")
 script = ExtResource("2_blexy")
 sketch_tilemap = NodePath("../TileMapLayer")
+
+[node name="Cursor" type="AnimatedSprite2D" parent="." node_paths=PackedStringArray("world_tilemap", "dual_tilemap")]
+sprite_frames = SubResource("SpriteFrames_jpgjx")
+script = ExtResource("3_ed5ee")
+world_tilemap = NodePath("../TileMapLayer")
+dual_tilemap = NodePath("../TileMapDual")
 
 [node name="Camera2D" type="Camera2D" parent="."]
