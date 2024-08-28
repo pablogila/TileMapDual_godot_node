@@ -12,7 +12,7 @@ config_version=5
 
 config/name="TileMapDual_godot_node"
 config/features=PackedStringArray("4.3", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://Docs/icon.svg"
 
 [input]
 

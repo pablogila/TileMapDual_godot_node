@@ -9,7 +9,7 @@ This dual-grid system [proposed by Oskar Stålberg](https://x.com/OskSta/status/
 ## Advantages
 
 Using a dual-grid system has the following advantages:  
-- Only 15 tiles are required, instead of 47
+- Only [15](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) tiles are required for autotiling, instead of [47](https://user-images.githubusercontent.com/47016402/87044533-f5e89f00-c1f6-11ea-9178-67b2e357ee8a.png)
 - The tiles can have perfectly rounded corners
 - The tiles align to the world grid
 
@@ -22,14 +22,19 @@ You just need to quickly sketch your level with the fully-filled tile, indicated
 
 ![](Docs/reference_tileset_standard.png)
 
-Then, create a `TileMapDual` node and assign the `TileMapLayer` to it. Just click the `Update in Editor` checkbox, and the dual grid will be automatically configured and generated in real-time.  
-Any change in the `TileMapLayer` will be updated by simply clicking the checkbox again!
+Then, create a `TileMapDual` node and assign the `TileMapLayer` to it. Just click the `Update in Editor` checkbox, and the dual grid will be automatically configured and generated in real-time.
+Any change in the `TileMapLayer` will be updated by simply clicking the checkbox again!  
+
+You can also freeze the tileset by activating the `Freeze` checkbox, to avoid accidental updates, both in-editor and in-game.
 
 ![](Docs/demo.gif)
 
-An in-game implementation can be activated by ckecking the `Update in Game` setting. This will update the dual grid in real-time during gameplay, thanks to the `TileMapLayer.changed` signal.  
+You can modify the dual tileset by calling one the following methods: 
 
-To achieve the best performance, only the fully-filled tile used for sketching is autotiled in the `TileMapDual`. This approach allows the world tileset to be used for other purposes, such as having an extended tileset with rocks, etc.  
+- `update_tile(world_tile)`: Update the displayed tiles around `world_tile`. This is the fastest method, and you can use it with an in-game tool. An example `CursorDual` node based on Jess's implementation is included.
+- `update_tileset()`: Update the entire tileset, offsetting itself by half a grid, and updating all tiles at once. This is what happens when you click the `Update in Editor` button.  
+
+To achieve the best performance, only the fully-filled tile used for sketching in the World grid is used for autotiling in the `TileMapDual`. This approach allows the World tileset to be used for other purposes, such as having an extended tileset with rocks, etc.  
 
 ## Why?
 

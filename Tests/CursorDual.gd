@@ -1,4 +1,7 @@
+class_name CursorDual
 extends Node2D
+
+# TO-DO: generalize the grid size
 
 @export var world_tilemap: TileMapLayer
 @export var dual_tilemap: TileMapDual
@@ -6,23 +9,17 @@ extends Node2D
 @onready var coords: Vector2i
 
 
-func _ready() -> void:
-	await owner.ready
-	if dual_tilemap != null and world_tilemap == null:
-		world_tilemap = dual_tilemap.sketch_tilemap
-
-
 func _process(_delta: float) -> void:
 	coords = world_tilemap.local_to_map(position)
 	
 	if Input.is_action_pressed("left_click"):
-		world_tilemap.set_cell(coords, 0, dual_tilemap.sketch_atlas_coords)
-		if dual_tilemap.update_in_game:
-			dual_tilemap.update_tilemap()
+		if not dual_tilemap.freeze:
+			world_tilemap.set_cell(coords, 0, dual_tilemap.full_tile)
+			dual_tilemap.update_tile(coords)
 	elif Input.is_action_pressed("right_click"):
-		world_tilemap.set_cell(coords, 0, dual_tilemap.empty_atlas_coords)
-		if dual_tilemap.update_in_game:
-			dual_tilemap.update_tilemap()
+		if not dual_tilemap.freeze:
+			world_tilemap.set_cell(coords, 0, dual_tilemap.empty_tile)
+			dual_tilemap.update_tile(coords)
 
 
 func _physics_process(_delta: float) -> void:
