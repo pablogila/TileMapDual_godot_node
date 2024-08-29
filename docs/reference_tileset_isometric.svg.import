@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1fxget81jjrv"
-path="res://.godot/imported/tileset_isometric_round.svg-7a8fcf39661ceb2aad616153b817fc55.ctex"
+uid="uid://cyx12b3q54dw4"
+path="res://.godot/imported/reference_tileset_isometric.svg-2ac7d50b75ae8c50bdd3827311761984.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Tests/assets/tileset_isometric_round.svg"
-dest_files=["res://.godot/imported/tileset_isometric_round.svg-7a8fcf39661ceb2aad616153b817fc55.ctex"]
+source_file="res://docs/reference_tileset_isometric.svg"
+dest_files=["res://.godot/imported/reference_tileset_isometric.svg-2ac7d50b75ae8c50bdd3827311761984.ctex"]
 
 [params]
 

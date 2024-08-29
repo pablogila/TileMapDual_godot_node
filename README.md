@@ -2,9 +2,9 @@
 
 Introducing TileMapDual, a custom TileMapLayer node
 which provides a real-time, in-editor and in-game dual-grid tileset system for Godot.
-This dual-grid system [proposed by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605) reduces the number of tiles required from 47 to just 15 (yes, fifteen!!), rocketing your dev journey!  
+This dual-grid system, [as explained by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605), reduces the number of tiles required from 47 to just 15 (yes, fifteen!!), rocketing your dev journey!  
 
-![](Docs/reference_dual.jpeg)
+![](docs/reference_dual.jpeg)
 
 ## Advantages
 
@@ -20,14 +20,14 @@ Just copy the `TileMapDual.gd` script to your project to start using the new cus
 You have to create a regular `TileMapLayer` with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
 You just need to quickly sketch your level with the fully-filled tile, indicated here:
 
-![](Docs/reference_tileset_standard.png)
+![](docs/reference_tileset_standard.png)
 
 Then, create a `TileMapDual` node and assign the `TileMapLayer` to it. Just click the `Update in Editor` checkbox, and the dual grid will be automatically configured and generated in real-time.
 Any change in the `TileMapLayer` will be updated by simply clicking the checkbox again!  
 
 You can also freeze the tileset by activating the `Freeze` checkbox, to avoid accidental updates, both in-editor and in-game.
 
-![](Docs/demo.gif)
+![](docs/demo.gif)
 
 You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node, based on Jess's implementation.
 
@@ -46,11 +46,11 @@ To achieve the best performance, only the fully-filled tile used for sketching i
 Isometric tilemaps are now compatible with the `TileMapDual` node.  
 You heard that right, isometric, as in 'isometric'. It works automatically, out of the box. Isometric tilemaps! yayyyy!
 
-![](Docs/demo_isometric.gif)
+![](docs/demo_isometric.gif)
 
 To use isometric tilemaps, you only need to follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps. Here it is:
 
-![](Docs/reference_tileset_isometric.svg)
+![](docs/reference_tileset_isometric.svg)
 
 That's it. Just 15 tiles for isometric autotiling. I love it.
 
@@ -71,6 +71,7 @@ Oh, and also... You can use isometric tilesets!
 ## To-do
 
 - Animations I guess
+- I am personally not interested in hex grids right now, but I am open to pull requests!
 
 ## References
 
@@ -82,7 +83,7 @@ Oh, and also... You can use isometric tilesets!
 
 ## Feedback
 
-Please feel free to contact me to provide feedback, suggestions, or improvements to this project.  
+Please feel free to contact me to provide feedback, suggestions, or improvements to this project :D  
 - [Twitter (@GilaPixel)](https://x.com/gilapixel)
 - [Instagram (@GilaPixel)](https://www.instagram.com/gilapixel/)
 - [Reddit (/u/pgilah)](https://www.reddit.com/u/pgilah/)
