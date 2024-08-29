@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dklpxtd6eowow"
-path="res://.godot/imported/tileset_isometric_standard.svg-cc3984822fc0d160872a98828874e2a0.ctex"
+uid="uid://bdjwbiojstx4k"
+path="res://.godot/imported/tileset_jess.png-079022901ce75e68ebdc51c46b5f37d4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Tests/tileset_isometric_standard.svg"
-dest_files=["res://.godot/imported/tileset_isometric_standard.svg-cc3984822fc0d160872a98828874e2a0.ctex"]
+source_file="res://Tests/assets/tileset_jess.png"
+dest_files=["res://.godot/imported/tileset_jess.png-079022901ce75e68ebdc51c46b5f37d4.ctex"]
 
 [params]
 
@@ -32,6 +32,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

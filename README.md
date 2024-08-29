@@ -31,15 +31,28 @@ You can also freeze the tileset by activating the `Freeze` checkbox, to avoid ac
 
 You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node, based on Jess's implementation.
 
-- `fill_tile(world_cell)`: Fill the corresponding world tile and update the corresponding dual tiles.
-- `erase_tile(world_cell)`: Erase the corresponding world tile and update the corresponding dual tiles.
+- `fill_tile(world_cell)`: Fill a given world cell and update the corresponding dual tiles.
+- `erase_tile(world_cell)`: Erase a given world cell and update the corresponding dual tiles.
 
-Two more public methods are available if needed:
+Two more public methods are available, although you may not need them in most cases:
 
-- `update_tile(world_cell)`: Update the displayed tiles around `world_tile`. This is the fastest method to upgrade specific cells.  
-- `update_tileset()`: Update the entire tileset, offsetting itself by half a grid, and updating all tiles at once. This is what happens when you click the `Update in Editor` button.  
+- `update_tile(world_cell)`: Update the displayed tiles around a given world cell. This is the fastest method to update specific cells.  
+- `update_tileset()`: Update the entire tileset, offsetting itself by half a cell, and updating all tiles at once. This is what happens when you click the `Update in Editor` button.  
 
 To achieve the best performance, only the fully-filled tile used for sketching in the World grid is used for autotiling in the `TileMapDual`. This approach allows the World tileset to be used for other purposes, such as having an extended tileset with rocks, etc.  
+
+## Isometric tilesets
+
+Isometric tilemaps are now compatible with the `TileMapDual` node.  
+You heard that right, isometric, as in 'isometric'. It works automatically, out of the box. Isometric tilemaps! yayyyy!
+
+![](Docs/demo_isometric.gif)
+
+To use isometric tilemaps, you only need to follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps. Here it is:
+
+![](Docs/reference_tileset_isometric.svg)
+
+That's it. Just 15 tiles for isometric autotiling. I love it.
 
 ## Why?
 
@@ -51,11 +64,13 @@ This is a potential source of headaches, and this release corrects said inversio
 
 This release also implements modern TileMapLayers instead of the deprecated TileMap node.  
 
-Finally, and most importantly, this release simplifies the process by introducing the dual-grid system as a simple custom node that runs within the editor, making it easy to integrate into your own projects.  
+Most importantly, this release simplifies the process by introducing the dual grid system as a simple custom node that runs automatically within the editor, making it easy to integrate into your own projects.  
+
+Oh, and also... You can use isometric tilesets!  
 
 ## To-do
 
-- Implement isometric support (ongoing)
+- Animations I guess
 
 ## References
 

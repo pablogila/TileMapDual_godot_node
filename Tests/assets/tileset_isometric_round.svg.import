@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xarbtk8x4ftk"
-path="res://.godot/imported/cursor_indicator.png-d5f95604698d61f0a1d2e1b7ed401c54.ctex"
+uid="uid://8e16fpt87xnl"
+path="res://.godot/imported/tileset_isometric_round.svg-7a8fcf39661ceb2aad616153b817fc55.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Tests/cursor_indicator.png"
-dest_files=["res://.godot/imported/cursor_indicator.png-d5f95604698d61f0a1d2e1b7ed401c54.ctex"]
+source_file="res://Tests/assets/tileset_isometric_round.svg"
+dest_files=["res://.godot/imported/tileset_isometric_round.svg-7a8fcf39661ceb2aad616153b817fc55.ctex"]
 
 [params]
 
@@ -32,3 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

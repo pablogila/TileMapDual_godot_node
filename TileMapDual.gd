@@ -46,15 +46,13 @@ const NEIGHBOURS := {
 
 ## Overlapping tiles from the World grid
 ## that a tile from the Dual grid has.
-## To be used with isometric tilesets.
-########### TO-DO #################
+## To be used ONLY with isometric tilesets.
 const NEIGHBOURS_ISOMETRIC := {
 	location.TOP_LEFT  : Vector2i(0,0),
-	location.LOW_LEFT  : Vector2i(0,1),
-	location.TOP_RIGHT : Vector2i(1,0),
-	location.LOW_RIGHT : Vector2i(1,1)
+	location.LOW_LEFT  : Vector2i(0,1), # - (1,0)
+	location.TOP_RIGHT : Vector2i(1,1), # - (1,0)
+	location.LOW_RIGHT : Vector2i(0,2)
 	}
-
 
 ## Dict to assign the Atlas coordinates from the
 ## summation over all sketched NEIGHBOURS.
@@ -143,8 +141,9 @@ func _update_tiles() -> void:
 	for _world_cell in world_tilemap.get_used_cells():
 		if _is_world_tile_sketched(_world_cell):
 			update_tile(_world_cell)
-	# checked_cells will only be used when updating the entire tilemap
-	# We must skip this check when updating tiles individually
+	# checked_cells will only be used when updating
+	# the entire tilemap to avoid repeating checks.
+	# This check is skipped when updating tiles individually.
 	checked_cells = [false]
 
 ## Takes a world cell, and updates the
@@ -171,12 +170,6 @@ func update_tile(world_cell: Vector2i) -> void:
 	_update_displayed_tile(_low_right)
 
 
-# TO-IMPLEMENT
-func _update_tile_isometric(_world_cell: Vector2i) -> void:
-	print('ISOMETRIC IS STILL UNDER DEVELOPMENT')
-	return
-
-
 func _update_displayed_tile(_display_cell: Vector2i) -> void:
 	# Avoid updating cells more than necessary
 	if checked_cells[0] == true:
@@ -187,11 +180,70 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 	if debug:
 		print('    Checking display tile ' + str(_display_cell) + '...')
 	
-	# CAUTION: To get the world cells from the dual grid, we apply the opposite vectors
+	# INFO: To get the world cells from the dual grid, we apply the opposite vectors
 	var _top_left = _display_cell - NEIGHBOURS[location.LOW_RIGHT]  # - (1,1)
 	var _low_left = _display_cell - NEIGHBOURS[location.TOP_RIGHT]  # - (1,0)
 	var _top_right = _display_cell - NEIGHBOURS[location.LOW_LEFT]  # - (0,1)
 	var _low_right = _display_cell - NEIGHBOURS[location.TOP_LEFT]  # - (0,0)
+	
+	# We perform a bitwise summation over the sketched neighbours
+	var _tile_key: int = 0
+	if _is_world_tile_sketched(_top_left):
+		_tile_key += location.TOP_LEFT
+	if _is_world_tile_sketched(_low_left):
+		_tile_key += location.LOW_LEFT
+	if _is_world_tile_sketched(_top_right):
+		_tile_key += location.TOP_RIGHT
+	if _is_world_tile_sketched(_low_right):
+		_tile_key += location.LOW_RIGHT
+	
+	var _coords_atlas: Vector2i = NEIGHBOURS_TO_ATLAS[_tile_key]
+	self.set_cell(_display_cell, 0, _coords_atlas)
+	if debug:
+		print('    Display tile ' + str(_display_cell) + ' updated with key ' + str(_tile_key))
+
+
+## Takes a world cell, and updates the
+## overlapping tiles from the dual grid accordingly.
+## Used automatically for isometric grids.
+func _update_tile_isometric(_world_cell: Vector2i) -> void:
+	# If _world_cell.y is even, displace by (-1,0) the low_left and top_right cells
+	var isometric_fix: Vector2i = Vector2i(0,0)
+	if abs(_world_cell.y) % 2 == 0:
+		isometric_fix = Vector2i(-1,0)
+	
+	# CAUTION: I am not going to explain how does the isometric fix works. It does. I need a coffee.
+	var _top_left = _world_cell + NEIGHBOURS_ISOMETRIC[location.TOP_LEFT]
+	var _low_left = _world_cell + NEIGHBOURS_ISOMETRIC[location.LOW_LEFT] + isometric_fix
+	var _top_right = _world_cell + NEIGHBOURS_ISOMETRIC[location.TOP_RIGHT] + isometric_fix
+	var _low_right = _world_cell + NEIGHBOURS_ISOMETRIC[location.LOW_RIGHT]
+	_update_displayed_tile_isometric(_top_left)
+	_update_displayed_tile_isometric(_low_left)
+	_update_displayed_tile_isometric(_top_right)
+	_update_displayed_tile_isometric(_low_right)
+
+
+func _update_displayed_tile_isometric(_display_cell: Vector2i) -> void:
+	# Avoid updating cells more than necessary
+	if checked_cells[0] == true:
+		if _display_cell in checked_cells:
+			return
+		checked_cells.append(_display_cell)
+	
+	if debug:
+		print('    Checking display tile ' + str(_display_cell) + '...')
+	
+	# If _display_cell.y is odd, displace by (+1,0) the low_left and top_right cells
+	var isometric_fix: Vector2i = Vector2i(0,0)
+	if abs(_display_cell.y) % 2 == 1:
+		isometric_fix = Vector2i(1,0)
+	
+	# INFO: Same as with squares, opposite vectors apply
+	# CAUTION: The coffee thing
+	var _top_left: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.LOW_RIGHT]  # - (1,1)
+	var _low_left: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.TOP_RIGHT] + isometric_fix  # - (1,0) or (0,0)
+	var _top_right: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.LOW_LEFT] + isometric_fix  # - (1,1) or (2,1)
+	var _low_right: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.TOP_LEFT]  # - (0,2)
 	
 	# We perform a bitwise summation over the sketched neighbours
 	var _tile_key: int = 0

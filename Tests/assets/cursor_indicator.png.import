@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://v4aqr2bp7bhp"
-path="res://.godot/imported/reference_tileset_standard.png-eac568b9efff973d6baf07d71e3a9665.ctex"
+uid="uid://xarbtk8x4ftk"
+path="res://.godot/imported/cursor_indicator.png-9884689d60b1674ad6f0d98ee27e577a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Docs/reference_tileset_standard.png"
-dest_files=["res://.godot/imported/reference_tileset_standard.png-eac568b9efff973d6baf07d71e3a9665.ctex"]
+source_file="res://Tests/assets/cursor_indicator.png"
+dest_files=["res://.godot/imported/cursor_indicator.png-9884689d60b1674ad6f0d98ee27e577a.ctex"]
 
 [params]
 
