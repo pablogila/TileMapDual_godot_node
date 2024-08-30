@@ -1,3 +1,23 @@
+'''
+	TileMapDual: An automatic, real-time dual-grid tileset system for Godot!
+	Copyright (C) 2024 Pablo Gila-Herranz (@GilaPixel)
+	
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
+
+		TL;DR: You can use this project for free, even commercially,
+		with the only condition that you share back any significant modifications to this specific code
+		- NOT your entire game, just the derivatives of the code provided here -
+		so that the Godot community keeps thriving. Thanks!
+'''
+
 @tool
 class_name TileMapDual
 extends TileMapLayer
