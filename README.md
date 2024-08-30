@@ -1,8 +1,9 @@
 # TileMapDual Godot Node
 
-Introducing TileMapDual, a custom TileMapLayer node
-which provides a real-time, in-editor and in-game dual-grid tileset system for Godot.
+Introducing *TileMapDual*: a simple, automatic and straightforward custom `TileMapLayer` node for [Godot](https://github.com/godotengine/godot) that provides a real-time, in-editor and in-game dual-grid tileset system, for both **square** and **isometric** grids.
 This dual-grid system, [as explained by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605), reduces the number of tiles required from 47 to just 15 (yes, fifteen!!), rocketing your dev journey!  
+
+Not only that, but if your tiles are symmetrical, you can get away with drawing only 6 (six!) tiles and then generating the 15-tile-tilesets used by *TileMapDual*, thanks to tools like [Wang Tile Set Creator](https://github.com/kleingeist37/godot-wang-converter).  
 
 ![](docs/reference_dual.jpeg)
 
@@ -58,15 +59,15 @@ That's it. Just 15 tiles for isometric autotiling. I love it.
 
 Previous implementations of a dual-grid tileset system in Godot
 by [GlitchedInOrbit](https://github.com/GlitchedinOrbit/dual-grid-tilemap-system-godot-gdscript)
-and [jess:codes](https://github.com/jess-hammer/dual-grid-tilemap-system-godot)
-used an inverted version of the official 16-tile template (although Jess's tileset is provided as an example in this repo).
+and [jess::codes](https://github.com/jess-hammer/dual-grid-tilemap-system-godot)
+used an inverted version of the [standard 16-tile template](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) (although Jess's tileset is provided as an example in this repo).
 This is a potential source of headaches, and this release corrects said inversion.  
 
-This release also implements modern TileMapLayers instead of the deprecated TileMap node.  
+This release also implements modern **TileMapLayers** instead of the deprecated TileMap node.  
 
-Most importantly, this release simplifies the process by introducing the dual grid system as a simple custom node that runs automatically within the editor, making it easy to integrate into your own projects.  
+Most importantly, this release simplifies the process by introducing the dual grid system as a simple **custom node** that runs **automatically** and **in-editor**, making it easy to integrate into your own projects.  
 
-Oh, and also... You can use isometric tilesets!  
+Oh, and also... You can use **isometric tilesets!**  
 
 ## To-do
 
@@ -77,9 +78,11 @@ Oh, and also... You can use isometric tilesets!
 
 - [Dual grid Twitter post by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605)
 - ['Programming Terrain Generation' video by ThinMatrix](https://www.youtube.com/watch?v=buKQjkad2I0)
-- ['Drawing Fewer Tiles' video by jess:codes](https://www.youtube.com/watch?v=jEWFSv3ivTg)
-- [jess:codes implementation in C#](https://github.com/jess-hammer/dual-grid-tilemap-system-godot)
+- ['Drawing Fewer Tiles' video by jess::codes](https://www.youtube.com/watch?v=jEWFSv3ivTg)
+- [jess::codes implementation in C#](https://github.com/jess-hammer/dual-grid-tilemap-system-godot)
 - [GlitchedInOrbit implementation in GDScript](https://github.com/GlitchedinOrbit/dual-grid-tilemap-system-godot-gdscript)
+- [Wang Tile Set Creator](https://github.com/kleingeist37/godot-wang-converter)
+- [Webtyler tool, to convert from 15-tile sets to 47-tile sets](https://wareya.github.io/webtyler/)
 
 ## Feedback
 
