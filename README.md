@@ -76,9 +76,9 @@ Oh, and also... You can use **isometric tilesets!**
 
 ## License
 
-This project is Free and Open Source Software, released under the [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html).  
+This project is Open Source Software, released under the MIT license. This basically means that you can do whatever you want with it. Enjoy!  
 
-**TL;DR:** You can use this project for **free**, even **commercially**, with the only condition that you **share back any significant  modifications *to this specific code*** - NOT your entire game, just the derivatives of the code provided here - so that the Godot community keeps thriving. Thanks!
+I am open to pull requests, and I personally encourage you to send back any significant improvements to this code so that the Godot community continues to thrive. Thanks!  
 
 ## References
 
