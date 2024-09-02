@@ -92,6 +92,8 @@ var empty_tile: Vector2i = Vector2i(0,3)
 var checked_cells: Array = [false]
 ## Track if it is isometric or not
 var is_isometric = false
+## Keep track of the atlas ID
+var _atlas_id: int
 
 
 func _ready() -> void:
@@ -119,7 +121,11 @@ func update_tileset() -> void:
 		print('tile_set.tile_shape = ' + str(world_tilemap.tile_set.tile_shape))
 	
 	self.tile_set = world_tilemap.tile_set
-	if world_tilemap.tile_set.tile_shape == 1:
+	
+	# Get the atlas ID used by the full_tile. TO AUTOMATIZE
+	_atlas_id = 0 # self.get_cell_source_id(full_tile)
+	
+	if self.tile_set.tile_shape == 1:
 		is_isometric = true
 		self.position.x = - self.tile_set.tile_size.x * 0
 		self.position.y = - self.tile_set.tile_size.y * 0.5
@@ -198,7 +204,7 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 		_tile_key += location.LOW_RIGHT
 	
 	var _coords_atlas: Vector2i = NEIGHBOURS_TO_ATLAS[_tile_key]
-	self.set_cell(_display_cell, 0, _coords_atlas)
+	self.set_cell(_display_cell, _atlas_id, _coords_atlas)
 	if debug:
 		print('    Display tile ' + str(_display_cell) + ' updated with key ' + str(_tile_key))
 
@@ -257,7 +263,7 @@ func _update_displayed_tile_isometric(_display_cell: Vector2i) -> void:
 		_tile_key += location.LOW_RIGHT
 	
 	var _coords_atlas: Vector2i = NEIGHBOURS_TO_ATLAS[_tile_key]
-	self.set_cell(_display_cell, 0, _coords_atlas)
+	self.set_cell(_display_cell, _atlas_id, _coords_atlas)
 	if debug:
 		print('    Display tile ' + str(_display_cell) + ' updated with key ' + str(_tile_key))
 
@@ -283,7 +289,7 @@ func _is_world_tile_sketched(_world_cell: Vector2i) -> bool:
 func fill_tile(world_cell) -> void:
 	if freeze:
 		return
-	world_tilemap.set_cell(world_cell, 0, full_tile)
+	world_tilemap.set_cell(world_cell, _atlas_id, full_tile)
 	update_tile(world_cell)
 
 
@@ -291,5 +297,5 @@ func fill_tile(world_cell) -> void:
 func erase_tile(world_cell) -> void:
 	if freeze:
 		return
-	world_tilemap.set_cell(world_cell, 0, empty_tile)
+	world_tilemap.set_cell(world_cell, _atlas_id, empty_tile)
 	update_tile(world_cell)
