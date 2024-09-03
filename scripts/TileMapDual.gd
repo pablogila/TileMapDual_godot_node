@@ -121,10 +121,7 @@ func update_tileset() -> void:
 		print('tile_set.tile_shape = ' + str(world_tilemap.tile_set.tile_shape))
 	
 	self.tile_set = world_tilemap.tile_set
-	
-	# Get the atlas ID used by the full_tile. TO AUTOMATIZE
-	_atlas_id = 0 # self.get_cell_source_id(full_tile)
-	
+		
 	if self.tile_set.tile_shape == 1:
 		is_isometric = true
 		self.position.x = - self.tile_set.tile_size.x * 0
@@ -160,6 +157,9 @@ func update_tile(world_cell: Vector2i) -> void:
 	
 	if debug:
 		print('  Updating displayed cells around world cell ' + str(world_cell) + '...')
+	
+	# Get the atlas ID used by this world cell coord before updating any tile mode (so it's correctly used in both)
+	_atlas_id = world_tilemap.get_cell_source_id(world_cell)
 	
 	if is_isometric:
 		_update_tile_isometric(world_cell)
