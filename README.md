@@ -32,8 +32,8 @@ You can also freeze the tileset by activating the `Freeze` checkbox, to avoid ac
 
 You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node, based on Jess's implementation.
 
-- `fill_tile(world_cell)`: Fill a given world cell and update the corresponding dual tiles.
-- `erase_tile(world_cell)`: Erase a given world cell and update the corresponding dual tiles.
+- `fill_tile(world_cell,atlas_id=0)`: Fill a given world cell and update the corresponding dual tiles, from a given atlas with atlas_id (0 by default).
+- `erase_tile(world_cell,atlas_id=0)`: Erase a given world cell and update the corresponding dual tiles.
 
 Two more public methods are available, although you may not need them in most cases:
 
@@ -55,17 +55,24 @@ To use isometric tilemaps, you only need to follow an isometric-ed version of th
 
 That's it. Just 15 tiles for isometric autotiling. I love it.
 
+## Multiple atlases
+
+You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default.
+
 ## Why?
 
-Previous implementations of a dual-grid tileset system in Godot
-by [GlitchedInOrbit](https://github.com/GlitchedinOrbit/dual-grid-tilemap-system-godot-gdscript)
-and [jess::codes](https://github.com/jess-hammer/dual-grid-tilemap-system-godot)
-used an inverted version of the [standard 16-tile template](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) (although Jess's tileset is provided as an example in this repo).
+This release simplifies the implementation of a dual-grid system by introducing a simple **custom node** that runs **automatically** and **in-editor**, making it easy to integrate into your own projects.  
+
+Previous implementations of a dual-grid tileset system in Godot, mainly by
+[jess::codes](https://github.com/jess-hammer/dual-grid-tilemap-system-godot) and
+[GlitchedInOrbit](https://github.com/GlitchedinOrbit/dual-grid-tilemap-system-godot-gdscript),
+were not automatic and required extensive manual configuration (at the time of writing).
+These implementations also used an inverted version of the [standard 16-tile template](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) (although Jess's tileset is provided as an example in this repo).
 This is a potential source of headaches, and this release corrects said inversion.  
 
 This release also implements modern **TileMapLayers** instead of the deprecated TileMap node.  
 
-Most importantly, this release simplifies the process by introducing the dual grid system as a simple **custom node** that runs **automatically** and **in-editor**, making it easy to integrate into your own projects.  
+Plus, you can use **multiple atlases** in the same tileset.  
 
 Oh, and also... You can use **isometric tilesets!**  
 

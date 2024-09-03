@@ -7,6 +7,7 @@ extends Sprite2D
 var cell: Vector2i
 var tile_size: Vector2
 var sprite_size: Vector2
+var atlas_id
 
 
 func _ready() -> void:
@@ -23,8 +24,14 @@ func _process(_delta: float) -> void:
 	global_position = world_tilemap.map_to_local(world_tilemap.local_to_map(get_global_mouse_position()))
 	if dual_tilemap == null:
 		return
+	
+	if Input.is_action_pressed("quick_action_1"):
+		atlas_id = 0
+	if Input.is_action_pressed("quick_action_2"):
+		atlas_id = 1
+	
 	cell = world_tilemap.local_to_map(global_position)
 	if Input.is_action_pressed("left_click"):
-		dual_tilemap.fill_tile(cell)
+		dual_tilemap.fill_tile(cell, atlas_id)
 	elif Input.is_action_pressed("right_click"):
-		dual_tilemap.erase_tile(cell)
+		dual_tilemap.erase_tile(cell, atlas_id)

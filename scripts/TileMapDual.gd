@@ -103,10 +103,6 @@ func _ready() -> void:
 	if debug:
 		print('Updating in-game is activated')
 	
-	if world_tilemap == null:
-		if self.owner.is_class('TileMapDual'):
-			world_tilemap = self.owner
-	
 	update_tileset()
 
 
@@ -117,11 +113,16 @@ func update_tileset() -> void:
 	if freeze:
 		return
 	
+	if world_tilemap == null:
+		if debug:
+			print('WARNING: No TileMapLayer connected!')
+		return
+	
 	if debug:
 		print('tile_set.tile_shape = ' + str(world_tilemap.tile_set.tile_shape))
 	
 	self.tile_set = world_tilemap.tile_set
-		
+	
 	if self.tile_set.tile_shape == 1:
 		is_isometric = true
 		self.position.x = - self.tile_set.tile_size.x * 0
@@ -155,11 +156,12 @@ func update_tile(world_cell: Vector2i) -> void:
 	if freeze:
 		return
 	
-	if debug:
-		print('  Updating displayed cells around world cell ' + str(world_cell) + '...')
-	
-	# Get the atlas ID used by this world cell coord before updating any tile mode (so it's correctly used in both)
+	# Get the atlas ID of this world cell before
+	# updating the corresponding tiles
 	_atlas_id = world_tilemap.get_cell_source_id(world_cell)
+	
+	if debug:
+		print('  Updating displayed cells around world cell ' + str(world_cell) + ' with atlas ID ' + str(_atlas_id) + '...')
 	
 	if is_isometric:
 		_update_tile_isometric(world_cell)
@@ -286,16 +288,28 @@ func _is_world_tile_sketched(_world_cell: Vector2i) -> bool:
 
 
 ## Public method to add a tile in a given World cell
-func fill_tile(world_cell) -> void:
+func fill_tile(world_cell, atlas_id=0) -> void:
 	if freeze:
 		return
-	world_tilemap.set_cell(world_cell, _atlas_id, full_tile)
+	
+	if world_tilemap == null:
+		if debug:
+			print('WARNING: No TileMapLayer connected!')
+		return
+	
+	world_tilemap.set_cell(world_cell, atlas_id, full_tile)
 	update_tile(world_cell)
 
 
 ## Public method to erase a tile in a given World cell
-func erase_tile(world_cell) -> void:
+func erase_tile(world_cell, atlas_id=0) -> void:
 	if freeze:
 		return
-	world_tilemap.set_cell(world_cell, _atlas_id, empty_tile)
+	
+	if world_tilemap == null:
+		if debug:
+			print('WARNING: No TileMapLayer connected!')
+		return
+	
+	world_tilemap.set_cell(world_cell, atlas_id, empty_tile)
 	update_tile(world_cell)
