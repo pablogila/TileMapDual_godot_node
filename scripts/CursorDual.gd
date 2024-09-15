@@ -7,7 +7,7 @@ extends Sprite2D
 var cell: Vector2i
 var tile_size: Vector2
 var sprite_size: Vector2
-var atlas_id
+var atlas_id = 0
 
 
 func _ready() -> void:
