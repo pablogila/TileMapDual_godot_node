@@ -85,7 +85,8 @@ Oh, and also... You can use **isometric tilesets!**
 
 This project is Open Source Software, released under the MIT license. This basically means that you can do whatever you want with it. Enjoy!  
 
-I am open to pull requests, and I personally encourage you to send back any significant improvements to this code so that the Godot community continues to thrive. Thanks!  
+This repo is open to pull requests, just make sure to check the [contributing guidelines](CONTRIBUTING.md).
+I personally encourage you to send back any significant improvements to this code so that the Godot community continues to thrive. Thanks!  
 
 ## References
 
