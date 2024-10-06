@@ -21,7 +21,7 @@ enum location {
 	TOP_LEFT  = 1,
 	LOW_LEFT  = 2,
 	TOP_RIGHT = 4,
-	LOW_RIGHT = 8,
+	LOW_RIGHT = 8
 	}
 
 enum direction {
