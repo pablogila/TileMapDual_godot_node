@@ -81,7 +81,7 @@ Oh, and also... You can use **isometric tilesets!**
 - Animations I guess
 - I am personally not interested in hex grids right now, but I am open to pull requests!
 
-## License
+## License and contributing
 
 This project is Open Source Software, released under the MIT license. This basically means that you can do whatever you want with it. Enjoy!  
 
