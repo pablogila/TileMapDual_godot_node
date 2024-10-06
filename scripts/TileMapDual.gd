@@ -7,21 +7,10 @@ extends TileMapLayer
 ## with respect to the World grid.
 ## Sketch here with the corresponding fully-filled tile
 ## from the standard tileset, indicated as sketch_atlas_coord.
-@export var world_tilemap: TileMapLayer = null
-## Click to update the tilemap inside the editor.
-## Make sure that the Freeze option is not checked!
-@export var update_in_editor: bool = false:
-	set(value):
-		update_tileset()
-## Clean all the drawn tiles from the TileMapDual node.
-@export var clean: bool = false:
-	set(value):
-		self.clear()
-## Stop any incoming updates of the dual tilemap,
-## freezing it in its current state.
-@export var freeze: bool = false
-## Print debug messages. Lots of them.
+var world_tilemap: TileMapLayer = null
 @export var debug: bool = false
+@onready var map_size = tile_map_data.size()
+var used_cache = {}
 
 ## We will use a bit-wise logic, so that
 ## a summation over all sketched neighbours
@@ -31,28 +20,44 @@ extends TileMapLayer
 enum location {
 	TOP_LEFT  = 1,
 	LOW_LEFT  = 2,
-	TOP_RIGHT = 4,
-	LOW_RIGHT = 8
-	}
+	TOP_RIGHT  = 4,
+	LOW_RIGHT  = 8,
+}
+
+enum direction {
+	TOP,
+	LEFT,
+	BOTTOM,
+	RIGHT,
+	BOTTOM_RIGHT,
+	BOTTOM_LEFT,
+	TOP_LEFT,
+	TOP_RIGHT
+}
 
 ## Overlapping tiles from the World grid
 ## that a tile from the Dual grid has.
 const NEIGHBOURS := {
-	location.TOP_LEFT  : Vector2i(0,0),
-	location.LOW_LEFT  : Vector2i(0,1),
-	location.TOP_RIGHT : Vector2i(1,0),
-	location.LOW_RIGHT : Vector2i(1,1)
-	}
+	direction.TOP  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_SIDE,
+	direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_SIDE,
+	direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_SIDE,
+	direction.BOTTOM  : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_SIDE,
+	direction.TOP_LEFT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+	direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER
+}
 
 ## Overlapping tiles from the World grid
 ## that a tile from the Dual grid has.
 ## To be used ONLY with isometric tilesets.
+## CellNighbors are literal, even for Isometric
 const NEIGHBOURS_ISOMETRIC := {
-	location.TOP_LEFT  : Vector2i(0,0),
-	location.LOW_LEFT  : Vector2i(0,1), # - (1,0)
-	location.TOP_RIGHT : Vector2i(1,1), # - (1,0)
-	location.LOW_RIGHT : Vector2i(0,2)
-	}
+	direction.TOP : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
+	direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_SIDE,
+	direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
+	direction.BOTTOM  : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
+	direction.TOP_LEFT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_CORNER,
+	direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_CORNER
+}
 
 ## Dict to assign the Atlas coordinates from the
 ## summation over all sketched NEIGHBOURS.
@@ -82,6 +87,7 @@ const NEIGHBOURS_TO_ATLAS: Dictionary = {
 ## Defaults to the one in the standard Godot template.
 ## Only this tile will be considered for autotiling.
 var full_tile: Vector2i = Vector2i(2,1)
+@onready var full_tile_atlas_coord = get_cell_atlas_coords(full_tile)
 ## The opposed of full_tile.
 ## Used in-game to erase sketched tiles.
 var empty_tile: Vector2i = Vector2i(0,3)
@@ -93,26 +99,20 @@ var checked_cells: Array = [false]
 ## Track if it is isometric or not
 var is_isometric = false
 ## Keep track of the atlas ID
-var _atlas_id: int
+var _atlas_id: int = 0
 
 
 func _ready() -> void:
-	if freeze:
-		return
-	
 	if debug:
 		print('Updating in-game is activated')
 	
-	update_tileset()
+	#update_tileset()
 
 
 ## Update the entire tileset resource from the dual grid.
 ## Copies the tileset resource from the world grid,
 ## displaces itself by half a tile, and updates all tiles.
 func update_tileset() -> void:
-	if freeze:
-		return
-	
 	if world_tilemap == null:
 		if debug:
 			print('WARNING: No TileMapLayer connected!')
@@ -121,17 +121,14 @@ func update_tileset() -> void:
 	if debug:
 		print('tile_set.tile_shape = ' + str(world_tilemap.tile_set.tile_shape))
 	
-	self.tile_set = world_tilemap.tile_set
-	
 	if self.tile_set.tile_shape == 1:
 		is_isometric = true
-		self.position.x = - self.tile_set.tile_size.x * 0
-		self.position.y = - self.tile_set.tile_size.y * 0.5
+		world_tilemap.position.x = - world_tilemap.tile_set.tile_size.x * 0
+		world_tilemap.position.y = - world_tilemap.tile_set.tile_size.y * 0.5
 	else:
 		is_isometric = false
-		self.position.x = - self.tile_set.tile_size.x * 0.5
-		self.position.y = - self.tile_set.tile_size.y * 0.5
-	_update_tiles()
+		world_tilemap.position.x = - world_tilemap.tile_set.tile_size.x * 0.5
+		world_tilemap.position.y = - world_tilemap.tile_set.tile_size.y * 0.5
 
 
 ## Update all displayed tiles from the dual grid.
@@ -140,9 +137,9 @@ func _update_tiles() -> void:
 	if debug:
 		print('Updating tiles....................')
 	
-	self.clear()
+	world_tilemap.clear()
 	checked_cells = [true]
-	for _world_cell in world_tilemap.get_used_cells():
+	for _world_cell in get_used_cells():
 		if _is_world_tile_sketched(_world_cell):
 			update_tile(_world_cell)
 	# checked_cells will only be used when updating
@@ -153,25 +150,23 @@ func _update_tiles() -> void:
 ## Takes a world cell, and updates the
 ## overlapping tiles from the dual grid accordingly.
 func update_tile(world_cell: Vector2i) -> void:
-	if freeze:
-		return
-	
 	# Get the atlas ID of this world cell before
 	# updating the corresponding tiles
-	_atlas_id = world_tilemap.get_cell_source_id(world_cell)
+	var id = get_cell_source_id(world_cell)
+	if id != -1:
+		_atlas_id = id
 	
 	if debug:
 		print('  Updating displayed cells around world cell ' + str(world_cell) + ' with atlas ID ' + str(_atlas_id) + '...')
 	
-	if is_isometric:
-		_update_tile_isometric(world_cell)
-		return
-	
 	# Calculate the overlapping cells from the dual grid and update them accordingly
-	var _top_left = world_cell + NEIGHBOURS[location.TOP_LEFT]
-	var _low_left = world_cell + NEIGHBOURS[location.LOW_LEFT]
-	var _top_right = world_cell + NEIGHBOURS[location.TOP_RIGHT]
-	var _low_right = world_cell + NEIGHBOURS[location.LOW_RIGHT]
+	var neighbors = NEIGHBOURS_ISOMETRIC if is_isometric else NEIGHBOURS
+	var _top_left = world_cell
+	var _low_left = world_tilemap.get_neighbor_cell(world_cell, neighbors[direction.BOTTOM])
+	var _top_right = world_tilemap.get_neighbor_cell(world_cell, neighbors[direction.RIGHT])
+	var _low_right = world_tilemap.get_neighbor_cell(world_cell, neighbors[direction.BOTTOM_RIGHT])
+
+	
 	_update_displayed_tile(_top_left)
 	_update_displayed_tile(_low_left)
 	_update_displayed_tile(_top_right)
@@ -184,16 +179,16 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 		if _display_cell in checked_cells:
 			return
 		checked_cells.append(_display_cell)
-	
+	#
 	if debug:
 		print('    Checking display tile ' + str(_display_cell) + '...')
 	
 	# INFO: To get the world cells from the dual grid, we apply the opposite vectors
-	var _top_left = _display_cell - NEIGHBOURS[location.LOW_RIGHT]  # - (1,1)
-	var _low_left = _display_cell - NEIGHBOURS[location.TOP_RIGHT]  # - (1,0)
-	var _top_right = _display_cell - NEIGHBOURS[location.LOW_LEFT]  # - (0,1)
-	var _low_right = _display_cell - NEIGHBOURS[location.TOP_LEFT]  # - (0,0)
-	
+	var neighbors = NEIGHBOURS_ISOMETRIC if is_isometric else NEIGHBOURS
+	var _top_left = world_tilemap.get_neighbor_cell(_display_cell, neighbors[direction.TOP_LEFT])
+	var _low_left = world_tilemap.get_neighbor_cell(_display_cell, neighbors[direction.LEFT])
+	var _top_right = world_tilemap.get_neighbor_cell(_display_cell, neighbors[direction.TOP])
+	var _low_right = _display_cell 
 	# We perform a bitwise summation over the sketched neighbours
 	var _tile_key: int = 0
 	if _is_world_tile_sketched(_top_left):
@@ -206,110 +201,104 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 		_tile_key += location.LOW_RIGHT
 	
 	var _coords_atlas: Vector2i = NEIGHBOURS_TO_ATLAS[_tile_key]
-	self.set_cell(_display_cell, _atlas_id, _coords_atlas)
-	if debug:
-		print('    Display tile ' + str(_display_cell) + ' updated with key ' + str(_tile_key))
-
-
-## Takes a world cell, and updates the
-## overlapping tiles from the dual grid accordingly.
-## Used automatically for isometric grids.
-func _update_tile_isometric(_world_cell: Vector2i) -> void:
-	# If _world_cell.y is even, displace by (-1,0) the low_left and top_right cells
-	var isometric_fix: Vector2i = Vector2i(0,0)
-	if abs(_world_cell.y) % 2 == 0:
-		isometric_fix = Vector2i(-1,0)
-	
-	# CAUTION: I am not going to explain how does the isometric fix works. It does. I need a coffee.
-	var _top_left = _world_cell + NEIGHBOURS_ISOMETRIC[location.TOP_LEFT]
-	var _low_left = _world_cell + NEIGHBOURS_ISOMETRIC[location.LOW_LEFT] + isometric_fix
-	var _top_right = _world_cell + NEIGHBOURS_ISOMETRIC[location.TOP_RIGHT] + isometric_fix
-	var _low_right = _world_cell + NEIGHBOURS_ISOMETRIC[location.LOW_RIGHT]
-	_update_displayed_tile_isometric(_top_left)
-	_update_displayed_tile_isometric(_low_left)
-	_update_displayed_tile_isometric(_top_right)
-	_update_displayed_tile_isometric(_low_right)
-
-
-func _update_displayed_tile_isometric(_display_cell: Vector2i) -> void:
-	# Avoid updating cells more than necessary
-	if checked_cells[0] == true:
-		if _display_cell in checked_cells:
-			return
-		checked_cells.append(_display_cell)
-	
-	if debug:
-		print('    Checking display tile ' + str(_display_cell) + '...')
-	
-	# If _display_cell.y is odd, displace by (+1,0) the low_left and top_right cells
-	var isometric_fix: Vector2i = Vector2i(0,0)
-	if abs(_display_cell.y) % 2 == 1:
-		isometric_fix = Vector2i(1,0)
-	
-	# INFO: Same as with squares, opposite vectors apply
-	# CAUTION: The coffee thing
-	var _top_left: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.LOW_RIGHT]  # - (1,1)
-	var _low_left: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.TOP_RIGHT] + isometric_fix  # - (1,0) or (0,0)
-	var _top_right: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.LOW_LEFT] + isometric_fix  # - (1,1) or (2,1)
-	var _low_right: Vector2i = _display_cell - NEIGHBOURS_ISOMETRIC[location.TOP_LEFT]  # - (0,2)
-	
-	# We perform a bitwise summation over the sketched neighbours
-	var _tile_key: int = 0
-	if _is_world_tile_sketched(_top_left):
-		_tile_key += location.TOP_LEFT
-	if _is_world_tile_sketched(_low_left):
-		_tile_key += location.LOW_LEFT
-	if _is_world_tile_sketched(_top_right):
-		_tile_key += location.TOP_RIGHT
-	if _is_world_tile_sketched(_low_right):
-		_tile_key += location.LOW_RIGHT
-	
-	var _coords_atlas: Vector2i = NEIGHBOURS_TO_ATLAS[_tile_key]
-	self.set_cell(_display_cell, _atlas_id, _coords_atlas)
+	world_tilemap.set_cell(_display_cell, _atlas_id, _coords_atlas)
 	if debug:
 		print('    Display tile ' + str(_display_cell) + ' updated with key ' + str(_tile_key))
 
 
 func _is_world_tile_sketched(_world_cell: Vector2i) -> bool:
-	var _atlas_coords = world_tilemap.get_cell_atlas_coords(_world_cell)
+	var _atlas_coords = get_cell_atlas_coords(_world_cell)
 	if _atlas_coords == full_tile:
 		if debug:
 			print('      World cell ' + str(_world_cell) + ' IS sketched with atlas coords ' + str(_atlas_coords))
 		return true
+	elif _atlas_coords == empty_tile:
+		erase_cell(_world_cell)
 	else:
 		# If the cell is empty, get_cell_atlas_coords() returns (-1,-1)
 		if Vector2(_atlas_coords) == Vector2(-1,-1):
 			if debug:
 				print('      World cell ' + str(_world_cell) + ' Is EMPTY')
-			return false
 		if debug:
 			print('      World cell ' + str(_world_cell) + ' Is NOT sketched with atlas coords ' + str(_atlas_coords))
-		return false
+	return false
 
 
 ## Public method to add a tile in a given World cell
 func fill_tile(world_cell, atlas_id=0) -> void:
-	if freeze:
-		return
-	
 	if world_tilemap == null:
 		if debug:
 			print('WARNING: No TileMapLayer connected!')
 		return
 	
-	world_tilemap.set_cell(world_cell, atlas_id, full_tile)
+	set_cell(world_cell, atlas_id, full_tile)
 	update_tile(world_cell)
-
 
 ## Public method to erase a tile in a given World cell
 func erase_tile(world_cell, atlas_id=0) -> void:
-	if freeze:
-		return
-	
 	if world_tilemap == null:
 		if debug:
 			print('WARNING: No TileMapLayer connected!')
 		return
 	
-	world_tilemap.set_cell(world_cell, atlas_id, empty_tile)
+	set_cell(world_cell, atlas_id, empty_tile)
 	update_tile(world_cell)
+
+
+func _process(_delta: float) -> void:
+	set_world_tilemap()
+	
+	var size = tile_map_data.size()
+	if map_size != size:
+		update_tileset()
+		if size < map_size:
+			if debug:
+				print("Remove cells")
+			remove_tiles()
+		else:
+			if debug:
+				print("Add cells")
+			add_tiles()
+		map_size = size
+		
+
+# Remove a cell and replace the ones around for autotiling
+func remove_tiles() -> void:
+	var remove_cells = used_cache.keys().filter(func(cell): return !get_cell_tile_data(cell))
+	var neighbors = NEIGHBOURS_ISOMETRIC if is_isometric else NEIGHBOURS
+	for cell in remove_cells:
+		used_cache.erase(cell)
+		var tile_map = world_tilemap.get_cell_tile_data(cell)
+		if tile_map:
+			var start_cell = get_neighbor_cell(cell, neighbors[direction.TOP_LEFT])
+			for row in 3:
+				var current_cell = start_cell
+				for col in 3:
+					update_tile(current_cell)
+					current_cell = get_neighbor_cell(current_cell, neighbors[direction.RIGHT])
+				start_cell = get_neighbor_cell(start_cell, neighbors[direction.BOTTOM])
+
+func add_tiles():
+	var add_cells = {}
+	for cell in get_used_cells():
+		if !used_cache.has(cell):
+			used_cache[cell] = true
+			update_tile(cell)
+			
+		
+func set_world_tilemap() -> void:
+	if !self.material:
+		# Make this map invisible without disabling it
+		self.material = CanvasItemMaterial.new()
+		self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+	# Create offset tileset once TileSet has been created
+	if self.tile_set:
+		if !get_node_or_null("WorldTileMap"):
+			# Add in visible layer
+			if world_tilemap:
+				tile_map_data = world_tilemap.tile_map_data
+			world_tilemap = TileMapLayer.new()
+			world_tilemap.name = "WorldTileMap"
+			add_child(world_tilemap)
+		if world_tilemap.tile_set != self.tile_set:
+			world_tilemap.tile_set = self.tile_set
