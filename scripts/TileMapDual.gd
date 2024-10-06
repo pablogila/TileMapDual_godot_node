@@ -9,8 +9,14 @@ extends TileMapLayer
 ## from the standard tileset, indicated as sketch_atlas_coord.
 var world_tilemap: TileMapLayer = null
 @export var debug: bool = false
-@onready var map_size = tile_map_data.size()
+@onready var map_size = -1
 var used_cache = {}
+## Click to update the tilemap inside the editor.
+## Make sure that the Freeze option is not checked!
+@export var update_in_editor: bool = false:
+	set(value):
+		update_tileset()
+		_update_tiles()
 
 ## We will use a bit-wise logic, so that
 ## a summation over all sketched neighbours
@@ -105,6 +111,7 @@ var _atlas_id: int = 0
 func _ready() -> void:
 	if debug:
 		print('Updating in-game is activated')
+	update_tileset()
 
 
 ## Update the entire tileset resource from the dual grid.

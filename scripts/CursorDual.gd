@@ -14,14 +14,14 @@ func _ready() -> void:
 	if world_tilemap != null:
 		tile_size = world_tilemap.tile_set.tile_size
 		sprite_size = self.texture.get_size()
-		scale = tile_size / sprite_size
+		scale = Vector2(tile_size.y, tile_size.y) / sprite_size
 		self.set_scale(scale)
 
 
 func _process(_delta: float) -> void:
 	if world_tilemap == null:
 		return
-	global_position = world_tilemap.map_to_local(world_tilemap.local_to_map(get_global_mouse_position()))
+	global_position = dual_tilemap.map_to_local(dual_tilemap.local_to_map(get_global_mouse_position()))
 	if dual_tilemap == null:
 		return
 	
@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 	if Input.is_action_pressed("quick_action_2"):
 		atlas_id = 1
 	
-	cell = world_tilemap.local_to_map(global_position)
+	cell = dual_tilemap.local_to_map(global_position)
 	if Input.is_action_pressed("left_click"):
 		dual_tilemap.fill_tile(cell, atlas_id)
 	elif Input.is_action_pressed("right_click"):
