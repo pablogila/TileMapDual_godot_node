@@ -270,18 +270,9 @@ func _process(_delta: float) -> void:
 # Remove a cell and replace the ones around for autotiling
 func remove_tiles() -> void:
 	var remove_cells = used_cache.keys().filter(func(cell): return !get_cell_tile_data(cell))
-	var neighbors = NEIGHBOURS_ISOMETRIC if is_isometric else NEIGHBOURS
 	for cell in remove_cells:
 		used_cache.erase(cell)
-		var tile_map = world_tilemap.get_cell_tile_data(cell)
-		if tile_map:
-			var start_cell = get_neighbor_cell(cell, neighbors[direction.TOP_LEFT])
-			for row in 3:
-				var current_cell = start_cell
-				for col in 3:
-					update_tile(current_cell)
-					current_cell = get_neighbor_cell(current_cell, neighbors[direction.RIGHT])
-				start_cell = get_neighbor_cell(start_cell, neighbors[direction.BOTTOM])
+		update_tile(cell)
 
 func add_tiles():
 	var add_cells = {}
