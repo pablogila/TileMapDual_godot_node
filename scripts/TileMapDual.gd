@@ -20,9 +20,9 @@ var used_cache = {}
 enum location {
 	TOP_LEFT  = 1,
 	LOW_LEFT  = 2,
-	TOP_RIGHT  = 4,
-	LOW_RIGHT  = 8,
-}
+	TOP_RIGHT = 4,
+	LOW_RIGHT = 8,
+	}
 
 enum direction {
 	TOP,
@@ -105,8 +105,6 @@ var _atlas_id: int = 0
 func _ready() -> void:
 	if debug:
 		print('Updating in-game is activated')
-	
-	#update_tileset()
 
 
 ## Update the entire tileset resource from the dual grid.
