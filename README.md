@@ -1,6 +1,9 @@
 # TileMapDual Godot Node
 
-Introducing *TileMapDual*: a simple, automatic and straightforward custom `TileMapLayer` node for [Godot](https://github.com/godotengine/godot) that provides a real-time, in-editor and in-game dual-grid tileset system, for both **square** and **isometric** grids.
+Introducing *TileMapDual*: a simple, automatic and straightforward custom `TileMapLayer` node for [Godot](https://github.com/godotengine/godot) that provides a real-time, in-editor and in-game dual-grid tileset system, for both **square** and **isometric** grids.  
+
+![](docs/demo.gif)
+
 This dual-grid system, [as explained by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605), reduces the number of tiles required from 47 to just 15 (yes, fifteen!!), rocketing your dev journey!  
 
 Not only that, but if your tiles are symmetrical, you can get away with drawing only 6 (six!) tiles and then generating the 15-tile-tilesets used by *TileMapDual*, thanks to tools like [Wang Tile Set Creator](https://github.com/kleingeist37/godot-wang-converter).  
@@ -18,29 +21,19 @@ Using a dual-grid system has the following advantages:
 
 Just copy the `TileMapDual.gd` script to your project to start using the new custom node.  
 
-You have to create a regular `TileMapLayer` with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
-You just need to quickly sketch your level with the fully-filled tile, indicated here:
+You have to create a `TileMapDual` node with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
+And that's it! You can now start sketching your level with the fully-filled tile, indicated here:
 
 ![](docs/reference_tileset_standard.png)
 
-Then, create a `TileMapDual` node and assign the `TileMapLayer` to it. Just click the `Update in Editor` checkbox, and the dual grid will be automatically configured and generated in real-time.
-Any change in the `TileMapLayer` will be updated by simply clicking the checkbox again!  
+You can also sketch with the empty tile in the bottom-left corner, or erase tiles as usual. The dual grid will update in real time as you draw!  
 
-You can also freeze the tileset by activating the `Freeze` checkbox, to avoid accidental updates, both in-editor and in-game.
+You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node.  
 
-![](docs/demo.gif)
+- `TileMapDual.fill_tile(world_cell,atlas_id=0)`: Fill a given world cell and update the corresponding dual tiles, from a given atlas with atlas_id (0 by default).
+- `TileMapDual.erase_tile(world_cell,atlas_id=0)`: Erase a given world cell and update the corresponding dual tiles.  
 
-You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node, based on Jess's implementation.
-
-- `fill_tile(world_cell,atlas_id=0)`: Fill a given world cell and update the corresponding dual tiles, from a given atlas with atlas_id (0 by default).
-- `erase_tile(world_cell,atlas_id=0)`: Erase a given world cell and update the corresponding dual tiles.
-
-Two more public methods are available, although you may not need them in most cases:
-
-- `update_tile(world_cell)`: Update the displayed tiles around a given world cell. This is the fastest method to update specific cells.  
-- `update_tileset()`: Update the entire tileset, offsetting itself by half a cell, and updating all tiles at once. This is what happens when you click the `Update in Editor` button.  
-
-To achieve the best performance, only the fully-filled tile used for sketching in the World grid is used for autotiling in the `TileMapDual`. This approach allows the World tileset to be used for other purposes, such as having an extended tileset with rocks, etc.  
+An additional method, `TileMapDual.update_full_tileset()`, is available to refresh the entire dual grid. It should not be necessary, but may come in handy in case of a hypothetical bug.  
 
 ## Isometric tilesets
 
