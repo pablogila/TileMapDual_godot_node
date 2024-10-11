@@ -87,7 +87,6 @@ const _NEIGHBORS_TO_ATLAS: Dictionary = {
 
 
 func _ready() -> void:
-	update_full_tileset()
 	if Engine.is_editor_hint():
 		set_process(true)
 	else: # Run in-game using signals for better performance
@@ -96,6 +95,8 @@ func _ready() -> void:
 
 
 func _process(_delta): # Only used inside the editor
+	if not self.tile_set:
+		return
 	call_deferred('_update_tileset')
 
 
@@ -135,7 +136,7 @@ func update_full_tileset() -> void:
 	for _cell in self.get_used_cells():
 		if _is_world_tile_sketched(_cell):
 			update_tile(_cell)
-		elif _is_world_tile_sketched(_cell) == 0:
+		elif _is_world_tile_sketched(_cell) == false:
 			update_tile(_cell)
 	_checked_cells = [false]
 	# _checked_cells is only used when updating
@@ -145,6 +146,8 @@ func update_full_tileset() -> void:
 
 ## Update only the very specific tiles that have changed.
 func _update_tileset() -> void:
+	if display_tilemap == null:
+		_set_display_tilemap()
 	if display_tilemap.tile_set != self.tile_set:
 		update_full_tileset()
 		return
