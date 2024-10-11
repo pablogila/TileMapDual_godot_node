@@ -125,13 +125,15 @@ func _set_display_tilemap() -> void:
 		is_isometric = false
 		display_tilemap.position.x = - self.tile_set.tile_size.x * 0.5
 		display_tilemap.position.y = - self.tile_set.tile_size.y * 0.5
+	display_tilemap.clear()
 
 
 ## Update the entire tileset.
 func update_full_tileset() -> void:
 	if display_tilemap == null:
 		_set_display_tilemap()
-	display_tilemap.clear()
+	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
+		_set_display_tilemap()
 	_checked_cells = [true]
 	for _cell in self.get_used_cells():
 		if _is_world_tile_sketched(_cell) == 1:
@@ -146,10 +148,11 @@ func update_full_tileset() -> void:
 
 ## Update only the very specific tiles that have changed.
 func _update_tileset() -> void:
-	if display_tilemap == null:
-		_set_display_tilemap()
-	if display_tilemap.tile_set != self.tile_set:
-		update_full_tileset()
+    if display_tilemap == null:
+        update_full_tileset()
+		return
+	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
+        update_full_tileset()
 		return
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
