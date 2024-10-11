@@ -136,7 +136,7 @@ func update_full_tileset() -> void:
 	for _cell in self.get_used_cells():
 		if _is_world_tile_sketched(_cell):
 			update_tile(_cell)
-		elif _is_world_tile_sketched(_cell) == false:
+		elif _is_world_tile_sketched(_cell) == 0:
 			update_tile(_cell)
 	_checked_cells = [false]
 	# _checked_cells is only used when updating
