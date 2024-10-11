@@ -134,7 +134,7 @@ func update_full_tileset() -> void:
 	display_tilemap.clear()
 	_checked_cells = [true]
 	for _cell in self.get_used_cells():
-		if _is_world_tile_sketched(_cell):
+		if _is_world_tile_sketched(_cell) == 1:
 			update_tile(_cell)
 		elif _is_world_tile_sketched(_cell) == 0:
 			update_tile(_cell)
@@ -217,26 +217,28 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 	
 	# We perform a bitwise summation over the sketched neighbours
 	var _tile_key: int = 0
-	if _is_world_tile_sketched(_top_left):
+	if _is_world_tile_sketched(_top_left) == 1:
 		_tile_key += _location.TOP_LEFT
-	if _is_world_tile_sketched(_low_left):
+	if _is_world_tile_sketched(_low_left) == 1:
 		_tile_key += _location.LOW_LEFT
-	if _is_world_tile_sketched(_top_right):
+	if _is_world_tile_sketched(_top_right) == 1:
 		_tile_key += _location.TOP_RIGHT
-	if _is_world_tile_sketched(_low_right):
+	if _is_world_tile_sketched(_low_right) == 1:
 		_tile_key += _location.LOW_RIGHT
 	
 	var _coords_atlas: Vector2i = _NEIGHBORS_TO_ATLAS[_tile_key]
 	display_tilemap.set_cell(_display_cell, _atlas_id, _coords_atlas)
 
 
+## Return -1 if the cell is empty, 0 if sketched with the empty tile,
+## and 1 if it is sketched with the fully-filled tile.
 func _is_world_tile_sketched(_world_cell: Vector2i):
 	var _atlas_coords = get_cell_atlas_coords(_world_cell)
 	if _atlas_coords == full_tile:
-		return true
+		return 1
 	elif _atlas_coords == empty_tile:
 		return 0
-	return false
+	return -1
 
 
 ## Public method to add a tile in a given World cell

@@ -2,13 +2,13 @@
 
 Introducing *TileMapDual*: a simple, automatic and straightforward custom `TileMapLayer` node for [Godot](https://github.com/godotengine/godot) that provides a real-time, in-editor and in-game dual-grid tileset system, for both **square** and **isometric** grids.  
 
-![](docs/demo.gif)
-
 This dual-grid system, [as explained by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605), reduces the number of tiles required from 47 to just 15 (yes, fifteen!!), rocketing your dev journey!  
+
+![](docs/demo.gif)  
 
 Not only that, but if your tiles are symmetrical, you can get away with drawing only 6 (six!) tiles and then generating the 15-tile-tilesets used by *TileMapDual*, thanks to tools like [Wang Tile Set Creator](https://github.com/kleingeist37/godot-wang-converter).  
 
-![](docs/reference_dual.jpeg)
+![](docs/reference_dual.jpeg)  
 
 ## Advantages
 
@@ -22,7 +22,7 @@ Using a dual-grid system has the following advantages:
 Just copy the `TileMapDual.gd` script to your project to start using the new custom node.  
 
 You have to create a `TileMapDual` node with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
-And that's it! You can now start sketching your level with the fully-filled tile, indicated here:
+And that's it! You can now start sketching your level with the fully-filled tile, indicated here:  
 
 ![](docs/reference_tileset_standard.png)
 
@@ -38,19 +38,20 @@ An additional method, `TileMapDual.update_full_tileset()`, is available to refre
 ## Isometric tilesets
 
 Isometric tilemaps are now compatible with the `TileMapDual` node.  
-You heard that right, isometric, as in 'isometric'. It works automatically, out of the box. Isometric tilemaps! yayyyy!
+You heard that right, isometric, as in 'isometric'. It works automatically, out of the box. Isometric tilemaps! yayyyy!  
 
-![](docs/demo_isometric.gif)
+![](docs/demo_isometric.gif)  
 
-To use isometric tilemaps, you only need to follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps. Here it is:
+To use isometric tilemaps, you only need to follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps. Here it is:  
 
-![](docs/reference_tileset_isometric.svg)
+![](docs/reference_tileset_isometric.svg)  
 
-That's it. Just 15 tiles for isometric autotiling. I love it.
+That's it. Just 15 tiles for isometric autotiling. I love it.  
 
 ## Multiple atlases
 
-You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default.
+You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default.  
+Note that each atlas can handle 2 surfaces. To add more surfaces on top of one another, consider using transparencies in your tileset, just as you would do with a regular `TileMapLayer`.  
 
 ## Why?
 
@@ -71,14 +72,14 @@ Oh, and also... You can use **isometric tilesets!**
 
 ## To-do
 
-- Animations I guess
-- I am personally not interested in hex grids right now, but I am open to pull requests!
+- Animations remain untested
+- I am personally not interested in hex grids right now, but the repo is open to pull requests!
 
 ## License and contributing
 
-This project is Open Source Software, released under the MIT license. This basically means that you can do whatever you want with it. Enjoy!  
+This project is Open Source Software, released under the [MIT license](LICENSE). This basically means that you can do whatever you want with it. Enjoy!  
 
-This repo is open to pull requests, just make sure to check the [contributing guidelines](CONTRIBUTING.md).
+[This repo](https://https://github.com/pablogila/TileMapDual_godot_node/) is open to pull requests, just make sure to check the [contributing guidelines](CONTRIBUTING.md).
 I personally encourage you to send back any significant improvements to this code so that the Godot community continues to thrive. Thanks!  
 
 ## References
@@ -93,7 +94,10 @@ I personally encourage you to send back any significant improvements to this cod
 
 ## Feedback
 
-Please feel free to contact me to provide feedback, suggestions, or improvements to this project :D  
+Please feel free to contact me to provide feedback, suggestions, or improvements to this project. You may also check the the [contributing guidelines](CONTRIBUTING.md) to submit an issue or a pull request  :D  
 - [Twitter (@GilaPixel)](https://x.com/gilapixel)
+- [YouTube (@GilaPixel)](https://www.youtube.com/@gilapixel)
 - [Instagram (@GilaPixel)](https://www.instagram.com/gilapixel/)
+- [Mastodon (@GilaPixel)](https://mastodon.gamedev.place/@GilaPixel)
 - [Reddit (/u/pgilah)](https://www.reddit.com/u/pgilah/)
+
