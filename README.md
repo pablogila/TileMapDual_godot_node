@@ -19,7 +19,7 @@ Using a dual-grid system has the following advantages:
 
 ## Installation and usage
 
-Just copy the `TileMapDual.gd` script to your project to start using the new custom node.  
+Just copy `TileMapDual.gd` from the scripts folder to your project to start using the new custom node.  
 
 You have to create a `TileMapDual` node with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
 And that's it! You can now start sketching your level with the fully-filled tile, indicated here:  
@@ -27,6 +27,8 @@ And that's it! You can now start sketching your level with the fully-filled tile
 ![](docs/reference_tileset_standard.png)
 
 You can also sketch with the empty tile in the bottom-left corner, or erase tiles as usual. The dual grid will update in real time as you draw!  
+
+An example with a square tileset is provided in the **Jess** scene.  
 
 You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node.  
 
@@ -46,12 +48,15 @@ To use isometric tilemaps, you only need to follow an isometric-ed version of th
 
 ![](docs/reference_tileset_isometric.svg)  
 
+An example is provided in the **Isometric** scene.    
+
 That's it. Just 15 tiles for isometric autotiling. I love it.  
 
-## Multiple atlases
+## Multiple atlases and layers
 
-You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default.  
-Note that each atlas can handle 2 surfaces. To add more surfaces on top of one another, consider using transparencies in your tileset, just as you would do with a regular `TileMapLayer`.  
+You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default. An example is included with the custom `CursorDual` node, see the **MultipleAtlases** scene.  
+
+Note that each atlas can handle 2 surfaces. To add more surfaces or tile variations on top of one another, consider using a second `TileMapDual` node with transparencies in your tileset, just as you would do with a regular `TileMapLayer`. An example is provided in the **MultipleLayers** scene.  
 
 ## Why?
 

@@ -128,7 +128,7 @@ func _set_display_tilemap() -> void:
 	display_tilemap.clear()
 
 
-## Update the entire tileset.
+## Update the entire tileset, processing all the cells in the map.
 func update_full_tileset() -> void:
 	if display_tilemap == null:
 		_set_display_tilemap()
@@ -136,9 +136,7 @@ func update_full_tileset() -> void:
 		_set_display_tilemap()
 	_checked_cells = [true]
 	for _cell in self.get_used_cells():
-		if _is_world_tile_sketched(_cell) == 1:
-			update_tile(_cell)
-		elif _is_world_tile_sketched(_cell) == 0:
+		if _is_world_tile_sketched(_cell) == 1 or _is_world_tile_sketched(_cell) == 0:
 			update_tile(_cell)
 	_checked_cells = [false]
 	# _checked_cells is only used when updating
@@ -147,12 +145,15 @@ func update_full_tileset() -> void:
 
 
 ## Update only the very specific tiles that have changed.
+## Much more efficient than update_full_tileset.
+## Called by signals when the tileset changes,
+## or by _process inside the editor.
 func _update_tileset() -> void:
-    if display_tilemap == null:
-        update_full_tileset()
+	if display_tilemap == null:
+		update_full_tileset()
 		return
 	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
-        update_full_tileset()
+		update_full_tileset()
 		return
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
@@ -177,7 +178,7 @@ func exclude_arrays(a: Array, b: Array) -> Array:
 	return result
 
 
-## Merge both arrays without duplicates
+## Merge two arrays without duplicates
 func intersect_arrays(a: Array, b: Array) -> Array:
 	var result: Array = a.duplicate()
 	for item in b:
@@ -188,12 +189,7 @@ func intersect_arrays(a: Array, b: Array) -> Array:
 
 ## Takes a cell, and updates the overlapping tiles from the dual grid accordingly.
 func update_tile(world_cell: Vector2i) -> void:
-	# Update the atlas_id if the cell is not empty
-#	var id = self.get_cell_source_id(world_cell)
-#	if id != -1:
-#		_atlas_id = id
 	_atlas_id = self.get_cell_source_id(world_cell)
-	
 	var __NEIGHBORS = _NEIGHBORS_ISOMETRIC if is_isometric else _NEIGHBORS
 	var _top_left = world_cell
 	var _low_left = display_tilemap.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM])
