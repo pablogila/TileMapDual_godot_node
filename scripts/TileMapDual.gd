@@ -34,8 +34,10 @@ enum _direction {
 	LEFT,
 	BOTTOM,
 	RIGHT,
+	BOTTOM_LEFT,
 	BOTTOM_RIGHT,
 	TOP_LEFT,
+	TOP_RIGHT,
 	}
 
 ## Overlapping tiles from the World grid
@@ -46,6 +48,8 @@ const _NEIGHBORS := {
 	_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_SIDE,
 	_direction.BOTTOM  : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_SIDE,
 	_direction.TOP_LEFT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+	_direction.TOP_RIGHT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+	_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
 	_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER
 	}
 
@@ -59,6 +63,8 @@ const _NEIGHBORS_ISOMETRIC := {
 	_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
 	_direction.BOTTOM  : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
 	_direction.TOP_LEFT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_CORNER,
+	_direction.TOP_RIGHT  : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_CORNER,
+	_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_CORNER,
 	_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_CORNER
 	}
 
@@ -188,8 +194,13 @@ func intersect_arrays(a: Array, b: Array) -> Array:
 
 
 ## Takes a cell, and updates the overlapping tiles from the dual grid accordingly.
-func update_tile(world_cell: Vector2i) -> void:
+func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
 	_atlas_id = self.get_cell_source_id(world_cell)
+	
+	# to not fall in a recursive loop because of a large space of emptiness in the map
+	if (!recurse and _atlas_id == -1):
+		return
+	
 	var __NEIGHBORS = _NEIGHBORS_ISOMETRIC if is_isometric else _NEIGHBORS
 	var _top_left = world_cell
 	var _low_left = display_tilemap.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM])
@@ -199,6 +210,17 @@ func update_tile(world_cell: Vector2i) -> void:
 	_update_displayed_tile(_low_left)
 	_update_displayed_tile(_top_right)
 	_update_displayed_tile(_low_right)
+	
+	# if atlas id is -1 the tile is empty, so to have a good rendering we need to update surroundings
+	if (_atlas_id == -1):
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.LEFT]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.TOP_LEFT]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.TOP]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.TOP_RIGHT]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.RIGHT]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM_RIGHT]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM]), false)
+		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM_LEFT]), false)
 
 
 func _update_displayed_tile(_display_cell: Vector2i) -> void:
