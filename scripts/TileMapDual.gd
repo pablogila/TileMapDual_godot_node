@@ -241,12 +241,19 @@ func _is_world_tile_sketched(_world_cell: Vector2i):
 
 
 ## Public method to add a tile in a given World cell
-func fill_tile(cell, atlas_id=0) -> void:
+func fill_tile(cell: Vector2i, atlas_id: int = 0) -> void:
+	# Prevents a crash if this is called on the first frame
+	if display_tilemap == null:
+		update_full_tileset()
+	
 	set_cell(cell, atlas_id, full_tile)
 	update_tile(cell)
 
 
 ## Public method to erase a tile in a given World cell
-func erase_tile(cell, atlas_id=0) -> void:
+func erase_tile(cell: Vector2i, atlas_id: int = 0) -> void:
+	if display_tilemap == null:
+		update_full_tileset()
+	
 	set_cell(cell, atlas_id, empty_tile)
 	update_tile(cell)
