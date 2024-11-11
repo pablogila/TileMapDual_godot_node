@@ -50,9 +50,12 @@ To use isometric tilemaps, you only need to follow an isometric-ed version of th
 
 ![](docs/reference_tileset_isometric.svg)  
 
-This isometric tileset can be drawn more easily using a tool like [TileCropper](https://github.com/pablogila/TileCropper). This Python tool allows you to draw the tiles in one continuous image, automatically separating the tiles as shown in the image below.  
+This isometric tileset can be drawn by hand.
+But it can also be drawn more easily using a tool like [TileCropper](https://github.com/pablogila/TileCropper).
+This Python tool allows you to draw the tiles in one continuous image, to later separate the tiles as shown in the image below.  
+> (NOTE: TileCropper is still under development, and has some bugs that need fixing. If you know Python, any help is really appreciated in the [TileCropper repo](https://github.com/pablogila/TileCropper)!)  
 
-![](docs/reference_tilecropper.png)
+![](docs/reference_tilecropper.png)  
 
 That's it. Just 15 tiles for isometric autotiling. I love it.  
 
