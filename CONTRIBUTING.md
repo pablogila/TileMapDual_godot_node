@@ -10,7 +10,7 @@ Please provide a clear description of your problem, including the steps to repro
 
 ## Submitting a pull request
 
-You can go for the `master` branch for minor changes. For significant modifications, please submit your pull request to the `dev` branch.  
+You can go for the `master` branch for minor changes. For significant modifications, please submit your pull request in a custom branch created for the occasion.  
 
 Also, don't forget:  
 

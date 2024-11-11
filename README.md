@@ -44,11 +44,15 @@ You heard that right, isometric, as in 'isometric'. It works automatically, out 
 
 ![](docs/demo_isometric.gif)  
 
+An use example is provided in the **Isometric** scene.  
+
 To use isometric tilemaps, you only need to follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps. Here it is:  
 
 ![](docs/reference_tileset_isometric.svg)  
 
-An example is provided in the **Isometric** scene.    
+This isometric tileset can be drawn more easily using a tool like [TileCropper](https://github.com/pablogila/TileCropper). This Python tool allows you to draw the tiles in one continuous image, automatically separating the tiles as shown in the image below.  
+
+![](docs/reference_tilecropper.png)
 
 That's it. Just 15 tiles for isometric autotiling. I love it.  
 
@@ -57,6 +61,8 @@ That's it. Just 15 tiles for isometric autotiling. I love it.
 You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default. An example is included with the custom `CursorDual` node, see the **MultipleAtlases** scene.  
 
 Note that each atlas can handle 2 surfaces. To add more surfaces or tile variations on top of one another, consider using a second `TileMapDual` node with transparencies in your tileset, just as you would do with a regular `TileMapLayer`. An example is provided in the **MultipleLayers** scene.  
+
+![](docs/demo_multiple_layers.gif)
 
 ## Why?
 
