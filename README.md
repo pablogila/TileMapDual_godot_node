@@ -51,9 +51,9 @@ To use isometric tilemaps, you only need to follow an isometric-ed version of th
 ![](docs/reference_tileset_isometric.svg)  
 
 This isometric tileset can be drawn by hand.
-But it can also be drawn more easily using a tool like [TileCropper](https://github.com/pablogila/TileCropper).
-This Python tool allows you to draw the tiles in one continuous image, to later separate the tiles as shown in the image below.  
-> (NOTE: TileCropper is still under development, and has some bugs that need fixing. If you know Python, any help is really appreciated in the [TileCropper repo](https://github.com/pablogila/TileCropper)!)  
+But it can also be drawn more easily using a tool like [IsoMapper](https://github.com/pablogila/IsoMapper).
+This Godot plugin allows you to draw the tiles in one continuous image, to later separate the tiles as shown in the image below.  
+> (NOTE: IsoMapper is still under development, and any contribution in the [GitHub repo](https://github.com/pablogila/IsoMapper) is really appreciated!)  
 
 ![](docs/reference_tilecropper.png)  
 
