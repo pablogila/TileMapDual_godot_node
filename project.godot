@@ -14,6 +14,10 @@ config/name="TileMapDual_godot_node"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://docs/icon.svg"
 
+[editor_plugins]
+
+enabled=PackedStringArray()
+
 [input]
 
 right_click={

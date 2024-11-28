@@ -279,3 +279,8 @@ func erase_tile(cell: Vector2i, atlas_id: int = 0) -> void:
 	
 	set_cell(cell, atlas_id, empty_tile)
 	update_tile(cell)
+
+
+####################################
+func action() -> void:
+	print("yayy")
