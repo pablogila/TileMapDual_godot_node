@@ -42,13 +42,13 @@ func _ready() -> void:
 
 
 func build(x) -> bool:
-	transformations = calculate_transformations(grid_side)
+	transformations = calculate_iso_transformations(grid_side)
 	build_slices()
 	build_new_image()
 	return false
 
 
-func calculate_transformations(side) -> Dictionary:
+func calculate_iso_transformations(side) -> Dictionary:
 	var i_new: int
 	var j_new: int
 	for i in range(0, side-1):
@@ -58,6 +58,7 @@ func calculate_transformations(side) -> Dictionary:
 			transformations[Vector2i(i, j)] = Vector2i(j_new,i_new)
 			i_new += 1
 			j_new -= 1
+	print(transformations)
 	return transformations
 
 

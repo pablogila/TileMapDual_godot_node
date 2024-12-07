@@ -3,6 +3,26 @@ class_name TileMapDual
 extends TileMapLayer
 
 
+## Tool to crop an isometric tilemap,
+## from a fully-iso tilemap to a standard one, usable by TileMapDual
+@export_group('Iso cropping tool')
+## Full isometric tilemap, to be cropped.
+## Height and width must match the corners.
+@export var input_tileset: Texture2D
+## Single tile, to be used as a mask to crop the isometric
+## tiles from iso_tilemap. Height and width must be
+## 1/tiles_per_side (1/4th by default) of iso_tilemap.
+@export var input_mask: Texture2D
+## Once everything is set, click the checkbox
+## and build your cropped isometric tileset!
+@export var build_now: bool = false : set = build
+## Grid side must be 4 to be used with TileMapDual.
+## However, you can also use this tool to crop iso tilemaps
+## of different tile sizes. For that specific scenario,
+## you might want to change the number of tiles per side.
+@export var tiles_per_side: int = 4
+
+
 var display_tilemap: TileMapLayer = null
 var _filled_cells = []
 var _emptied_cells = []
@@ -90,6 +110,9 @@ const _NEIGHBORS_TO_ATLAS: Dictionary = {
 	14: Vector2i(1,1),
 	15: Vector2i(2,1)
 	}
+
+
+var iso_transformations: Dictionary
 
 
 func _ready() -> void:
@@ -267,7 +290,6 @@ func fill_tile(cell: Vector2i, atlas_id: int = 0) -> void:
 	# Prevents a crash if this is called on the first frame
 	if display_tilemap == null:
 		update_full_tileset()
-	
 	set_cell(cell, atlas_id, full_tile)
 	update_tile(cell)
 
@@ -276,11 +298,92 @@ func fill_tile(cell: Vector2i, atlas_id: int = 0) -> void:
 func erase_tile(cell: Vector2i, atlas_id: int = 0) -> void:
 	if display_tilemap == null:
 		update_full_tileset()
-	
 	set_cell(cell, atlas_id, empty_tile)
 	update_tile(cell)
 
 
+## Public method to remove a tile in a given World cell
+func remove_tile(cell: Vector2i) -> void:
+	if display_tilemap == null:
+		update_full_tileset()
+	set_cell(cell, -1)
+	update_tile(cell)
+
+
 ####################################
-func action() -> void:
-	print("yayy")
+func build_iso(grid_side) -> bool:
+	iso_transformations = calculate_iso_transformations(grid_side)
+	build_iso_slices(iso_transformations)
+	build_iso_image()
+	return false
+
+
+func calculate_iso_transformations(side) -> Dictionary:
+	var i_new: int
+	var j_new: int
+	for i in range(0, side-1):
+		i_new = i
+		j_new = i + side - 1
+		for j in range(0, side-1):
+			iso_transformations[Vector2i(i, j)] = Vector2i(j_new,i_new)
+			i_new += 1
+			j_new -= 1
+	return iso_transformations
+
+
+func build_iso_slices(iso_transformations) -> void:
+	# Check we have the resourcecs to do this or exit
+	if not input_tileset:
+		print('Nope! You must load input_tileset first!')
+		return
+	if not input_mask:
+		print('Nope! You must load input_mask first!')
+		return
+	
+	# Convert the resources to Image resources
+	var input_image := input_tileset.get_image()
+	var mask_image := input_mask.get_image()
+	
+	var tile_height = input_image.get_height() / tiles_per_side
+	var tile_width = input_image.get_width() / tiles_per_side
+	var tile_size = Vector2i(tile_width, tile_height)
+	
+	# Could probably work the positions out by code... but why bother
+	for initial_position, final_position in enumerate(iso_transformations):
+		
+		# Create an empty image the size of a tile
+		var new_slice := Image.create_empty(tile_size.x, tile_size.y, false, input_tileset.get_format())
+		
+		# Blit (copy) the rect onto the new image
+		var blit_position := slice_position * (tile_size / 2)
+		var slice_rect := Rect2i(blit_position, Vector2i(tile_size.x, tile_size.y))
+		new_slice.blit_rect(input_image, slice_rect, Vector2i(0,0))
+		
+		# Mask the blitted slice, needs to happen after because the size needs to be the same.
+		var masked_slice := Image.create_empty(tile_size.x, tile_size.y, false, input_image.get_format())
+		var mask_rect := Rect2i(Vector2i(0,0), tile_size)
+		masked_slice.blit_rect_mask(new_slice, mask_image, mask_rect, Vector2i(0,0))
+		
+		# Add it to an array for later use
+		slices.append(masked_slice)
+		
+func build_iso_image() -> void:
+	# Check we have image slice
+	if slices.size() == 0:
+		return
+	
+	# Create new image that's blank. The RGBA8 format should preserve alpha but I havent tested yet
+	new_image = Image.create_empty(grid_width * tile_size.x, grid_height * tile_size.y, false, Image.FORMAT_RGBA8)
+	
+	# Loop through the slices to build the image in grid order. Again just using array positions for speed
+	var i := 0
+	for slice in slices:
+		# Dst is the position on the new image, rect is the tile size
+		var dst := grid_position[i] * tile_size
+		var slice_rect = Rect2i(Vector2i(0,0), tile_size)
+		new_image.blit_rect(slice, slice_rect, dst)
+		i += 1
+	
+	if output_path:
+		# Save to a file. You could add a filename export if you wanted to
+		new_image.save_png(output_path + "/output.png")

@@ -32,8 +32,9 @@ An example with a square tileset is provided in the **Jess** scene.
 
 You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node.  
 
-- `TileMapDual.fill_tile(world_cell,atlas_id=0)`: Fill a given world cell and update the corresponding dual tiles, from a given atlas with atlas_id (0 by default).
-- `TileMapDual.erase_tile(world_cell,atlas_id=0)`: Erase a given world cell and update the corresponding dual tiles.  
+- `TileMapDual.fill_tile(world_cell,atlas_id=0)`: Fill a given world cell using the `full_tile` and update the corresponding dual tiles, from a given atlas with atlas_id (0 by default).
+- `TileMapDual.erase_tile(world_cell,atlas_id=0)`: 'Erase' a given world cell using the `empty_tile` and update the corresponding dual tiles.  
+- `TileMapDual.remove_tile(world_cell)`: Remove the corresponding cell and update the surroundings.  
 
 An additional method, `TileMapDual.update_full_tileset()`, is available to refresh the entire dual grid. It should not be necessary, but may come in handy in case of a hypothetical bug.  
 
