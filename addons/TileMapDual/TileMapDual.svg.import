@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwrgqfo3lxgjb"
-path="res://.godot/imported/2x2_grass.png-bd52e2a1eff08cc26ad6958e0e26dd72.ctex"
+uid="uid://bqu55yxko3ofm"
+path="res://.godot/imported/TileMapDual.svg-74ed91a3d196dbe51dce1133c9b2d6f7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/2x2_grass.png"
-dest_files=["res://.godot/imported/2x2_grass.png-bd52e2a1eff08cc26ad6958e0e26dd72.ctex"]
+source_file="res://addons/TileMapDual/TileMapDual.svg"
+dest_files=["res://.godot/imported/TileMapDual.svg-74ed91a3d196dbe51dce1133c9b2d6f7.ctex"]
 
 [params]
 
@@ -32,3 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

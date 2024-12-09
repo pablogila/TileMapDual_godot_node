@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xarbtk8x4ftk"
-path="res://.godot/imported/cursor_indicator.png-9c1e13f49ee39fdc3f38008838b084a7.ctex"
+uid="uid://cvw27ok6bgyxo"
+path="res://.godot/imported/tileset_sand.png-483996165fcf933ff29d5d78bb347173.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cursor_indicator.png"
-dest_files=["res://.godot/imported/cursor_indicator.png-9c1e13f49ee39fdc3f38008838b084a7.ctex"]
+source_file="res://assets/tileset_sand.png"
+dest_files=["res://.godot/imported/tileset_sand.png-483996165fcf933ff29d5d78bb347173.ctex"]
 
 [params]
 

@@ -1,14 +1,15 @@
-# TileMapDual Godot Node
+# TileMapDual
 
 Introducing *TileMapDual*: a simple, automatic and straightforward custom `TileMapLayer` node for [Godot](https://github.com/godotengine/godot) that provides a real-time, in-editor and in-game dual-grid tileset system, for both **square** and **isometric** grids.  
 
 This dual-grid system, [as explained by Oskar Stålberg](https://x.com/OskSta/status/1448248658865049605), reduces the number of tiles required from 47 to just 15 (yes, fifteen!!), rocketing your dev journey!  
 
-![](docs/demo.gif)  
+![](docs/demo_jess.gif)  
 
 Not only that, but if your tiles are symmetrical, you can get away with drawing only 6 (six!) tiles and then generating the 15-tile-tilesets used by *TileMapDual*, thanks to tools like [Wang Tile Set Creator](https://github.com/kleingeist37/godot-wang-converter).  
 
 ![](docs/reference_dual.jpeg)  
+
 
 ## Advantages
 
@@ -17,9 +18,14 @@ Using a dual-grid system has the following advantages:
 - The tiles can have perfectly rounded corners
 - The tiles align to the world grid
 
-## Installation and usage
 
-Just copy `TileMapDual.gd` from the scripts folder to your project to start using the new custom node.  
+## Installation
+
+TileMapDual is installed as a regular Godot plugin.
+Just copy the `addons/TileMapDual` folder to your Godot project, and enable it on *Project*, *Project settings...*, *Plugins*.  
+
+
+## Usage
 
 You have to create a `TileMapDual` node with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
 And that's it! You can now start sketching your level with the fully-filled tile, indicated here:  
@@ -28,45 +34,53 @@ And that's it! You can now start sketching your level with the fully-filled tile
 
 You can also sketch with the empty tile in the bottom-left corner, or erase tiles as usual. The dual grid will update in real time as you draw!  
 
-An example with a square tileset is provided in the **Jess** scene.  
+The `examples` folder has several example scenes. A simple use case with square tiles is provided in the **Jess** scene.
 
-You can modify the dual tileset in-game by calling the following methods. An example is included in the custom `CursorDual` node.  
+You can modify the dual tileset in-game by calling the `draw()` method as follows:  
+```gdscript
+TileMapDual.draw(cell: Vector2i, tile: int = 1, atlas_id: int = 0)
+```
+Where:  
+- `cell` is a vector with the cell position
+- `tile` is `1` to draw the full tile (default), `0` to draw the empty tile, and `-1` to completely remove the tile
+- `atlas_id` is the atlas id of the tileset to modify, 0 by default
 
-- `TileMapDual.fill_tile(world_cell,atlas_id=0)`: Fill a given world cell using the `full_tile` and update the corresponding dual tiles, from a given atlas with atlas_id (0 by default).
-- `TileMapDual.erase_tile(world_cell,atlas_id=0)`: 'Erase' a given world cell using the `empty_tile` and update the corresponding dual tiles.  
-- `TileMapDual.remove_tile(world_cell)`: Remove the corresponding cell and update the surroundings.  
+> Note: the new `draw()` method replaces the deprecated `fill_tile()` and `erase_tile()` methods.
+
+The included `CursorDual` node provides an example use case to modify the tiles in-game.  
 
 An additional method, `TileMapDual.update_full_tileset()`, is available to refresh the entire dual grid. It should not be necessary, but may come in handy in case of a hypothetical bug.  
 
+
 ## Isometric tilesets
 
-Isometric tilemaps are now compatible with the `TileMapDual` node.  
+Isometric tilemaps are compatible with the `TileMapDual` node.  
 You heard that right, isometric, as in 'isometric'. It works automatically, out of the box. Isometric tilemaps! yayyyy!  
 
-![](docs/demo_isometric.gif)  
+![](docs/demo_iso.gif)  
 
 An use example is provided in the **Isometric** scene.  
 
-To use isometric tilemaps, you only need to follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps. Here it is:  
+To use isometric tilemaps, all you need to do is follow an isometric-ed version of the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png) template that we previously used for square tilemaps, as shown in the image below:  
 
 ![](docs/reference_tileset_isometric.svg)  
 
 This isometric tileset can be drawn by hand.
-But it can also be drawn more easily using a tool like [IsoMapper](https://github.com/pablogila/IsoMapper).
-This Godot plugin allows you to draw the tiles in one continuous image, to later separate the tiles as shown in the image below.  
-> (NOTE: IsoMapper is still under development, and any contribution in the [GitHub repo](https://github.com/pablogila/IsoMapper) is really appreciated!)  
+But it can also be drawn more easily using a tool like [TileCropper](https://github.com/pablogila/TileCropper), a Godot plugin that allows you to draw the tiles in one continuous image, to later separate the tiles as follows:  
 
 ![](docs/reference_tilecropper.png)  
 
 That's it. Just 15 tiles for isometric autotiling. I love it.  
 
+
 ## Multiple atlases and layers
 
-You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `fill_tile` and `erase_tile` methods described above with the desired `atlas_id`, which is `0` by default. An example is included with the custom `CursorDual` node, see the **MultipleAtlases** scene.  
+You can use multiple atlases in the same tileset. To change them in-game, make sure you call the `draw()` method described above with the desired `atlas_id`, which is `0` by default. An example is included with the custom `CursorDual` node, see the **MultipleAtlases** scene.  
 
 Note that each atlas can handle 2 surfaces. To add more surfaces or tile variations on top of one another, consider using a second `TileMapDual` node with transparencies in your tileset, just as you would do with a regular `TileMapLayer`. An example is provided in the **MultipleLayers** scene.  
 
-![](docs/demo_multiple_layers.gif)
+![](docs/demo_layers.png)
+
 
 ## Why?
 
@@ -85,10 +99,6 @@ Plus, you can use **multiple atlases** in the same tileset.
 
 Oh, and also... You can use **isometric tilesets!**  
 
-## To-do
-
-- Animations remain untested
-- I am personally not interested in hex grids right now, but the repo is open to pull requests!
 
 ## License and contributing
 
@@ -96,6 +106,7 @@ This project is Open Source Software, released under the [MIT license](LICENSE).
 
 [This repo](https://https://github.com/pablogila/TileMapDual_godot_node/) is open to pull requests, just make sure to check the [contributing guidelines](CONTRIBUTING.md).
 I personally encourage you to send back any significant improvements to this code so that the Godot community continues to thrive. Thanks!  
+
 
 ## References
 

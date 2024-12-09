@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c3x0o00288w1"
-path="res://.godot/imported/reference_tileset_isometric_before_displacement.svg-062144893738ab2d48b570e6426b8759.ctex"
+uid="uid://bth8306ui4dcx"
+path="res://.godot/imported/CursorDual.svg-af24e4bad2d22f0cc5627c83d35ae307.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://docs/reference_tileset_isometric_before_displacement.svg"
-dest_files=["res://.godot/imported/reference_tileset_isometric_before_displacement.svg-062144893738ab2d48b570e6426b8759.ctex"]
+source_file="res://addons/TileMapDual/CursorDual.svg"
+dest_files=["res://.godot/imported/CursorDual.svg-af24e4bad2d22f0cc5627c83d35ae307.ctex"]
 
 [params]
 

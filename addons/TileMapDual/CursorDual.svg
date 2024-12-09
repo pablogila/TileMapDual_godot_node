@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="CursorDual.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="35.5"
+     inkscape:cx="9.0845069"
+     inkscape:cy="8.112676"
+     inkscape:window-width="1366"
+     inkscape:window-height="736"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     d="M 8.9882813,2.0703125 V 4.046875 h 2.9648437 v 2.9648437 h 1.976563 V 2.0703125 Z"
+     style="fill:#ffb273;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+     id="path10" />
+  <path
+     d="m 8.9882813,11.953125 v 1.976563 H 13.929688 V 8.9882813 h -1.976563 v 2.9648437 z"
+     style="fill:#ffb273;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+     id="path9" />
+  <path
+     d="M 7.0117187,13.929688 V 11.953125 H 4.046875 V 8.9882813 H 2.0703125 v 4.9414067 z"
+     style="fill:#ffb273;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+     id="path8" />
+  <path
+     d="M 2.0703125,7.0117187 H 4.046875 V 4.046875 H 7.0117187 V 2.0703125 H 2.0703125 Z"
+     style="fill:#ffb273;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+     id="path7" />
+</svg>
