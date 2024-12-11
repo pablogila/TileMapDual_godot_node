@@ -7,6 +7,7 @@ extends TileMapLayer
 var display_tilemap: TileMapLayer = null
 var _filled_cells = []
 var _emptied_cells = []
+var _tile_shape: TileSet.TileShape = TileSet.TileShape.TILE_SHAPE_SQUARE
 var _tile_size: Vector2i = Vector2i(16, 16)
 ## Coordinates for the fully-filled tile in the Atlas that
 ## will be used to sketch in the World grid.
@@ -125,17 +126,19 @@ func _set_display_tilemap() -> void:
 	if display_tilemap.tile_set != self.tile_set:
 		display_tilemap.tile_set = self.tile_set
 	# Displace the display TileMapLayer
-	is_isometric = self.tile_set.tile_shape == 1
-	update_displacement()
+	update_geometry()
 	display_tilemap.clear()
-	
 
-func update_displacement() -> void:
+
+## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
+func update_geometry() -> void:
+	is_isometric = self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_ISOMETRIC
 	var offset := Vector2(self.tile_set.tile_size) * -0.5
 	if is_isometric:
 		offset.x = 0
 	display_tilemap.position = offset
 	_tile_size = self.tile_set.tile_size
+	_tile_shape = self.tile_set.tile_shape
 
 
 ## Update the entire tileset, processing all the cells in the map.
@@ -165,8 +168,8 @@ func _update_tileset() -> void:
 	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
 		update_full_tileset()
 		return
-	elif _tile_size != self.tile_set.tile_size:
-		update_displacement()
+	elif _tile_size != self.tile_set.tile_size or _tile_shape != self.tile_set.tile_shape:
+		update_geometry()
 		return
 	# TO-DO: check for tile shape change
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
