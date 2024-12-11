@@ -171,7 +171,6 @@ func _update_tileset() -> void:
 	elif _tile_size != self.tile_set.tile_size or _tile_shape != self.tile_set.tile_shape:
 		update_geometry()
 		return
-	# TO-DO: check for tile shape change
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
 	var _changed_cells: Array = intersect_arrays(
