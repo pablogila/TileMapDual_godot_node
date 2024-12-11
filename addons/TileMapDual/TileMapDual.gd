@@ -125,19 +125,16 @@ func _set_display_tilemap() -> void:
 	if display_tilemap.tile_set != self.tile_set:
 		display_tilemap.tile_set = self.tile_set
 	# Displace the display TileMapLayer
+	is_isometric = self.tile_set.tile_shape == 1
 	update_displacement()
 	display_tilemap.clear()
 	
 
 func update_displacement() -> void:
-	if self.tile_set.tile_shape == 1:
-		is_isometric = true
-		display_tilemap.position.x = - self.tile_set.tile_size.x * 0
-		display_tilemap.position.y = - self.tile_set.tile_size.y * 0.5
-	else:
-		is_isometric = false
-		display_tilemap.position.x = - self.tile_set.tile_size.x * 0.5
-		display_tilemap.position.y = - self.tile_set.tile_size.y * 0.5
+	var offset := Vector2(self.tile_set.tile_size) * -0.5
+	if is_isometric:
+		offset.x = 0
+	display_tilemap.position = offset
 	_tile_size = self.tile_set.tile_size
 
 
@@ -171,6 +168,7 @@ func _update_tileset() -> void:
 	elif _tile_size != self.tile_set.tile_size:
 		update_displacement()
 		return
+	# TO-DO: check for tile shape change
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
 	var _changed_cells: Array = intersect_arrays(
