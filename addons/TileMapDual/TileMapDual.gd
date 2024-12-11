@@ -7,6 +7,7 @@ extends TileMapLayer
 var display_tilemap: TileMapLayer = null
 var _filled_cells = []
 var _emptied_cells = []
+var _tile_size: Vector2i = Vector2i(16, 16)
 ## Coordinates for the fully-filled tile in the Atlas that
 ## will be used to sketch in the World grid.
 ## Only this tile will be considered for autotiling.
@@ -124,6 +125,11 @@ func _set_display_tilemap() -> void:
 	if display_tilemap.tile_set != self.tile_set:
 		display_tilemap.tile_set = self.tile_set
 	# Displace the display TileMapLayer
+	update_displacement()
+	display_tilemap.clear()
+	
+
+func update_displacement() -> void:
 	if self.tile_set.tile_shape == 1:
 		is_isometric = true
 		display_tilemap.position.x = - self.tile_set.tile_size.x * 0
@@ -132,7 +138,7 @@ func _set_display_tilemap() -> void:
 		is_isometric = false
 		display_tilemap.position.x = - self.tile_set.tile_size.x * 0.5
 		display_tilemap.position.y = - self.tile_set.tile_size.y * 0.5
-	display_tilemap.clear()
+	_tile_size = self.tile_set.tile_size
 
 
 ## Update the entire tileset, processing all the cells in the map.
@@ -161,6 +167,9 @@ func _update_tileset() -> void:
 		return
 	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
 		update_full_tileset()
+		return
+	elif _tile_size != self.tile_set.tile_size:
+		update_displacement()
 		return
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
