@@ -133,14 +133,14 @@ func _create_display_tilemap() -> void:
 ## Update the entire tileset, including geometry and tilemap data.
 func _update_full_tileset() -> void:
 	# Check if tile_set has been added or replaced
-	# For some reason I cannot detect if it has been deleted
-	if self.tile_set and self.tile_set != _tile_set:
-		if _tile_set:
-			_tile_set.changed.disconnect(_changed_tileset)
-		_tile_set = self.tile_set
-		self.tile_set.changed.connect(_changed_tileset, 1)
-		self.tile_set.emit_changed()
-
+	if self.tile_set == _tile_set:
+		return
+	if _tile_set:
+		_tile_set.changed.disconnect(_changed_tileset)
+		_update_full_tilemap()
+	_tile_set = self.tile_set
+	self.tile_set.changed.connect(_changed_tileset, 1)
+	self.tile_set.emit_changed()
 
 
 ## Called on tile_set.changed.
@@ -176,7 +176,7 @@ func _update_full_tilemap() -> void:
 
 
 ## Update only the very specific tiles that have changed.
-## Much more efficient than update_full.
+## Much more efficient than update_full_tilemap.
 func _update_tilemap() -> void:
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
