@@ -5,10 +5,11 @@ extends TileMapLayer
 
 
 var display_tilemap: TileMapLayer = null
+## When self.tile_set is set to null,
+## the _changed_tileset() function is disconnected through this variable.
+var _tile_set: TileSet = null
 var _filled_cells = []
 var _emptied_cells = []
-var _tile_shape: TileSet.TileShape = TileSet.TileShape.TILE_SHAPE_SQUARE
-var _tile_size: Vector2i = Vector2i(16, 16)
 ## Coordinates for the fully-filled tile in the Atlas that
 ## will be used to sketch in the World grid.
 ## Only this tile will be considered for autotiling.
@@ -19,7 +20,6 @@ var empty_tile: Vector2i = Vector2i(0,3)
 ## is being updated, which is indicated by _checked_cells[0]=true.
 ## _checked_cells[0]=false will overpass this check. 
 var _checked_cells: Array = [false]
-var is_isometric: bool = false
 var _atlas_id: int
 
 ## We will use a bit-wise logic, so that a summation over all sketched
@@ -29,7 +29,7 @@ enum _location {
 	TOP_LEFT  = 1,
 	LOW_LEFT  = 2,
 	TOP_RIGHT = 4,
-	LOW_RIGHT = 8
+	LOW_RIGHT = 8,
 	}
 
 enum _direction {
@@ -46,30 +46,31 @@ enum _direction {
 ## Overlapping tiles from the World grid
 ## that a tile from the Dual grid has.
 const _NEIGHBORS := {
-	_direction.TOP  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_SIDE,
-	_direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_SIDE,
-	_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_SIDE,
-	_direction.BOTTOM  : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_SIDE,
-	_direction.TOP_LEFT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-	_direction.TOP_RIGHT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
-	_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
-	_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER
+	TileSet.TileShape.TILE_SHAPE_SQUARE : {
+		_direction.TOP : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_SIDE,
+		_direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_SIDE,
+		_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_SIDE,
+		_direction.BOTTOM : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_SIDE,
+		_direction.TOP_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+		_direction.TOP_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+		_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+		_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER
+		},
+	TileSet.TileShape.TILE_SHAPE_ISOMETRIC : {
+		_direction.TOP : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
+		_direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_SIDE,
+		_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
+		_direction.BOTTOM : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
+		_direction.TOP_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_CORNER,
+		_direction.TOP_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_CORNER,
+		_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_CORNER,
+		_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_CORNER
+		},
+	TileSet.TileShape.TILE_SHAPE_HEXAGON : {
+		# TODO
+		}
 	}
 
-## Overlapping tiles from the World grid
-## that a tile from the Dual grid has.
-## To be used ONLY with isometric tilesets.
-## CellNighbors are literal, even for Isometric
-const _NEIGHBORS_ISOMETRIC := {
-	_direction.TOP : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
-	_direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_SIDE,
-	_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
-	_direction.BOTTOM  : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
-	_direction.TOP_LEFT  : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_CORNER,
-	_direction.TOP_RIGHT  : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_CORNER,
-	_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_CORNER,
-	_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_CORNER
-	}
 
 ## Dict to assign the Atlas coordinates from the
 ## summation over all sketched NEIGHBOURS.
@@ -96,57 +97,77 @@ const _NEIGHBORS_TO_ATLAS: Dictionary = {
 
 
 func _ready() -> void:
+	_create_display_tilemap()
 	if Engine.is_editor_hint():
 		set_process(true)
 	else: # Run in-game using signals for better performance
 		set_process(false)
-		self.changed.connect(_update_tileset, 1)
+		self.changed.connect(_changed, 1)
 
 
-func _process(_delta): # Only used inside the editor
+func _process(_delta) -> void: # Only used inside the editor
 	if not self.tile_set:
 		return
-	call_deferred('_update_tileset')
+	call_deferred('_changed')
 
 
-## Set the dual grid as a child of TileMapDual.
-func _set_display_tilemap() -> void:
-	if not self.tile_set:
-		return
-	# Make TileMapDual invisible without disabling it
-	if not self.material:
-		self.material = CanvasItemMaterial.new()
-		self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+## Called by signals when the tileset changes,
+## or by _process inside the editor.
+func _changed() -> void:
+	_update_full_tileset()
+	_update_tilemap()
+
+
+## Sets up the Dual-Grid illusion.
+## Called on ready.
+func _create_display_tilemap() -> void:
 	# Add the display TileMapLayer
-	if not get_node_or_null('WorldTileMap'):
-		display_tilemap = TileMapLayer.new()
-		display_tilemap.name = "WorldTileMap"
-		add_child(display_tilemap)
-	# Both tilemaps must be the same
-	if display_tilemap.tile_set != self.tile_set:
-		display_tilemap.tile_set = self.tile_set
-	# Displace the display TileMapLayer
-	update_geometry()
-	display_tilemap.clear()
+	display_tilemap = TileMapLayer.new()
+	display_tilemap.name = "WorldTileMap"
+	add_child(display_tilemap)
+	# Make TileMapDual invisible without disabling it
+	self.material = CanvasItemMaterial.new()
+	self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+
+
+## Update the entire tileset, including geometry and tilemap data.
+func _update_full_tileset() -> void:
+	# Check if tile_set has been added or deleted
+	if display_tilemap.tile_set == null and self.tile_set != null:
+		_tile_set = self.tile_set
+		_update_tileset_data()
+		self.tile_set.changed.connect(_changed_tileset, 1)
+	elif display_tilemap.tile_set != null and self.tile_set == null:
+		_tile_set.changed.disconnect(_changed_tileset)
+		display_tilemap.tile_set = null
+		return
+
+
+## Called on tile_set.changed.
+func _changed_tileset() -> void:
+	_update_tileset_data()
+	
+
+
+## Updates the data within the tileset.
+func _update_tileset_data() -> void:
+	display_tilemap.tile_set = self.tile_set.duplicate()
+	_update_geometry()
 
 
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
-func update_geometry() -> void:
-	is_isometric = self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_ISOMETRIC
+func _update_geometry() -> void:
 	var offset := Vector2(self.tile_set.tile_size) * -0.5
-	if is_isometric:
+	if self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
 		offset.x = 0
 	display_tilemap.position = offset
-	_tile_size = self.tile_set.tile_size
-	_tile_shape = self.tile_set.tile_shape
+	display_tilemap.tile_set.tile_size = self.tile_set.tile_size
+	display_tilemap.tile_set.tile_shape = self.tile_set.tile_shape
 
 
-## Update the entire tileset, processing all the cells in the map.
-func update_full_tileset() -> void:
-	if display_tilemap == null:
-		_set_display_tilemap()
-	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
-		_set_display_tilemap()
+## Update every cell in the entire tilemap.
+func _update_full_tilemap() -> void:
+	# Process all the cells in the map
 	_checked_cells = [true]
 	for _cell in self.get_used_cells():
 		if _is_world_tile_sketched(_cell) == 1 or _is_world_tile_sketched(_cell) == 0:
@@ -158,19 +179,8 @@ func update_full_tileset() -> void:
 
 
 ## Update only the very specific tiles that have changed.
-## Much more efficient than update_full_tileset.
-## Called by signals when the tileset changes,
-## or by _process inside the editor.
-func _update_tileset() -> void:
-	if display_tilemap == null:
-		update_full_tileset()
-		return
-	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
-		update_full_tileset()
-		return
-	elif _tile_size != self.tile_set.tile_size or _tile_shape != self.tile_set.tile_shape:
-		update_geometry()
-		return
+## Much more efficient than update_full.
+func _update_tilemap() -> void:
 	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
 	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
 	var _changed_cells: Array = intersect_arrays(
@@ -211,7 +221,8 @@ func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
 	if (!recurse and _atlas_id == -1):
 		return
 	
-	var __NEIGHBORS = _NEIGHBORS_ISOMETRIC if is_isometric else _NEIGHBORS
+	
+	var __NEIGHBORS = _NEIGHBORS[self.tile_set.tile_shape]
 	var _top_left = world_cell
 	var _low_left = display_tilemap.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM])
 	var _top_right = display_tilemap.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.RIGHT])
@@ -240,7 +251,7 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 			return
 		_checked_cells.append(_display_cell)
 	
-	var __NEIGHBORS = _NEIGHBORS_ISOMETRIC if is_isometric else _NEIGHBORS
+	var __NEIGHBORS = _NEIGHBORS[self.tile_set.tile_shape]
 	var _top_left = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.TOP_LEFT])
 	var _low_left = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.LEFT])
 	var _top_right = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.TOP])
@@ -263,7 +274,7 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 
 ## Return -1 if the cell is empty, 0 if sketched with the empty tile,
 ## and 1 if it is sketched with the fully-filled tile.
-func _is_world_tile_sketched(_world_cell: Vector2i):
+func _is_world_tile_sketched(_world_cell: Vector2i) -> int:
 	var _atlas_coords = get_cell_atlas_coords(_world_cell)
 	if _atlas_coords == full_tile:
 		return 1
@@ -280,9 +291,6 @@ func _is_world_tile_sketched(_world_cell: Vector2i):
 ## 'atlas_id' is the atlas id of the tileset to modify, 0 by default.
 ## This method replaces the deprecated 'fill_tile' and 'erase_tile' methods.
 func draw(cell: Vector2i, tile: int = 1, atlas_id: int = 0) -> void:
-	# Prevents a crash if this is called on the first frame
-	if display_tilemap == null:
-		update_full_tileset()
 	var tile_to_use: Vector2i
 	if tile == 1:
 		tile_to_use = full_tile
