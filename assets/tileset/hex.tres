@@ -1,0 +1,20 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://chpeld5ek6f5h"]
+
+[ext_resource type="Texture2D" uid="uid://dmo15h7wra80b" path="res://assets/Hex Dual Vert Flat - 48x64tri 64x64hex.png" id="1_has0b"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wemt1"]
+texture = ExtResource("1_has0b")
+texture_region_size = Vector2i(48, 64)
+2:1/size_in_atlas = Vector2i(2, 3)
+2:1/0 = 0
+0:0/size_in_atlas = Vector2i(2, 1)
+0:0/0 = 0
+2:0/size_in_atlas = Vector2i(2, 1)
+2:0/0 = 0
+0:3/0 = 0
+
+[resource]
+tile_shape = 3
+tile_offset_axis = 1
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_wemt1")

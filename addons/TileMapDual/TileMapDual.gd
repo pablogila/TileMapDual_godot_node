@@ -10,6 +10,7 @@ var display_tilemap: TileMapLayer = null
 var _tile_set: TileSet = null
 var _filled_cells = []
 var _emptied_cells = []
+# TODO: use terrains instead of hardcoded tile coordinates
 ## Coordinates for the fully-filled tile in the Atlas that
 ## will be used to sketch in the World grid.
 ## Only this tile will be considered for autotiling.
@@ -145,6 +146,19 @@ func _update_full_tileset() -> void:
 
 ## Called on tile_set.changed.
 func _changed_tileset() -> void:
+	if self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_HEXAGON:
+		const REQUIREMENTS = {
+			'tile_layout': ['Stacked', TileSet.TileLayout.TILE_LAYOUT_STACKED],
+			'tile_offset_axis': ['Vertical Offset', TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_VERTICAL],
+			}
+		for key in REQUIREMENTS:
+			var requirement = REQUIREMENTS[key]
+			var expected_str = requirement[0]
+			var expected_val = requirement[1]
+			var actual = self.tile_set[key]
+			if actual != expected_val:
+				push_error("Dual grids don't support any %s other than %s." % [key, expected_str])
+				self.tile_set[key] = expected_val
 	_update_tileset_data()
 
 
@@ -156,7 +170,7 @@ func _update_tileset_data() -> void:
 
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
 func _update_geometry() -> void:
-	var offset := Vector2(self.tile_set.tile_size) * -0.5
+	var offset := Vector2(display_tilemap.tile_set.tile_size) * -0.5
 	if self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
 		offset.x = 0
 	display_tilemap.position = offset
