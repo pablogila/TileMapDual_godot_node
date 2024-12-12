@@ -132,21 +132,20 @@ func _create_display_tilemap() -> void:
 
 ## Update the entire tileset, including geometry and tilemap data.
 func _update_full_tileset() -> void:
-	# Check if tile_set has been added or deleted
-	if display_tilemap.tile_set == null and self.tile_set != null:
+	# Check if tile_set has been added or replaced
+	# For some reason I cannot detect if it has been deleted
+	if self.tile_set and self.tile_set != _tile_set:
+		if _tile_set:
+			_tile_set.changed.disconnect(_changed_tileset)
 		_tile_set = self.tile_set
-		_update_tileset_data()
 		self.tile_set.changed.connect(_changed_tileset, 1)
-	elif display_tilemap.tile_set != null and self.tile_set == null:
-		_tile_set.changed.disconnect(_changed_tileset)
-		display_tilemap.tile_set = null
-		return
+		self.tile_set.emit_changed()
+
 
 
 ## Called on tile_set.changed.
 func _changed_tileset() -> void:
 	_update_tileset_data()
-	
 
 
 ## Updates the data within the tileset.
@@ -161,8 +160,6 @@ func _update_geometry() -> void:
 	if self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
 		offset.x = 0
 	display_tilemap.position = offset
-	display_tilemap.tile_set.tile_size = self.tile_set.tile_size
-	display_tilemap.tile_set.tile_shape = self.tile_set.tile_shape
 
 
 ## Update every cell in the entire tilemap.
@@ -216,12 +213,12 @@ func intersect_arrays(a: Array, b: Array) -> Array:
 ## Takes a cell, and updates the overlapping tiles from the dual grid accordingly.
 func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
 	_atlas_id = self.get_cell_source_id(world_cell)
-	
+
 	# to not fall in a recursive loop because of a large space of emptiness in the map
 	if (!recurse and _atlas_id == -1):
 		return
-	
-	
+
+
 	var __NEIGHBORS = _NEIGHBORS[self.tile_set.tile_shape]
 	var _top_left = world_cell
 	var _low_left = display_tilemap.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM])
@@ -231,7 +228,7 @@ func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
 	_update_displayed_tile(_low_left)
 	_update_displayed_tile(_top_right)
 	_update_displayed_tile(_low_right)
-	
+
 	# if atlas id is -1 the tile is empty, so to have a good rendering we need to update surroundings
 	if (_atlas_id == -1):
 		update_tile(self.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.LEFT]), false)
@@ -250,13 +247,13 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 		if _display_cell in _checked_cells:
 			return
 		_checked_cells.append(_display_cell)
-	
+
 	var __NEIGHBORS = _NEIGHBORS[self.tile_set.tile_shape]
 	var _top_left = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.TOP_LEFT])
 	var _low_left = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.LEFT])
 	var _top_right = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.TOP])
 	var _low_right = _display_cell
-	
+
 	# We perform a bitwise summation over the sketched neighbours
 	var _tile_key: int = 0
 	if _is_world_tile_sketched(_top_left) == 1:
@@ -267,7 +264,7 @@ func _update_displayed_tile(_display_cell: Vector2i) -> void:
 		_tile_key += _location.TOP_RIGHT
 	if _is_world_tile_sketched(_low_right) == 1:
 		_tile_key += _location.LOW_RIGHT
-	
+
 	var _coords_atlas: Vector2i = _NEIGHBORS_TO_ATLAS[_tile_key]
 	display_tilemap.set_cell(_display_cell, _atlas_id, _coords_atlas)
 

@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dmo15h7wra80b" path="res://assets/Hex Dual Vert Flat - 48x64tri 64x64hex.png" id="1_i4yas"]
 [ext_resource type="Script" path="res://addons/TileMapDual/TileMapDual.gd" id="2_fqrx5"]
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fyu7y"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vn2xn"]
 light_mode = 2
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_evl4d"]
@@ -34,6 +34,6 @@ sources/0 = SubResource("TileSetAtlasSource_evl4d")
 [node name="Hexagonal" type="Node2D"]
 
 [node name="TileMapDual" type="TileMapLayer" parent="."]
-material = SubResource("CanvasItemMaterial_fyu7y")
+material = SubResource("CanvasItemMaterial_vn2xn")
 tile_set = SubResource("TileSet_8oxdn")
 script = ExtResource("2_fqrx5")

@@ -23,6 +23,5 @@ texture_region_size = Vector2i(64, 64)
 3:3/0 = 0
 
 [resource]
-tile_shape = 1
 tile_size = Vector2i(64, 64)
 sources/0 = SubResource("TileSetAtlasSource_skpq5")
