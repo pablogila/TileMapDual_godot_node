@@ -15,7 +15,7 @@ enum GridShape {
 }
 
 
-static func grid_shape(tile_set: TileSet) -> GridShape:
+static func _grid_shape(tile_set: TileSet) -> GridShape:
 	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
 	match tile_set.tile_shape:
 		TileSet.TileShape.TILE_SHAPE_SQUARE:
@@ -28,6 +28,10 @@ static func grid_shape(tile_set: TileSet) -> GridShape:
 			return Grids.GridShape.HEX_HORI if hori else Grids.GridShape.HEX_VERT
 		_:
 			return Grids.GridShape.SQUARE
+
+
+static func grid_data(tile_set: TileSet) -> Dictionary:
+	return GRID_DATA[_grid_shape(tile_set)]
 
 
 ## Dict to assign the Atlas coordinates from the
@@ -99,7 +103,7 @@ const TEMPLATES: Dictionary = {
 
 
 ## How to deal with every available GridShape.
-const SHAPE_DATA = [
+const GRID_DATA = [
 	{ # GridShape.SQUARE
 		'template': TEMPLATES.square,
 		'dual_to_display': [[
