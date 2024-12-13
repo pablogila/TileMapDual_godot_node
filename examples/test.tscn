@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dkl42t25uvsvh"]
+
+[ext_resource type="Script" path="res://addons/TileMapDual/TileMapDual.gd" id="1_5l5ra"]
+
+[sub_resource type="TileSet" id="TileSet_b2ci2"]
+terrain_set_0/mode = 0
+
+[node name="Test" type="Node2D"]
+
+[node name="TileMapDual" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_b2ci2")
+script = ExtResource("1_5l5ra")
