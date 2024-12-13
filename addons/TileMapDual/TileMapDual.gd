@@ -13,17 +13,17 @@ var _cached_cells := Set.new()
 var display_tilemaps: Array[TileMapLayer] = []
 
 
-var _grid_data: Dictionary :
+var _grid_data: Array[Dictionary] :
 	get:
 		return Grids.grid_data(self.tile_set)
 
 var _tile_empty: Vector2i :
 	get:
-		return _grid_data.template[0].front()
+		return Grids.tile_empty(_grid_data)
 
 var _tile_full: Vector2i :
 	get:
-		return _grid_data.template[0].back()
+		return Grids.tile_full(_grid_data)
 
 
 var _atlas_id: int

@@ -29,10 +29,6 @@ static func _grid_shape(tile_set: TileSet) -> GridShape:
 			return Grids.GridShape.SQUARE
 
 
-static func grid_data(tile_set: TileSet) -> Dictionary:
-	return GRID_DATA[_grid_shape(tile_set)]
-
-
 ## Dict to assign the Atlas coordinates from the
 ## summation over all sketched NEIGHBOURS.
 const TEMPLATES: Dictionary = {
@@ -95,6 +91,18 @@ const TEMPLATES: Dictionary = {
 		Vector2i(0, 3),
 	],
 }
+
+
+static func grid_data(tile_set: TileSet) -> Array[Dictionary]:
+	return GRID_DATA[_grid_shape(tile_set)]
+
+
+static func tile_empty(grid_data: Array[Dictionary]) -> Vector2i:
+	return grid_data.front().template.front()
+
+
+static func tile_full(grid_data: Array[Dictionary]) -> Vector2i:
+	return grid_data.front().template.back()
 
 
 ## How to deal with every available GridShape.
