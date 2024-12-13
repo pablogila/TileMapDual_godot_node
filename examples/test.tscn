@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=4 uid="uid://dkl42t25uvsvh"]
+[gd_scene load_steps=5 format=3 uid="uid://dkl42t25uvsvh"]
 
 [ext_resource type="Script" path="res://addons/TileMapDual/TileMapDual.gd" id="1_5l5ra"]
 [ext_resource type="Texture2D" uid="uid://cwh3a3qb6ah4e" path="res://assets/Hex Dual Hori Flat - 64x48tri 64x64hex.png" id="1_e8koc"]
@@ -40,6 +40,5 @@ sources/0 = SubResource("TileSetAtlasSource_elufu")
 [node name="Test" type="Node2D"]
 
 [node name="TileMapDual" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray("AAD+////AAAAAAAAAAD//wAAAAAAAAAAAAD/////AAAAAAAAAAAAAAAAAAAAAAIAAAAAAP//AAAAAAIAAAABAAAAAAAAAAIAAAA=")
 tile_set = SubResource("TileSet_hyi4o")
 script = ExtResource("1_5l5ra")

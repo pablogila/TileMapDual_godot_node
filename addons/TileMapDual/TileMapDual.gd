@@ -3,14 +3,14 @@
 class_name TileMapDual
 extends TileMapLayer
 
-var _cached_tile_set = null
-var _cached_tileset_data = null
 var _cached_cells := Set.new()
 """
 		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
 		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
 """
 var display_tilemaps: Array[TileMapLayer] = []
+
+# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
 
 
 var _grid_data: Array :
@@ -52,7 +52,7 @@ func _changed() -> void:
 	_update_full_tileset()
 	#_update_tilemap()
 
-
+var _cached_tile_set = null
 func _update_full_tileset() -> void:
 	# Check if tile_set has been added, replaced, or deleted
 	if tile_set == _cached_tile_set:
@@ -64,7 +64,6 @@ func _update_full_tileset() -> void:
 		self.tile_set.changed.connect(_changed_tile_set, 1)
 		self.tile_set.emit_changed()
 	_cached_tile_set = tile_set
-
 
 
 var _cached_source_count: int = 0
@@ -126,7 +125,7 @@ func _changed_tile_set() -> void:
 		print(expected_size)
 		print('set?')
 
-		# reset the whole grid
+		# Reset the whole grid
 		print('resetting')
 		for y in 4:
 			for x in 4:
@@ -135,14 +134,15 @@ func _changed_tile_set() -> void:
 					atlas.create_tile(tile)
 				data = atlas.get_tile_data(tile, 0)
 				data.terrain_set = -1
-		# register the empty tile
+		# Register the Empty tile as a Terrain
 		data = atlas.get_tile_data(_tile_empty, 0)
 		data.terrain_set = i
 		data.terrain = 0
-		# register the full tile
+		# Register the Full tile as a Terrain
 		data = atlas.get_tile_data(_tile_full, 0)
 		data.terrain_set = i
 		data.terrain = 1
+
 
 ## Sets up the Dual-Grid illusion.
 ## Called on ready.
@@ -151,11 +151,9 @@ func _create_display_tilemaps() -> void:
 	_create_display_tilemap()
 	_create_display_tilemap().enabled = false
 
-
 func _make_self_invisible() -> void:
 	self.material = CanvasItemMaterial.new()
 	self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
-
 
 func _create_display_tilemap() -> TileMapLayer:
 	var layer = TileMapLayer.new()
