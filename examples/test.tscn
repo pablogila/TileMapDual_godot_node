@@ -40,6 +40,5 @@ sources/0 = SubResource("TileSetAtlasSource_nxr2h")
 [node name="Test" type="Node2D"]
 
 [node name="TileMapDual" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray(0, 0, 255, 255, 254, 255, 0, 0, 2, 0, 1, 0, 0, 0)
 tile_set = SubResource("TileSet_b2ci2")
 script = ExtResource("1_5l5ra")
