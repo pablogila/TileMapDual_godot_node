@@ -13,7 +13,7 @@ var _cached_cells := Set.new()
 var display_tilemaps: Array[TileMapLayer] = []
 
 
-var _grid_data: Array[Dictionary] :
+var _grid_data: Array :
 	get:
 		return Grids.grid_data(self.tile_set)
 
@@ -66,32 +66,69 @@ func _update_full_tileset() -> void:
 	_cached_tile_set = tile_set
 
 
+
+var _cached_source_count: int = 0
 func _changed_tile_set() -> void:
+	print('changing')
+	# Update all tileset sources
 	var source_count := self.tile_set.get_source_count()
 	var terrain_set_count := self.tile_set.get_terrain_sets_count()
+	# Only if an asset was added or removed
+	if _cached_source_count == source_count:
+		return
+	_cached_source_count = source_count
+
+	# Get all the atlases in the TileSet
+	var atlases: Array[TileSetAtlasSource] = []
 	for i in source_count:
 		var sid: int = self.tile_set.get_source_id(i)
 		var source: TileSetSource = self.tile_set.get_source(sid)
+		# We only support atlases
 		if source is not TileSetAtlasSource:
+			push_warning(
+				"Non-Atlas TileSet found at index %i, source id %i.\n" +
+				"Dual Grids only support Atlas TileSets."
+				% [i, source]
+			)
 			continue
 		var atlas: TileSetAtlasSource = source
-		if i >= terrain_set_count:
-			self.tile_set.add_terrain_set()
-		if self.tile_set.get_terrains_count(i) == 0:
-			var data: TileData
-			# register the empty tile
-			self.tile_set.add_terrain(i)
-			atlas.create_tile(_tile_empty)
-			data = atlas.get_tile_data(_tile_empty, 0)
-			data.terrain_set = 0
-			data.terrain = 0
-			# register the full tile
-			self.tile_set.add_terrain(i)
-			atlas.create_tile(_tile_full)
-			data = atlas.get_tile_data(_tile_full, 0)
-			data.terrain_set = 0
-			data.terrain = 1
+		atlases.push_back(atlas)
 
+	# Even out the number of atlases and terrain sets
+	var diff := atlases.size() - terrain_set_count
+	var start = atlases.size() - 1
+	for i in range(start, start + diff, +1):
+		print('adding')
+		self.tile_set.add_terrain_set()
+		self.tile_set.add_terrain(i)
+		self.tile_set.add_terrain(i)
+	for i in range(start - diff, start, -1):
+		print('deleting')
+		self.tile_set.remove_terrain(i, 1)
+		self.tile_set.remove_terrain(i, 0)
+		self.tile_set.remove_terrain_set(i)
+
+	# Update all atlases and configure their terrains
+	var data: TileData
+	for i in atlases.size():
+		var atlas: TileSetAtlasSource = atlases[i]
+		# reset the whole grid
+		print('resetting')
+		for y in 4:
+			for x in 4:
+				var tile := Vector2i(x, y)
+				if not atlas.has_tile(tile):
+					atlas.create_tile(tile)
+				data = atlas.get_tile_data(tile, 0)
+				data.terrain_set = -1
+		# register the empty tile
+		data = atlas.get_tile_data(_tile_empty, 0)
+		data.terrain_set = i
+		data.terrain = 0
+		# register the full tile
+		data = atlas.get_tile_data(_tile_full, 0)
+		data.terrain_set = i
+		data.terrain = 1
 
 ## Sets up the Dual-Grid illusion.
 ## Called on ready.

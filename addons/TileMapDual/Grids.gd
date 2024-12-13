@@ -93,20 +93,20 @@ const TEMPLATES: Dictionary = {
 }
 
 
-static func grid_data(tile_set: TileSet) -> Array[Dictionary]:
+static func grid_data(tile_set: TileSet) -> Array:
 	return GRID_DATA[_grid_shape(tile_set)]
 
 
-static func tile_empty(grid_data: Array[Dictionary]) -> Vector2i:
+static func tile_empty(grid_data: Array) -> Vector2i:
 	return grid_data.front().template.front()
 
 
-static func tile_full(grid_data: Array[Dictionary]) -> Vector2i:
+static func tile_full(grid_data: Array) -> Vector2i:
 	return grid_data.front().template.back()
 
 
 ## How to deal with every available GridShape.
-const GRID_DATA = [
+const GRID_DATA: Array[Array] = [
 	[{ # GridShape.SQUARE
 		'template': TEMPLATES.square,
 		'offset': Vector2(-0.5, -0.5),
