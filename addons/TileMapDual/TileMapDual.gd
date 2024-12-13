@@ -101,7 +101,9 @@ func _changed_tile_set() -> void:
 		print('adding')
 		self.tile_set.add_terrain_set()
 		self.tile_set.add_terrain(i)
+		self.tile_set.set_terrain_name(i, 0, "Empty")
 		self.tile_set.add_terrain(i)
+		self.tile_set.set_terrain_name(i, 1, "Full")
 	for i in range(start - diff, start, -1):
 		print('deleting')
 		self.tile_set.remove_terrain(i, 1)
