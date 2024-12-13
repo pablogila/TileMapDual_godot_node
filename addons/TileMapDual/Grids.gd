@@ -1,4 +1,3 @@
-@tool
 class_name Grids
 
 # TODO
@@ -78,7 +77,7 @@ const TEMPLATES: Dictionary = {
 			Vector2i(3, 0),
 		],
 	],
-	'triangle_horizontal':  [
+	'triangle_horizontal': [
 		[ # v
 			Vector2i(0, 0),
 			Vector2i(2, 0),
@@ -106,83 +105,122 @@ const TEMPLATES: Dictionary = {
 const GRID_DATA = [
 	{ # GridShape.SQUARE
 		'template': TEMPLATES.square,
-		'dual_to_display': [[
-			TileSet.CELL_NEIGHBOR_RIGHT_SIDE,
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_SIDE,
-		]],
-		'display_to_dual': [[
-			TileSet.CELL_NEIGHBOR_LEFT_SIDE,
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_SIDE,
-		]],
+		'displays': [{
+			'offset': Vector2(-0.5, -0.5),
+			'dual_to_display': [
+				TileSet.CELL_NEIGHBOR_RIGHT_SIDE,
+				TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+				TileSet.CELL_NEIGHBOR_BOTTOM_SIDE,
+			],
+			'display_to_dual': [
+				TileSet.CELL_NEIGHBOR_LEFT_SIDE,
+				TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+				TileSet.CELL_NEIGHBOR_TOP_SIDE,
+			],
+		}],
 	},
 	{ # GridShape.ISO
 		'template': TEMPLATES.square,
-		'offset': [Vector2(0, -0.5)],
-		'dual_to_display': [[
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
-			TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
-		]],
-		'display_to_dual': [[
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE,
-			TileSet.CELL_NEIGHBOR_TOP_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
-		]],
+		'displays': [{
+			'offset': Vector2(0, -0.5),
+			'dual_to_display': [
+				TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
+				TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
+				TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
+			],
+			'display_to_dual': [
+				TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE,
+				TileSet.CELL_NEIGHBOR_TOP_CORNER,
+				TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
+			],
+		}],
 	},
 	{ # GridShape.HALF_OFF_HORI
 		'template': TEMPLATES.triangle_horizontal,
-		'offset': TODO,
-		'dual_to_display': [
-			[TODO],
-			[TODO],
-		],
-		'display_to_dual': [
-			[TODO],
-			[TODO],
+		'displays': [
+			{
+				'offset': TODO,
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			}, {
+				'offset': TODO,
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			},
 		],
 	},
 	{ # GridShape.HALF_OFF_VERT
 		'template': TEMPLATES.triangle_vertical,
-		'offset': TODO,
-		'dual_to_display': [
-			[TODO],
-			[TODO],
-		],
-		'display_to_dual': [
-			[TODO],
-			[TODO],
+		'displays': [
+			{
+				'offset': TODO,
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			}, {
+				'offset': TODO,
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			},
 		],
 	},
 	{ # GridShape.HEX_HORI
 		'template': TEMPLATES.triangle_horizontal,
-		'offset': [
-			TODO, #Vector2(-0.25 / sqrt(3), -0.25),
-			TODO, #Vector2(-0.25 / sqrt(3), -0.75),
-		],
-		'dual_to_display': [
-			[TODO],
-			[TODO],
-		],
-		'display_to_dual': [
-			[TODO],
-			[TODO],
+		'displays': [
+			{
+				'offset': TODO,
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			}, {
+				'offset': TODO,
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			},
 		],
 	},
 	{ # GridShape.HEX_VERT
 		'template': TEMPLATES.triangle_vertical,
-		'offset': [
-			Vector2(-0.25 / sqrt(3), -0.25),
-			Vector2(-0.25 / sqrt(3), -0.75),
-		],
-		'dual_to_display': [
-			[TODO],
-			[TODO],
-		],
-		'display_to_dual': [
-			[TODO],
-			[TODO],
+		'displays': [
+			{
+				'offset': Vector2(-0.25 / sqrt(3), -0.25),
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			}, {
+				'offset': Vector2(-0.25 / sqrt(3), -0.75),
+				'dual_to_display': [
+					TODO,
+				],
+				'display_to_dual': [
+					TODO,
+				],
+			},
 		],
 	},
 ]
