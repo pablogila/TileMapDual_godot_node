@@ -117,10 +117,6 @@ func _changed_tile_set() -> void:
 		# Automaticaly correct the texture size
 		# The user may or may not like this
 		var expected_size = atlas.texture.get_size() / 4
-		print(atlas.texture_region_size)
-		print(expected_size)
-		expected_size.x = min(expected_size.x, atlas.texture_region_size.x)
-		expected_size.y = min(expected_size.y, atlas.texture_region_size.y)
 		atlas.texture_region_size = expected_size
 		print(expected_size)
 		print('set?')
