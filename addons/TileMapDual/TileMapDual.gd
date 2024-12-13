@@ -3,70 +3,6 @@
 class_name TileMapDual
 extends TileMapLayer
 
-enum _direction {
-	TOP,
-	LEFT,
-	BOTTOM,
-	RIGHT,
-	BOTTOM_LEFT,
-	BOTTOM_RIGHT,
-	TOP_LEFT,
-	TOP_RIGHT,
-	}
-
-## Overlapping tiles from the World grid
-## that a tile from the Dual grid has.
-const _NEIGHBORS := {
-	TileSet.TileShape.TILE_SHAPE_SQUARE : {
-		_direction.TOP : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_SIDE,
-		_direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_SIDE,
-		_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_SIDE,
-		_direction.BOTTOM : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_SIDE,
-		_direction.TOP_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-		_direction.TOP_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
-		_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
-		_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER
-		},
-	TileSet.TileShape.TILE_SHAPE_ISOMETRIC : {
-		_direction.TOP : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
-		_direction.LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_SIDE,
-		_direction.RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
-		_direction.BOTTOM : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
-		_direction.TOP_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_CORNER,
-		_direction.TOP_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_CORNER,
-		_direction.BOTTOM_LEFT : TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_CORNER,
-		_direction.BOTTOM_RIGHT : TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_CORNER
-		},
-	TileSet.TileShape.TILE_SHAPE_HEXAGON : {
-		# TODO
-		}
-	}
-
-
-## Dict to assign the Atlas coordinates from the
-## summation over all sketched NEIGHBOURS.
-## Follows the official 2x2 template.
-## Works for isometric as well.
-const _NEIGHBORS_TO_ATLAS: Array[Vector2i] = [
-	Vector2i(0,3),
-	Vector2i(3,3),
-	Vector2i(0,0),
-	Vector2i(3,2),
-	Vector2i(0,2),
-	Vector2i(1,2),
-	Vector2i(2,3),
-	Vector2i(3,1),
-	Vector2i(1,3),
-	Vector2i(0,1),
-	Vector2i(3,0),
-	Vector2i(2,0),
-	Vector2i(1,0),
-	Vector2i(2,2),
-	Vector2i(1,1),
-	Vector2i(2,1),
-	]
-
-
 var _cached_tile_set = null
 var _cached_tileset_data = null
 var _cached_cells := Set.new()
@@ -76,13 +12,19 @@ var _cached_cells := Set.new()
 """
 var display_tilemaps: Array[TileMapLayer] = []
 
-# TODO: use terrains instead of hardcoded tile coordinates
-## Coordinates for the fully-filled tile in the Atlas that
-## will be used to sketch in the World grid.
-## Only this tile will be considered for autotiling.
-var full_tile: Vector2i = Vector2i(2,1)
-## The opposed of full_tile. Used to erase sketched tiles.
-var empty_tile: Vector2i = Vector2i(0,3)
+
+var _shape_data: Dictionary :
+	get:
+		return Grids.SHAPE_DATA[Grids.grid_shape(self.tile_set)]
+
+var _tile_empty: Vector2i :
+	get:
+		return _shape_data.template[0].front()
+
+var _tile_full: Vector2i :
+	get:
+		return _shape_data.template[0].back()
+
 
 var _atlas_id: int
 
@@ -139,14 +81,14 @@ func _changed_tile_set() -> void:
 			var data: TileData
 			# register the empty tile
 			self.tile_set.add_terrain(i)
-			atlas.create_tile(empty_tile)
-			data = atlas.get_tile_data(empty_tile, 0)
+			atlas.create_tile(_tile_empty)
+			data = atlas.get_tile_data(_tile_empty, 0)
 			data.terrain_set = 0
 			data.terrain = 0
 			# register the full tile
 			self.tile_set.add_terrain(i)
-			atlas.create_tile(full_tile)
-			data = atlas.get_tile_data(full_tile, 0)
+			atlas.create_tile(_tile_full)
+			data = atlas.get_tile_data(_tile_full, 0)
 			data.terrain_set = 0
 			data.terrain = 1
 
@@ -170,17 +112,6 @@ func _create_display_tilemap() -> TileMapLayer:
 	add_child(layer)
 	return layer
 """
-
-
-## The displacements for each tile layer based on the tile shape
-const GEOMETRY_DISPLACEMENTS: Dictionary = {
-	TileSet.TileShape.TILE_SHAPE_SQUARE: [Vector2(-0.5, -0.5)],
-	TileSet.TileShape.TILE_SHAPE_ISOMETRIC: [Vector2(0, -0.5)],
-	TileSet.TileShape.TILE_SHAPE_HEXAGON: [
-		Vector2(-0.25 / sqrt(3), -0.25),
-		Vector2(-0.25 / sqrt(3), -0.75),
-		],
-	}
 
 
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
