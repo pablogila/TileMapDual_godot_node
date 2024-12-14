@@ -84,7 +84,6 @@ texture_region_size = Vector2i(48, 64)
 1:3/0/terrains_peering_bit/top_left_corner = 1
 0:3/0 = 0
 0:3/0/terrain_set = 0
-0:3/0/terrain = 0
 0:3/0/terrains_peering_bit/right_corner = 0
 0:3/0/terrains_peering_bit/bottom_right_corner = 0
 0:3/0/terrains_peering_bit/bottom_left_corner = 0

@@ -1,8 +1,7 @@
-class_name DisplayLayers
+class_name Display
 extends Node
 
 
-"""
 const TODO = null
 
 
@@ -14,6 +13,23 @@ enum Topology {
 	HEX_HORI,
 	HEX_VERT,
 }
+
+
+static func get_topology(tile_set: TileSet) -> Topology:
+	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
+	match tile_set.tile_shape:
+		TileSet.TileShape.TILE_SHAPE_SQUARE:
+			return Topology.SQUARE
+		TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
+			return Topology.ISO
+		TileSet.TileShape.TILE_SHAPE_HALF_OFFSET_SQUARE:
+			return Topology.HALF_OFF_HORI if hori else Topology.HALF_OFF_VERT
+		TileSet.TileShape.TILE_SHAPE_HEXAGON:
+			return Topology.HEX_HORI if hori else Topology.HEX_VERT
+		_:
+			return Topology.SQUARE
+
+"""
 
 
 ## How to deal with every available Topology.
@@ -136,20 +152,6 @@ func _init(tile_set: TileSet) -> void:
 	for layer_config in GRID_DATA[_grid_shape(tile_set)]:
 		add_child(DisplayLayer.new(layer_config))
 		TileSetAtlasSource
-
-static func _grid_shape(tile_set: TileSet) -> Topology:
-	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
-	match tile_set.tile_shape:
-		TileSet.TileShape.TILE_SHAPE_SQUARE:
-			return Topology.SQUARE
-		TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
-			return Topology.ISO
-		TileSet.TileShape.TILE_SHAPE_HALF_OFFSET_SQUARE:
-			return Topology.HALF_OFF_HORI if hori else Topology.HALF_OFF_VERT
-		TileSet.TileShape.TILE_SHAPE_HEXAGON:
-			return Topology.HEX_HORI if hori else Topology.HEX_VERT
-		_:
-			return Topology.SQUARE
 
 static func tile_empty(grid_data: Array) -> Vector2i:
 	return layers.front().layout.front()
