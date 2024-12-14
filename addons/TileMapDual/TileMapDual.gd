@@ -3,33 +3,15 @@
 class_name TileMapDual
 extends TileMapLayer
 
-var _cached_cells := Set.new()
-"""
-		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
-		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
-"""
-var display_tilemaps: Array[TileMapLayer] = []
-
-# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
-
-
-var _grid_data: Array :
-	get:
-		return Grids.grid_data(self.tile_set)
-
-var _tile_empty: Vector2i :
-	get:
-		return Grids.tile_empty(_grid_data)
-
-var _tile_full: Vector2i :
-	get:
-		return Grids.tile_full(_grid_data)
-
 
 var _atlas_id: int
 
+var _tile_empty = Vector2i(0, 3)
+var _tile_full = Vector2i(2, 1)
+
 
 func _ready() -> void:
+	#add_child(DisplayLayers.new(null), false, Node.INTERNAL_MODE_FRONT)
 	#_create_display_tilemaps()
 	if Engine.is_editor_hint() and false:
 		set_process(true)
@@ -69,6 +51,14 @@ func _update_full_tileset() -> void:
 var _cached_source_count: int = 0
 func _changed_tile_set() -> void:
 	print('changing')
+	_update_tile_set_atlases()
+
+## Configures all tile set atlases
+# TODO: cache the sources that already exist, as they were likely manually edited by the user
+# TODO: implement AtlasLayout through the actual terrain system?
+#       seems quite complicated since it interferes with itself while drawing,
+#       but it can be fixed by caching the tiles that are strictly empty or strictly full.
+func _update_tile_set_atlases():
 	# Update all tileset sources
 	var source_count := self.tile_set.get_source_count()
 	var terrain_set_count := self.tile_set.get_terrain_sets_count()
@@ -116,6 +106,7 @@ func _changed_tile_set() -> void:
 
 		# Automaticaly correct the texture size
 		# The user may or may not like this
+		# TODO: detect "would you like to automatically create tiles in the atlas"
 		var expected_size = atlas.texture.get_size() / 4
 		atlas.texture_region_size = expected_size
 		print(expected_size)
@@ -143,19 +134,37 @@ func _changed_tile_set() -> void:
 ## Sets up the Dual-Grid illusion.
 ## Called on ready.
 func _create_display_tilemaps() -> void:
-	#_make_self_invisible()
-	_create_display_tilemap()
-	_create_display_tilemap().enabled = false
+	_make_self_invisible()
+	_add_display_tilemap()
 
 func _make_self_invisible() -> void:
 	self.material = CanvasItemMaterial.new()
 	self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
-func _create_display_tilemap() -> TileMapLayer:
+# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
+var display_tilemaps: Array[TileMapLayer] = []
+
+
+func _add_display_tilemap() -> TileMapLayer:
 	var layer = TileMapLayer.new()
 	display_tilemaps.push_back(layer)
 	add_child(layer)
 	return layer
+
+func _remove_display_tilemap() -> TileMapLayer:
+	var layer = display_tilemaps.pop_back()
+	layer.queue_free()
+	return layer
+
+
+var _cached_cells := Set.new()
+"""
+		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
+		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
+"""
+func _update_cells() -> void:
+	#var current_cells = _compute_current_cells()
+	pass
 """
 
 

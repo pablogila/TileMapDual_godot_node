@@ -1,0 +1,75 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://jplxavs0rvdx"]
+
+[ext_resource type="Texture2D" uid="uid://cwh3a3qb6ah4e" path="res://assets/Hex Dual Hori Flat - 64x48tri 64x64hex.png" id="1_y4jyl"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u50im"]
+texture = ExtResource("1_y4jyl")
+texture_region_size = Vector2i(64, 48)
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 0
+1:0/0 = 0
+1:0/0/terrain_set = 0
+1:0/0/terrains_peering_bit/bottom_right_corner = 1
+2:0/0 = 0
+2:0/0/terrain_set = 0
+2:0/0/terrains_peering_bit/bottom_corner = 1
+3:0/0 = 0
+3:0/0/terrain_set = 0
+3:0/0/terrains_peering_bit/bottom_left_corner = 1
+0:1/0 = 0
+0:1/0/terrain_set = 0
+1:1/0 = 0
+1:1/0/terrain_set = 0
+1:1/0/terrains_peering_bit/top_right_corner = 1
+2:1/0 = 0
+2:1/0/terrain_set = 0
+2:1/0/terrains_peering_bit/top_corner = 1
+3:1/0 = 0
+3:1/0/terrain_set = 0
+3:1/0/terrains_peering_bit/top_left_corner = 1
+0:2/0 = 0
+0:2/0/terrain_set = 0
+0:2/0/terrain = 0
+0:2/0/terrains_peering_bit/bottom_corner = 1
+0:2/0/terrains_peering_bit/top_left_corner = 1
+0:2/0/terrains_peering_bit/top_right_corner = 1
+1:2/0 = 0
+1:2/0/terrain_set = 0
+1:2/0/terrains_peering_bit/bottom_left_corner = 1
+1:2/0/terrains_peering_bit/top_corner = 1
+2:2/0 = 0
+2:2/0/terrain_set = 0
+2:2/0/terrains_peering_bit/top_left_corner = 1
+2:2/0/terrains_peering_bit/top_right_corner = 1
+3:2/0 = 0
+3:2/0/terrain_set = 0
+3:2/0/terrains_peering_bit/bottom_right_corner = 1
+3:2/0/terrains_peering_bit/top_corner = 1
+0:3/0 = 0
+0:3/0/terrain_set = 0
+0:3/0/terrains_peering_bit/bottom_right_corner = 1
+0:3/0/terrains_peering_bit/bottom_left_corner = 1
+0:3/0/terrains_peering_bit/top_corner = 1
+1:3/0 = 0
+1:3/0/terrain_set = 0
+1:3/0/terrains_peering_bit/bottom_corner = 1
+1:3/0/terrains_peering_bit/top_left_corner = 1
+2:3/0 = 0
+2:3/0/terrain_set = 0
+2:3/0/terrains_peering_bit/bottom_right_corner = 1
+2:3/0/terrains_peering_bit/bottom_left_corner = 1
+3:3/0 = 0
+3:3/0/terrain_set = 0
+3:3/0/terrains_peering_bit/bottom_corner = 1
+3:3/0/terrains_peering_bit/top_right_corner = 1
+
+[resource]
+tile_shape = 2
+tile_size = Vector2i(64, 48)
+terrain_set_0/mode = 1
+terrain_set_0/terrain_0/name = "Drawable"
+terrain_set_0/terrain_0/color = Color(0.5, 0.34375, 0.25, 1)
+terrain_set_0/terrain_1/name = "Connections"
+terrain_set_0/terrain_1/color = Color(0.5, 0.4375, 0.25, 1)
+sources/0 = SubResource("TileSetAtlasSource_u50im")

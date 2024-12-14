@@ -1,44 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dkl42t25uvsvh"]
+[gd_scene load_steps=3 format=3 uid="uid://dkl42t25uvsvh"]
 
 [ext_resource type="Script" path="res://addons/TileMapDual/TileMapDual.gd" id="1_5l5ra"]
-[ext_resource type="Texture2D" uid="uid://cwh3a3qb6ah4e" path="res://assets/Hex Dual Hori Flat - 64x48tri 64x64hex.png" id="1_e8koc"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_elufu"]
-texture = ExtResource("1_e8koc")
-texture_region_size = Vector2i(64, 48)
-0:0/0 = 0
-0:0/0/terrain_set = 0
-0:0/0/terrain = 0
-1:0/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-2:1/0 = 0
-3:1/0 = 0
-0:2/0 = 0
-0:2/0/terrain_set = 0
-0:2/0/terrain = 1
-1:2/0 = 0
-2:2/0 = 0
-3:2/0 = 0
-0:3/0 = 0
-1:3/0 = 0
-2:3/0 = 0
-3:3/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_hyi4o"]
-tile_shape = 3
-tile_size = Vector2i(64, 64)
-terrain_set_0/mode = 0
-terrain_set_0/terrain_0/name = "Empty"
-terrain_set_0/terrain_0/color = Color(0.5, 0.34375, 0.25, 1)
-terrain_set_0/terrain_1/name = "Full"
-terrain_set_0/terrain_1/color = Color(0.5, 0.4375, 0.25, 1)
-sources/0 = SubResource("TileSetAtlasSource_elufu")
+[ext_resource type="TileSet" uid="uid://7l0cwy2ahtmu" path="res://assets/tileset/iso.tres" id="1_cqeku"]
 
 [node name="Test" type="Node2D"]
 
 [node name="TileMapDual" type="TileMapLayer" parent="."]
-tile_set = SubResource("TileSet_hyi4o")
+tile_set = ExtResource("1_cqeku")
 script = ExtResource("1_5l5ra")
