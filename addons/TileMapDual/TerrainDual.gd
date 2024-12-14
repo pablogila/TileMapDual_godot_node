@@ -1,8 +1,6 @@
 class_name TerrainDual
 extends Resource
 
-@export var layout = []
-
 enum Layout {
 	SQUARE,
 	ISOMETRIC,
@@ -134,12 +132,21 @@ const TOPOLOGY_LAYOUTS = [
 ]
 
 
+## The exact type is {[TileSet.CellNeighbor]: {[int]: Vector2i}}
+@export var terrain: Dictionary = {}
+func _init(atlas: TileSetAtlasSource) -> void:
+	# TODO: read terrain from atlas
+	pass
+
+
 ## Would you like to automatically create tiles in the atlas?
 static func create_tiles(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 	print('generating tiles')
+	
+	# Set size
 	atlas.texture_region_size = atlas.texture.get_size() / 4
-	atlas.clear_tiles_outside_texture()
 
+	# Create new terrain set
 	var terrain_set = tile_set.get_terrain_sets_count()
 	tile_set.add_terrain_set()
 	tile_set.set_terrain_set_mode(terrain_set, TileSet.TERRAIN_MODE_MATCH_CORNERS)
@@ -148,6 +155,8 @@ static func create_tiles(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 	tile_set.add_terrain(terrain_set)
 	tile_set.set_terrain_name(terrain_set, 1, "Foreground")
 
+	# Create tiles with terrain set
+	atlas.clear_tiles_outside_texture()
 	for y in 4:
 		for x in 4:
 			var tile := Vector2i(x, y)
@@ -156,23 +165,28 @@ static func create_tiles(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 			var data = atlas.get_tile_data(tile, 0)
 			data.terrain_set = terrain_set
 
+	# Determine layout
 	var topology := Display.get_topology(tile_set)
 	var layout := TERRAINS[TOPOLOGY_LAYOUTS[topology]]
 	print(layout)
 
-	var is_first := true
+	# Set terrains
+	var sequence: Array
+	# Get the first filter in the layout
 	for filter in layout:
-		var sequence: Array = layout[filter]
-		if is_first:
-			is_first = false
-			var tile_bg = sequence.front()
-			atlas.get_tile_data(tile_bg, 0).terrain = 0
-			var tile_fg = sequence.back()
-			atlas.get_tile_data(tile_fg, 0).terrain = 1
-		var len := sequence.size()
-		for i in len:
-			var tile = sequence[i]
-			var data = atlas.get_tile_data(tile, 0)
+		sequence = layout[filter]
+		break
+	var tile_bg = sequence.front()
+	atlas.get_tile_data(tile_bg, 0).terrain = 0
+	var tile_fg = sequence.back()
+	atlas.get_tile_data(tile_fg, 0).terrain = 1
+
+	# Set peering bits
+	for filter in layout:
+		sequence = layout[filter]
+		for i in sequence.size():
+			var tile: Vector2i = sequence[i]
+			var data := atlas.get_tile_data(tile, 0)
 			for neighbor in filter:
 				data.set_terrain_peering_bit(neighbor, i & 1)
 				i >>= 1

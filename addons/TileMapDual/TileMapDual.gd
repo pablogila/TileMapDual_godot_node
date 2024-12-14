@@ -53,13 +53,10 @@ func _changed_tile_set() -> void:
 	print('change detected')
 	_update_tile_set_atlases()
 
+
 ## Configures all tile set atlases
-# TODO: cache the sources that already exist, as they were likely manually edited by the user
-# TODO: implement AtlasLayout through the actual terrain system?
-#       seems quite complicated since it interferes with itself while drawing,
-#       but it can be fixed by caching the tiles that are strictly empty or strictly full.
+# TODO: detect automatic tile creation
 func _update_tile_set_atlases():
-	
 	# Update all tileset sources
 	var source_count := tile_set.get_source_count()
 	var terrain_set_count := tile_set.get_terrain_sets_count()
