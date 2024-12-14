@@ -5,64 +5,60 @@ extends Resource
 
 enum Layout {
 	SQUARE,
-	TRIANGLE_VERTICAL,
+	ISOMETRIC,
 	TRIANGLE_HORIZONTAL,
+	TRIANGLE_VERTICAL,
 }
 
 const TERRAINS: Array[Dictionary] = [
 	{ # Layout.SQUARE
 		[
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
 			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
 			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
 		]: [
 			Vector2i(0, 3),
-			Vector2i(1, 3),
-			Vector2i(0, 0),
-			Vector2i(3, 0),
 			Vector2i(3, 3),
-			Vector2i(0, 1),
+			Vector2i(0, 0),
 			Vector2i(3, 2),
-			Vector2i(2, 0),
 			Vector2i(0, 2),
-			Vector2i(1, 0),
-			Vector2i(2, 3),
-			Vector2i(1, 1),
 			Vector2i(1, 2),
-			Vector2i(2, 2),
+			Vector2i(2, 3),
 			Vector2i(3, 1),
+			Vector2i(1, 3),
+			Vector2i(0, 1),
+			Vector2i(3, 0),
+			Vector2i(2, 0),
+			Vector2i(1, 0),
+			Vector2i(2, 2),
+			Vector2i(1, 1),
 			Vector2i(2, 1),
 		],
 	},
-	{ # Layout.TRIANGLE_VERTICAL
+	{ # Layout.ISOMETRIC
 		[
+			TileSet.CELL_NEIGHBOR_TOP_CORNER,
 			TileSet.CELL_NEIGHBOR_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-		]: [
-			Vector2i(0, 0),
-			Vector2i(0, 2),
-			Vector2i(1, 1),
-			Vector2i(3, 3),
-			Vector2i(1, 3),
-			Vector2i(3, 1),
-			Vector2i(2, 2),
-			Vector2i(2, 0),
-		],
-		[
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
 			TileSet.CELL_NEIGHBOR_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
 		]: [
-			Vector2i(1, 0),
-			Vector2i(0, 1),
+			Vector2i(0, 3),
+			Vector2i(3, 3),
+			Vector2i(0, 0),
+			Vector2i(3, 2),
+			Vector2i(0, 2),
 			Vector2i(1, 2),
 			Vector2i(2, 3),
-			Vector2i(0, 3),
-			Vector2i(3, 2),
-			Vector2i(2, 1),
+			Vector2i(3, 1),
+			Vector2i(1, 3),
+			Vector2i(0, 1),
 			Vector2i(3, 0),
+			Vector2i(2, 0),
+			Vector2i(1, 0),
+			Vector2i(2, 2),
+			Vector2i(1, 1),
+			Vector2i(2, 1),
 		],
 	},
 	{ # Layout.TRIANGLE_HORIZONTAL
@@ -73,26 +69,56 @@ const TERRAINS: Array[Dictionary] = [
 		]: [
 			Vector2i(0, 0),
 			Vector2i(2, 0),
-			Vector2i(1, 1),
-			Vector2i(3, 3),
 			Vector2i(3, 1),
 			Vector2i(1, 3),
+			Vector2i(1, 1),
+			Vector2i(3, 3),
 			Vector2i(2, 2),
 			Vector2i(0, 2),
 		],
 		[
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
 			TileSet.CELL_NEIGHBOR_TOP_CORNER,
-		]: [ # ^
+			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+		]: [
 			Vector2i(0, 1),
-			Vector2i(1, 0),
 			Vector2i(2, 1),
-			Vector2i(3, 2),
 			Vector2i(3, 0),
+			Vector2i(1, 2),
+			Vector2i(1, 0),
+			Vector2i(3, 2),
 			Vector2i(2, 3),
+			Vector2i(0, 3),
+		],
+	},
+	{ # Layout.TRIANGLE_VERTICAL
+		[
+			TileSet.CELL_NEIGHBOR_RIGHT_CORNER,
+			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+		]: [
+			Vector2i(0, 0),
+			Vector2i(0, 2),
+			Vector2i(1, 3),
+			Vector2i(3, 1),
+			Vector2i(1, 1),
+			Vector2i(3, 3),
+			Vector2i(2, 2),
+			Vector2i(2, 0),
+		],
+		[
+			TileSet.CELL_NEIGHBOR_LEFT_CORNER,
+			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+		]: [
+			Vector2i(1, 0),
 			Vector2i(1, 2),
 			Vector2i(0, 3),
+			Vector2i(2, 1),
+			Vector2i(0, 1),
+			Vector2i(2, 3),
+			Vector2i(3, 2),
+			Vector2i(3, 0),
 		],
 	},
 ]
@@ -100,19 +126,23 @@ const TERRAINS: Array[Dictionary] = [
 
 const TOPOLOGY_LAYOUTS = [
 	Layout.SQUARE, # Display.Topology.SQUARE
-	Layout.SQUARE, # Display.Topology.ISO
+	Layout.ISOMETRIC, # Display.Topology.ISO
 	Layout.TRIANGLE_HORIZONTAL, # Display.Topology.HALF_OFF_HORI
 	Layout.TRIANGLE_VERTICAL, # Display.Topology.HALF_OFF_VERT
 	Layout.TRIANGLE_HORIZONTAL, # Display.Topology.HEX_HORI
 	Layout.TRIANGLE_VERTICAL, # Display.Topology.HEX_VERT
 ]
 
+
 ## Would you like to automatically create tiles in the atlas?
 static func create_tiles(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
+	print('generating tiles')
 	atlas.texture_region_size = atlas.texture.get_size() / 4
+	atlas.clear_tiles_outside_texture()
 
 	var terrain_set = tile_set.get_terrain_sets_count()
 	tile_set.add_terrain_set()
+	tile_set.set_terrain_set_mode(terrain_set, TileSet.TERRAIN_MODE_MATCH_CORNERS)
 	tile_set.add_terrain(terrain_set)
 	tile_set.set_terrain_name(terrain_set, 0, "Background")
 	tile_set.add_terrain(terrain_set)
@@ -128,10 +158,11 @@ static func create_tiles(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 
 	var topology := Display.get_topology(tile_set)
 	var layout := TERRAINS[TOPOLOGY_LAYOUTS[topology]]
+	print(layout)
 
 	var is_first := true
 	for filter in layout:
-		var sequence: Array[Vector2i] = layout[filter]
+		var sequence: Array = layout[filter]
 		if is_first:
 			is_first = false
 			var tile_bg = sequence.front()

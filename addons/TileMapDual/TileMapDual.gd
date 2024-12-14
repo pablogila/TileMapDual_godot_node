@@ -17,7 +17,7 @@ func _ready() -> void:
 		set_process(true)
 	else: # Run in-game using signals for better performance
 		set_process(false)
-		self.changed.connect(_changed, 1)
+		changed.connect(_changed, 1)
 
 
 func _process(_delta) -> void: # Only used inside the editor
@@ -43,14 +43,14 @@ func _update_full_tileset() -> void:
 		_cached_tile_set.changed.disconnect(_changed_tile_set)
 		#_update_full_tilemap()
 	if tile_set != null:
-		self.tile_set.changed.connect(_changed_tile_set, 1)
-		self.tile_set.emit_changed()
+		tile_set.changed.connect(_changed_tile_set, 1)
+		tile_set.emit_changed()
 	_cached_tile_set = tile_set
 
 
 var _cached_source_count: int = 0
 func _changed_tile_set() -> void:
-	print('changing')
+	print('change detected')
 	_update_tile_set_atlases()
 
 ## Configures all tile set atlases
@@ -59,19 +59,21 @@ func _changed_tile_set() -> void:
 #       seems quite complicated since it interferes with itself while drawing,
 #       but it can be fixed by caching the tiles that are strictly empty or strictly full.
 func _update_tile_set_atlases():
+	
 	# Update all tileset sources
-	var source_count := self.tile_set.get_source_count()
-	var terrain_set_count := self.tile_set.get_terrain_sets_count()
+	var source_count := tile_set.get_source_count()
+	var terrain_set_count := tile_set.get_terrain_sets_count()
 	# Only if an asset was added or removed
 	if _cached_source_count == source_count:
 		return
 	_cached_source_count = source_count
-
+	
+	print('actually changing')
 	# Get all the atlases in the TileSet
 	var atlases: Array[TileSetAtlasSource] = []
 	for i in source_count:
-		var sid: int = self.tile_set.get_source_id(i)
-		var source: TileSetSource = self.tile_set.get_source(sid)
+		var sid: int = tile_set.get_source_id(i)
+		var source: TileSetSource = tile_set.get_source(sid)
 		# We only support atlases
 		if source is not TileSetAtlasSource:
 			push_warning(
@@ -83,28 +85,11 @@ func _update_tile_set_atlases():
 		var atlas: TileSetAtlasSource = source
 		atlases.push_back(atlas)
 
-	# Even out the number of atlases and terrain sets
-	var diff := atlases.size() - terrain_set_count
-	var start = atlases.size() - 1
-	for i in range(start, start + diff, +1):
-		print('adding')
-		self.tile_set.add_terrain_set()
-		self.tile_set.add_terrain(i)
-		self.tile_set.set_terrain_name(i, 0, "Empty")
-		self.tile_set.add_terrain(i)
-		self.tile_set.set_terrain_name(i, 1, "Full")
-	for i in range(start - diff, start, -1):
-		print('deleting')
-		self.tile_set.remove_terrain(i, 1)
-		self.tile_set.remove_terrain(i, 0)
-		self.tile_set.remove_terrain_set(i)
-
 	# Update all atlases and configure their terrains
 	var data: TileData
 	for i in atlases.size():
 		var atlas: TileSetAtlasSource = atlases[i]
-
-		# MOVED TO: TerrainDual.gd
+		TerrainDual.create_tiles(tile_set, atlas)
 
 
 ## Sets up the Dual-Grid illusion.
@@ -114,8 +99,8 @@ func _create_display_tilemaps() -> void:
 	_add_display_tilemap()
 
 func _make_self_invisible() -> void:
-	self.material = CanvasItemMaterial.new()
-	self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+	material = CanvasItemMaterial.new()
+	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
 var display_tilemaps: Array[TileMapLayer] = []
@@ -141,9 +126,8 @@ var _cached_cells := Set.new()
 func _update_cells() -> void:
 	#var current_cells = _compute_current_cells()
 	pass
+
 """
-
-
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
 func _update_geometry() -> void:
 	var size := Vector2(self.tile_set.tile_size)
