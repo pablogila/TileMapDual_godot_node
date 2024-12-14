@@ -1,13 +1,13 @@
 [gd_scene load_steps=4 format=3 uid="uid://dfwspboskmgnn"]
 
-[ext_resource type="Script" path="res://addons/TileMapDual/Topology.gd" id="1_n18qc"]
-[ext_resource type="TileSet" uid="uid://7l0cwy2ahtmu" path="res://assets/tileset/iso.tres" id="2_a5mbj"]
-[ext_resource type="Script" path="res://addons/TileMapDual/DisplayLayer.gd" id="3_q3qi5"]
+[ext_resource type="Script" path="res://addons/TileMapDual/Display.gd" id="1_5ecu7"]
+[ext_resource type="Script" path="res://addons/TileMapDual/DisplayLayer.gd" id="1_qar6p"]
+[ext_resource type="TileSet" uid="uid://7l0cwy2ahtmu" path="res://assets/tileset/iso.tres" id="2_jemy6"]
 
 [node name="Square" type="Node"]
-script = ExtResource("1_n18qc")
+script = ExtResource("1_5ecu7")
 
 [node name="DisplayLayer" type="TileMapLayer" parent="."]
 position = Vector2(-0.5, -0.5)
-tile_set = ExtResource("2_a5mbj")
-script = ExtResource("3_q3qi5")
+tile_set = ExtResource("2_jemy6")
+script = ExtResource("1_qar6p")

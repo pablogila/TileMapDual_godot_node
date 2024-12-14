@@ -14,6 +14,10 @@ config/name="TileMapDual"
 run/main_scene="res://examples/test.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/TileMapDual/plugin.cfg")
+
 [input]
 
 right_click={

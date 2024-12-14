@@ -104,31 +104,7 @@ func _update_tile_set_atlases():
 	for i in atlases.size():
 		var atlas: TileSetAtlasSource = atlases[i]
 
-		# Automaticaly correct the texture size
-		# The user may or may not like this
-		# TODO: detect "would you like to automatically create tiles in the atlas"
-		var expected_size = atlas.texture.get_size() / 4
-		atlas.texture_region_size = expected_size
-		print(expected_size)
-		print('set?')
-
-		# Reset the whole grid
-		print('resetting')
-		for y in 4:
-			for x in 4:
-				var tile := Vector2i(x, y)
-				if not atlas.has_tile(tile):
-					atlas.create_tile(tile)
-				data = atlas.get_tile_data(tile, 0)
-				data.terrain_set = -1
-		# Register the Empty tile as a Terrain
-		data = atlas.get_tile_data(_tile_empty, 0)
-		data.terrain_set = i
-		data.terrain = 0
-		# Register the Full tile as a Terrain
-		data = atlas.get_tile_data(_tile_full, 0)
-		data.terrain_set = i
-		data.terrain = 1
+		# MOVED TO: TerrainDual.gd
 
 
 ## Sets up the Dual-Grid illusion.
