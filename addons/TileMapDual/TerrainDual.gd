@@ -174,6 +174,7 @@ const NEIGHBORS: Array[TileSet.CellNeighbor] = [
 ## The exact type is {[int; 8]: Vector2i}
 @export var terrain: Dictionary = {}
 func _init(atlas: TileSetAtlasSource) -> void:
+	# TODO: do we need to verify validity?
 	var size = atlas.get_atlas_grid_size()
 	for y in size.y:
 		for x in size.x:
