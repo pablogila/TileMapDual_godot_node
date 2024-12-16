@@ -5,7 +5,7 @@ extends Node
 const TODO = null
 
 
-enum Topology {
+enum Grid {
 	SQUARE,
 	ISO,
 	HALF_OFF_HORI,
@@ -15,56 +15,59 @@ enum Topology {
 }
 
 
-static func get_topology(tile_set: TileSet) -> Topology:
+static func tile_set_grid(tile_set: TileSet) -> Grid:
 	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
 	match tile_set.tile_shape:
 		TileSet.TileShape.TILE_SHAPE_SQUARE:
-			return Topology.SQUARE
+			return Grid.SQUARE
 		TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
-			return Topology.ISO
+			return Grid.ISO
 		TileSet.TileShape.TILE_SHAPE_HALF_OFFSET_SQUARE:
-			return Topology.HALF_OFF_HORI if hori else Topology.HALF_OFF_VERT
+			return Grid.HALF_OFF_HORI if hori else Grid.HALF_OFF_VERT
 		TileSet.TileShape.TILE_SHAPE_HEXAGON:
-			return Topology.HEX_HORI if hori else Topology.HEX_VERT
+			return Grid.HEX_HORI if hori else Grid.HEX_VERT
 		_:
-			return Topology.SQUARE
-
-"""
+			return Grid.SQUARE
 
 
-## How to deal with every available Topology.
-const TOPOLOGIES: Array[Array] = [
-	[{ # Topology.SQUARE
-		'layout': AtlasLayout.LAYOUTS.square,
-		'offset': Vector2(-0.5, -0.5),
-		'dual_to_display': [
-			TileSet.CELL_NEIGHBOR_RIGHT_SIDE,
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_SIDE,
-		],
-		'display_to_dual': [
-			TileSet.CELL_NEIGHBOR_LEFT_SIDE,
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_SIDE,
-		],
-	}],
-	[{ # Topology.ISO
-		'layout': AtlasLayout.LAYOUTS.square,
-		'offset': Vector2(0, -0.5),
-		'dual_to_display': [
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE,
-			TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE,
-		],
-		'display_to_dual': [
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE,
-			TileSet.CELL_NEIGHBOR_TOP_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE,
-		],
-	}],
-	[ # Topology.HALF_OFF_HORI
-		{
-			'layout': AtlasLayout.LAYOUTS.triangle_horizontal_down,
+## How to deal with every available Grid.
+const GRIDS: Dictionary = {
+	Grid.SQUARE: [
+		{ # []
+			'offset': Vector2(-0.5, -0.5),
+			'dual_to_display': [
+				[],
+				[TileSet.CELL_NEIGHBOR_RIGHT_SIDE],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_SIDE],
+			],
+			'display_to_dual': [
+				[],
+				[TileSet.CELL_NEIGHBOR_LEFT_SIDE],
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER],
+				[TileSet.CELL_NEIGHBOR_TOP_SIDE],
+			],
+		}
+	],
+	Grid.ISO: [
+		{ # <>
+			'offset': Vector2(0, -0.5),
+			'dual_to_display': [
+				[], # TOP
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE], # RIGHT
+				[TileSet.CELL_NEIGHBOR_BOTTOM_CORNER], # BOTTOM
+				[TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE], # LEFT
+			],
+			'display_to_dual': [
+				[TileSet.CELL_NEIGHBOR_TOP_CORNER], # TOP
+				[TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE], # RIGHT
+				[], # BOTTOM
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE], # LEFT
+			],
+		}
+	],
+	Grid.HALF_OFF_HORI: [
+		{ # v
 			'offset': TODO,
 			'dual_to_display': [
 				TODO,
@@ -72,8 +75,8 @@ const TOPOLOGIES: Array[Array] = [
 			'display_to_dual': [
 				TODO,
 			],
-		}, {
-			'layout': AtlasLayout.LAYOUTS.triangle_horizontal_up,
+		},
+		{ # ^
 			'offset': TODO,
 			'dual_to_display': [
 				TODO,
@@ -83,9 +86,8 @@ const TOPOLOGIES: Array[Array] = [
 			],
 		},
 	],
-	[ # Topology.HALF_OFF_VERT
-		{
-			'layout': AtlasLayout.LAYOUTS.triangle_vertical_right,
+	Grid.HALF_OFF_VERT: [
+		{ # >
 			'offset': TODO,
 			'dual_to_display': [
 				TODO,
@@ -93,8 +95,8 @@ const TOPOLOGIES: Array[Array] = [
 			'display_to_dual': [
 				TODO,
 			],
-		}, {
-			'layout': AtlasLayout.LAYOUTS.triangle_vertical_left,
+		},
+		{ # <
 			'offset': TODO,
 			'dual_to_display': [
 				TODO,
@@ -104,9 +106,8 @@ const TOPOLOGIES: Array[Array] = [
 			],
 		},
 	],
-	[ # Topology.HEX_HORI
+	Grid.HEX_HORI: [
 		{
-			'layout': AtlasLayout.LAYOUTS.triangle_horizontal_down,
 			'offset': TODO,
 			'dual_to_display': [
 				TODO,
@@ -115,7 +116,6 @@ const TOPOLOGIES: Array[Array] = [
 				TODO,
 			],
 		}, {
-			'layout': AtlasLayout.LAYOUTS.triangle_horizontal_up,
 			'offset': TODO,
 			'dual_to_display': [
 				TODO,
@@ -125,9 +125,8 @@ const TOPOLOGIES: Array[Array] = [
 			],
 		},
 	],
-	[ # Topology.HEX_VERT
+	Grid.HEX_VERT: [
 		{
-			'layout': AtlasLayout.LAYOUTS.triangle_vertical_right,
 			'offset': Vector2(-0.25 / sqrt(3), -0.25),
 			'dual_to_display': [
 				TODO,
@@ -136,7 +135,6 @@ const TOPOLOGIES: Array[Array] = [
 				TODO,
 			],
 		}, {
-			'layout': AtlasLayout.LAYOUTS.triangle_vertical_left,
 			'offset': Vector2(-0.25 / sqrt(3), -0.75),
 			'dual_to_display': [
 				TODO,
@@ -146,7 +144,8 @@ const TOPOLOGIES: Array[Array] = [
 			],
 		},
 	],
-]
+}
+"""
 
 func _init(tile_set: TileSet) -> void:
 	for layer_config in GRID_DATA[_grid_shape(tile_set)]:

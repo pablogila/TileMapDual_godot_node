@@ -86,8 +86,11 @@ func _update_tile_set_atlases():
 	var data: TileData
 	for i in atlases.size():
 		var atlas: TileSetAtlasSource = atlases[i]
-		TerrainDual.create_tiles(tile_set, atlas)
-
+		# TODO: further testing
+		TerrainDual.write_default_preset(tile_set, atlas)
+		var dual := TerrainDual.new(atlas)
+		for key in dual.terrain:
+			print(key, dual.terrain[key])
 
 ## Sets up the Dual-Grid illusion.
 ## Called on ready.
