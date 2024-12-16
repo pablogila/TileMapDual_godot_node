@@ -159,19 +159,29 @@ const PRESETS := {
 }
 
 
-## The exact type is {[TileSet.CellNeighbor]: {[int]: Vector2i}}
+const NEIGHBORS: Array[TileSet.CellNeighbor] = [
+	TileSet.CELL_NEIGHBOR_RIGHT_CORNER,
+	TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+	TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
+	TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+	TileSet.CELL_NEIGHBOR_LEFT_CORNER,
+	TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+	TileSet.CELL_NEIGHBOR_TOP_CORNER,
+	TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+]
+
+
+## The exact type is {[int; 8]: Vector2i}
 @export var terrain: Dictionary = {}
 func _init(atlas: TileSetAtlasSource) -> void:
-	#var size = atlas.get_atlas_grid_size()
-	#for y in size.y:
-		#for x in size.x:
-			#var tile := Vector2i(x, y)
-			#if not atlas.has_tile(tile):
-				#continue
-			#var data = atlas.get_tile_data(tile_bg, 0)
-			#for neighbor in filter:
-				#data.get_terrain_peering_bit(neighbor, i & 1)
-	pass
+	var size = atlas.get_atlas_grid_size()
+	for y in size.y:
+		for x in size.x:
+			var tile := Vector2i(x, y)
+			if not atlas.has_tile(tile):
+				continue
+			var data := atlas.get_tile_data(tile, 0)
+			terrain[NEIGHBORS.map(data.get_terrain_peering_bit)] = tile
 
 
 ## Would you like to automatically create tiles in the atlas?
