@@ -8,77 +8,100 @@ enum Layout {
 	TRIANGLE_VERTICAL,
 }
 
-const TERRAINS: Array[Dictionary] = [
-	{ # Layout.SQUARE
-		[
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-		]: [
-			Vector2i(0, 3),
-			Vector2i(3, 3),
-			Vector2i(0, 0),
-			Vector2i(3, 2),
-			Vector2i(0, 2),
-			Vector2i(1, 2),
-			Vector2i(2, 3),
-			Vector2i(3, 1),
-			Vector2i(1, 3),
-			Vector2i(0, 1),
-			Vector2i(3, 0),
-			Vector2i(2, 0),
-			Vector2i(1, 0),
-			Vector2i(2, 2),
-			Vector2i(1, 1),
-			Vector2i(2, 1),
-		],
-	},
-	{ # Layout.ISOMETRIC
+const FILTERS: Array[Array] = [
+	[ # Layout.SQUARE
+		TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+		TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+		TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+		TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+	],
+	[ # Layout.ISOMETRIC
 		[
 			TileSet.CELL_NEIGHBOR_TOP_CORNER,
 			TileSet.CELL_NEIGHBOR_RIGHT_CORNER,
 			TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
 			TileSet.CELL_NEIGHBOR_LEFT_CORNER,
-		]: [
-			Vector2i(0, 3),
-			Vector2i(3, 3),
-			Vector2i(0, 0),
-			Vector2i(3, 2),
-			Vector2i(0, 2),
-			Vector2i(1, 2),
-			Vector2i(2, 3),
-			Vector2i(3, 1),
-			Vector2i(1, 3),
-			Vector2i(0, 1),
-			Vector2i(3, 0),
-			Vector2i(2, 0),
-			Vector2i(1, 0),
-			Vector2i(2, 2),
-			Vector2i(1, 1),
-			Vector2i(2, 1),
-		],
-	},
-	{ # Layout.TRIANGLE_HORIZONTAL
+		]
+	],
+	[ # Layout.TRIANGLE_HORIZONTAL
 		[
 			TileSet.CELL_NEIGHBOR_BOTTOM_CORNER,
 			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
 			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
-		]: [
-			Vector2i(0, 0),
-			Vector2i(2, 0),
-			Vector2i(3, 1),
-			Vector2i(1, 3),
-			Vector2i(1, 1),
-			Vector2i(3, 3),
-			Vector2i(2, 2),
-			Vector2i(0, 2),
 		],
 		[
 			TileSet.CELL_NEIGHBOR_TOP_CORNER,
 			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
 			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-		]: [
+		],
+	],
+	[ # Layout.TRIANGLE_VERTICAL
+		[
+			TileSet.CELL_NEIGHBOR_RIGHT_CORNER,
+			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+		],
+		[
+			TileSet.CELL_NEIGHBOR_LEFT_CORNER,
+			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+		],
+	],
+]
+
+const PRESETS: Array[Array] = [
+	[ # Layout.SQUARE
+		[
+			Vector2i(0, 3),
+			Vector2i(3, 3),
+			Vector2i(0, 0),
+			Vector2i(3, 2),
+			Vector2i(0, 2),
+			Vector2i(1, 2),
+			Vector2i(2, 3),
+			Vector2i(3, 1),
+			Vector2i(1, 3),
+			Vector2i(0, 1),
+			Vector2i(3, 0),
+			Vector2i(2, 0),
+			Vector2i(1, 0),
+			Vector2i(2, 2),
+			Vector2i(1, 1),
+			Vector2i(2, 1),
+		],
+	],
+	[ # Layout.ISOMETRIC
+		[
+			Vector2i(0, 3),
+			Vector2i(3, 3),
+			Vector2i(0, 0),
+			Vector2i(3, 2),
+			Vector2i(0, 2),
+			Vector2i(1, 2),
+			Vector2i(2, 3),
+			Vector2i(3, 1),
+			Vector2i(1, 3),
+			Vector2i(0, 1),
+			Vector2i(3, 0),
+			Vector2i(2, 0),
+			Vector2i(1, 0),
+			Vector2i(2, 2),
+			Vector2i(1, 1),
+			Vector2i(2, 1),
+		],
+	],
+	[ # Layout.TRIANGLE_HORIZONTAL
+		[ # v
+			Vector2i(0, 0),
+			Vector2i(2, 0),
+			Vector2i(3, 1),
+			Vector2i(1, 3),
+			Vector2i(1, 1),
+			Vector2i(3, 3),
+			Vector2i(2, 2),
+			Vector2i(0, 2),
+		],
+		[ # ^
 			Vector2i(0, 1),
 			Vector2i(2, 1),
 			Vector2i(3, 0),
@@ -88,13 +111,9 @@ const TERRAINS: Array[Dictionary] = [
 			Vector2i(2, 3),
 			Vector2i(0, 3),
 		],
-	},
-	{ # Layout.TRIANGLE_VERTICAL
-		[
-			TileSet.CELL_NEIGHBOR_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
-		]: [
+	],
+	[ # Layout.TRIANGLE_VERTICAL
+		[ # >
 			Vector2i(0, 0),
 			Vector2i(0, 2),
 			Vector2i(1, 3),
@@ -104,11 +123,7 @@ const TERRAINS: Array[Dictionary] = [
 			Vector2i(2, 2),
 			Vector2i(2, 0),
 		],
-		[
-			TileSet.CELL_NEIGHBOR_LEFT_CORNER,
-			TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
-			TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
-		]: [
+		[ # <
 			Vector2i(1, 0),
 			Vector2i(1, 2),
 			Vector2i(0, 3),
@@ -118,7 +133,7 @@ const TERRAINS: Array[Dictionary] = [
 			Vector2i(3, 2),
 			Vector2i(3, 0),
 		],
-	},
+	],
 ]
 
 
@@ -167,23 +182,22 @@ static func create_tiles(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 
 	# Determine layout
 	var topology := Display.get_topology(tile_set)
-	var layout := TERRAINS[TOPOLOGY_LAYOUTS[topology]]
-	print(layout)
+	var filters := FILTERS[TOPOLOGY_LAYOUTS[topology]]
+	var preset := PRESETS[TOPOLOGY_LAYOUTS[topology]]
+	print(filters)
+	print(preset)
 
 	# Set terrains
-	var sequence: Array
-	# Get the first filter in the layout
-	for filter in layout:
-		sequence = layout[filter]
-		break
-	var tile_bg = sequence.front()
+	var first_sequence := preset.front()
+	var tile_bg = first_sequence.front()
 	atlas.get_tile_data(tile_bg, 0).terrain = 0
-	var tile_fg = sequence.back()
+	var tile_fg = first_sequence.back()
 	atlas.get_tile_data(tile_fg, 0).terrain = 1
 
 	# Set peering bits
-	for filter in layout:
-		sequence = layout[filter]
+	for j in filters.size():
+		var filter = filters[j]
+		var sequence: Array = preset[j]
 		for i in sequence.size():
 			var tile: Vector2i = sequence[i]
 			var data := atlas.get_tile_data(tile, 0)
