@@ -41,6 +41,7 @@ signal tileset_reshaped(new_grid: Display.Grid)
 signal tileset_deleted
 signal tileset_added
 signal atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource)
+signal terrains_changed(tile_set: TileSet)
 signal world_tiles_changed(changed: Array[Vector2i])
 
 var _cached_tile_set = null

@@ -171,14 +171,15 @@ const NEIGHBORS: Array[TileSet.CellNeighbor] = [
 ]
 
 
-var terrain: Dictionary
+var terrain_rules: Dictionary
+var terrains: Dictionary
 var filter: Array
 func _init(tile_set: TileSet, filter: Array) -> void:
 	read_tile_set(tile_set, filter)
 
 
 func read_tile_set(tile_set: TileSet, filter: Array) -> void:
-	self.terrain = {}
+	self.terrain_rules = {}
 	self.filter = filter
 	for i in tile_set.get_source_count():
 		var sid := tile_set.get_source_id(i)
@@ -198,21 +199,31 @@ func read_atlas(atlas: TileSetAtlasSource, sid: int) -> void:
 			if not atlas.has_tile(tile):
 				continue
 			var data := atlas.get_tile_data(tile, 0)
+			var mapping := { 'sid': sid, 'tile': tile }
+			var terrain := data.terrain
+			if terrain != -1:
+				if terrain in terrains:
+					var prev_mapping = terrains[terrain]
+					push_warning(
+						"2 different tiles in this TileSet have the same Terrain type:\n" +
+						"1st: %s\n" % [prev_mapping] +
+						"2nd: %s" % [mapping]
+					)
+				terrains[data.terrain] = tile
 			var condition := filter.map(data.get_terrain_peering_bit)
 			# Skip tiles with no peering bits in this filter
 			# They might be used for a different layer,
 			# or may have no peering bits at all, which will just be ignored by all layers
 			if condition.all(func(neighbor): neighbor == -1):
 				continue
-			var mapping := { 'sid': sid, 'tile': tile }
-			if condition in terrain:
-				var prev_mapping = terrain[condition]
+			if condition in terrain_rules:
+				var prev_mapping = terrain_rules[condition]
 				push_warning(
-					"2 different tiles in this TileSet have the same Terrain configuration:\n" +
+					"2 different tiles in this TileSet have the same Terrain neighborhood:\n" +
 					"1st: %s\n" % [prev_mapping] +
 					"2nd: %s" % [mapping]
 				)
-			terrain[condition] = mapping
+			terrain_rules[condition] = mapping
 
 
 ## Would you like to automatically create tiles in the atlas?
