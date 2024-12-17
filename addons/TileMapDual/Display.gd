@@ -5,15 +5,30 @@ extends Node
 const TODO = null
 
 
+var tile_set: TileSet
+var grid: Grid
 func _init(tile_set: TileSet) -> void:
 	print('initializing Display...')
-	for layer_config in GRIDS[tile_set_grid(tile_set)]:
+	self.tile_set = tile_set
+	grid = tileset_grid(tile_set)
+	tile_set.changed.connect(_changed_tile_set)
+	
+	for layer_config in GRIDS[grid]:
+		print('layer_config: %s' % layer_config)
 		add_child(DisplayLayer.new(tile_set, layer_config))
+
+
+## You should replace yourself now
+func _changed_tile_set():
+	if tileset_grid(tile_set) != grid:
+		print('replacing self')
+		self.get_parent().add_child(new(tile_set))
+		queue_free()
 
 
 ## Returns what kind of grid a TileSet is.
 ## Defaults to SQUARE.
-static func tile_set_grid(tile_set: TileSet) -> Grid:
+static func tileset_grid(tile_set: TileSet) -> Grid:
 	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
 	match tile_set.tile_shape:
 		TileSet.TileShape.TILE_SHAPE_SQUARE:

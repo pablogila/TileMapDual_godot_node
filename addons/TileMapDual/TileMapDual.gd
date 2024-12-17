@@ -4,18 +4,20 @@ class_name TileMapDual
 extends TileMapLayer
 
 
-var _tile_empty = Vector2i(0, 3)
-var _tile_full = Vector2i(2, 1)
-
-
 func _ready() -> void:
-	#add_child(DisplayLayers.new(null), false, Node.INTERNAL_MODE_FRONT)
 	#_create_display_tilemaps()
 	if Engine.is_editor_hint() and false:
 		set_process(true)
 	else: # Run in-game using signals for better performance
 		set_process(false)
 		changed.connect(_changed, 1)
+
+
+## Sets up the Dual-Grid illusion.
+## Called on ready.
+func _make_self_invisible() -> void:
+	material = CanvasItemMaterial.new()
+	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
 
 func _process(_delta) -> void: # Only used inside the editor
@@ -30,7 +32,16 @@ func _input(event: InputEvent) -> void:
 ## or by _process inside the editor.
 func _changed() -> void:
 	_update_full_tileset()
-	#_update_tilemap()
+	_update_tilemap()
+
+
+# TODO: use signals to tell when something has been added or deleted
+signal tileset_resized(new_size: Vector2i)
+signal tileset_reshaped(new_grid: Display.Grid)
+signal tileset_deleted
+signal tileset_added
+signal atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource)
+signal world_tiles_changed(changed: Array[Vector2i])
 
 var _cached_tile_set = null
 var _display: Display = null
@@ -41,16 +52,18 @@ func _update_full_tileset() -> void:
 	print('tile set replaced')
 	if _cached_tile_set != null:
 		_cached_tile_set.changed.disconnect(_changed_tile_set)
-		remove_child(_display)
+		_display.queue_free()
 		#_update_full_tilemap()
 	if tile_set != null:
 		_display = Display.new(tile_set)
+		add_child(_display)
 		tile_set.changed.connect(_changed_tile_set, 1)
 		tile_set.emit_changed()
 	_cached_tile_set = tile_set
 
 
 var _cached_source_count: int = 0
+var _cached_shape: Display.Grid
 func _changed_tile_set() -> void:
 	print('tile set changed')
 	_update_tile_set_atlases()
@@ -90,13 +103,6 @@ func _update_tile_set_atlases():
 		TerrainDual.write_default_preset(tile_set, atlas)
 	_cached_sids = sids
 
-
-## Sets up the Dual-Grid illusion.
-## Called on ready.
-func _make_self_invisible() -> void:
-	material = CanvasItemMaterial.new()
-	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
-
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
 var display_tilemaps: Array[TileMapLayer] = []
 
@@ -105,7 +111,7 @@ var _cached_cells := Set.new()
 		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
 		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
 """
-func _update_cells() -> void:
+func _update_tilemap() -> void:
 	#var current_cells = _compute_current_cells()
 	pass
 

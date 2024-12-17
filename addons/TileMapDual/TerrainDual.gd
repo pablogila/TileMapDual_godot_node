@@ -4,7 +4,7 @@ extends Resource
 # Functions are ordered top to bottom in the transformation pipeline
 
 static func tile_set_neighborhood(tile_set: TileSet) -> Neighborhood:
-	return GRID_NEIGHBORHOODS[Display.tile_set_grid(tile_set)]
+	return GRID_NEIGHBORHOODS[Display.tileset_grid(tile_set)]
 
 
 const GRID_NEIGHBORHOODS = {
