@@ -5,16 +5,14 @@ extends Node
 const TODO = null
 
 
-enum Grid {
-	SQUARE,
-	ISO,
-	HALF_OFF_HORI,
-	HALF_OFF_VERT,
-	HEX_HORI,
-	HEX_VERT,
-}
+func _init(tile_set: TileSet) -> void:
+	print('initializing Display...')
+	for layer_config in GRIDS[tile_set_grid(tile_set)]:
+		add_child(DisplayLayer.new(tile_set, layer_config))
 
 
+## Returns what kind of grid a TileSet is.
+## Defaults to SQUARE.
 static func tile_set_grid(tile_set: TileSet) -> Grid:
 	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
 	match tile_set.tile_shape:
@@ -28,6 +26,16 @@ static func tile_set_grid(tile_set: TileSet) -> Grid:
 			return Grid.HEX_HORI if hori else Grid.HEX_VERT
 		_:
 			return Grid.SQUARE
+
+
+enum Grid {
+	SQUARE,
+	ISO,
+	HALF_OFF_HORI,
+	HALF_OFF_VERT,
+	HEX_HORI,
+	HEX_VERT,
+}
 
 
 ## How to deal with every available Grid.
@@ -145,17 +153,3 @@ const GRIDS: Dictionary = {
 		},
 	],
 }
-"""
-
-func _init(tile_set: TileSet) -> void:
-	for layer_config in GRID_DATA[_grid_shape(tile_set)]:
-		add_child(DisplayLayer.new(layer_config))
-		TileSetAtlasSource
-
-static func tile_empty(grid_data: Array) -> Vector2i:
-	return layers.front().layout.front()
-
-
-static func tile_full(grid_data: Array) -> Vector2i:
-	return layers.front().layout.back()
-"""

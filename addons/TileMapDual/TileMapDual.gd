@@ -4,8 +4,6 @@ class_name TileMapDual
 extends TileMapLayer
 
 
-var _atlas_id: int
-
 var _tile_empty = Vector2i(0, 3)
 var _tile_full = Vector2i(2, 1)
 
@@ -35,14 +33,18 @@ func _changed() -> void:
 	#_update_tilemap()
 
 var _cached_tile_set = null
+var _display: Display = null
 func _update_full_tileset() -> void:
 	# Check if tile_set has been added, replaced, or deleted
 	if tile_set == _cached_tile_set:
 		return
+	print('tile set replaced')
 	if _cached_tile_set != null:
 		_cached_tile_set.changed.disconnect(_changed_tile_set)
+		remove_child(_display)
 		#_update_full_tilemap()
 	if tile_set != null:
+		_display = Display.new(tile_set)
 		tile_set.changed.connect(_changed_tile_set, 1)
 		tile_set.emit_changed()
 	_cached_tile_set = tile_set
@@ -50,12 +52,13 @@ func _update_full_tileset() -> void:
 
 var _cached_source_count: int = 0
 func _changed_tile_set() -> void:
-	print('change detected')
+	print('tile set changed')
 	_update_tile_set_atlases()
 
 
 ## Configures all tile set atlases
 # TODO: detect automatic tile creation
+var _cached_sids := Set.new()
 func _update_tile_set_atlases():
 	# Update all tileset sources
 	var source_count := tile_set.get_source_count()
@@ -66,57 +69,36 @@ func _update_tile_set_atlases():
 	_cached_source_count = source_count
 	
 	print('actually changing')
-	# Get all the atlases in the TileSet
-	var atlases: Array[TileSetAtlasSource] = []
+	
+	# Process the new atlases in the TileSet
+	var sids := Set.new()
 	for i in source_count:
 		var sid: int = tile_set.get_source_id(i)
+		sids.insert(sid)
+		print('checking')
+		if _cached_sids.has(sid):
+			continue
 		var source: TileSetSource = tile_set.get_source(sid)
-		# We only support atlases
 		if source is not TileSetAtlasSource:
 			push_warning(
-				"Non-Atlas TileSet found at index %i, source id %i.\n" +
+				"Non-Atlas TileSet found at index %i, source id %i.\n" % [i, source] +
 				"Dual Grids only support Atlas TileSets."
-				% [i, source]
 			)
 			continue
 		var atlas: TileSetAtlasSource = source
-		atlases.push_back(atlas)
-
-	# Update all atlases and configure their terrains
-	var data: TileData
-	for i in atlases.size():
-		var atlas: TileSetAtlasSource = atlases[i]
-		# TODO: further testing
+		print('writing')
 		TerrainDual.write_default_preset(tile_set, atlas)
-		var dual := TerrainDual.new(atlas)
-		for key in dual.terrain:
-			print(key, dual.terrain[key])
+	_cached_sids = sids
+
 
 ## Sets up the Dual-Grid illusion.
 ## Called on ready.
-func _create_display_tilemaps() -> void:
-	_make_self_invisible()
-	_add_display_tilemap()
-
 func _make_self_invisible() -> void:
 	material = CanvasItemMaterial.new()
 	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
 var display_tilemaps: Array[TileMapLayer] = []
-
-
-func _add_display_tilemap() -> TileMapLayer:
-	var layer = TileMapLayer.new()
-	display_tilemaps.push_back(layer)
-	add_child(layer)
-	return layer
-
-func _remove_display_tilemap() -> TileMapLayer:
-	var layer = display_tilemaps.pop_back()
-	layer.queue_free()
-	return layer
-
 
 var _cached_cells := Set.new()
 """

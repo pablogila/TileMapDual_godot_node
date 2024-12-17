@@ -171,50 +171,85 @@ const NEIGHBORS: Array[TileSet.CellNeighbor] = [
 ]
 
 
-## The exact type is {[int; 8]: Vector2i}
-@export var terrain: Dictionary = {}
-func _init(atlas: TileSetAtlasSource) -> void:
-	# TODO: do we need to verify validity?
+var terrain: Dictionary
+var filter: Array
+func _init(tile_set: TileSet, filter: Array) -> void:
+	read_tile_set(tile_set, filter)
+
+
+func read_tile_set(tile_set: TileSet, filter: Array) -> void:
+	self.terrain = {}
+	self.filter = filter
+	for i in tile_set.get_source_count():
+		var sid := tile_set.get_source_id(i)
+		var src := tile_set.get_source(i)
+		if src is not TileSetAtlasSource:
+			continue
+		read_atlas(src, sid)
+
+
+func read_atlas(atlas: TileSetAtlasSource, sid: int) -> void:
+	# Read every tile in the atlas
 	var size = atlas.get_atlas_grid_size()
 	for y in size.y:
 		for x in size.x:
 			var tile := Vector2i(x, y)
+			# Take only existing tiles
 			if not atlas.has_tile(tile):
 				continue
 			var data := atlas.get_tile_data(tile, 0)
-			terrain[NEIGHBORS.map(data.get_terrain_peering_bit)] = tile
+			var condition := filter.map(data.get_terrain_peering_bit)
+			# Skip tiles with no peering bits in this filter
+			# They might be used for a different layer,
+			# or may have no peering bits at all, which will just be ignored by all layers
+			if condition.all(func(neighbor): neighbor == -1):
+				continue
+			var mapping := { 'sid': sid, 'tile': tile }
+			if condition in terrain:
+				var prev_mapping = terrain[condition]
+				push_warning(
+					"2 different tiles in this TileSet have the same Terrain configuration:\n" +
+					"1st: %s\n" % [prev_mapping] +
+					"2nd: %s" % [mapping]
+				)
+			terrain[condition] = mapping
 
 
 ## Would you like to automatically create tiles in the atlas?
 static func write_default_preset(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 	print('writing default')
 	var neighborhood := tile_set_neighborhood(tile_set)
+	var terrain_offset := create_false_terrain_set(
+		tile_set,
+		atlas.texture.resource_path.get_file()
+	)
 	write_preset(
 		atlas,
 		NEIGHBORHOODS[neighborhood],
 		neighborhood_preset(neighborhood),
-		create_terrain_set(tile_set)
+		terrain_offset + 0,
+		terrain_offset + 1,
 	)
 
 
-static func create_terrain_set(tile_set: TileSet) -> int:
-	var terrain_set := tile_set.get_terrain_sets_count()
-	tile_set.add_terrain_set()
-	tile_set.set_terrain_set_mode(terrain_set, TileSet.TERRAIN_MODE_MATCH_CORNERS)
-	tile_set.add_terrain(terrain_set)
-	tile_set.set_terrain_name(terrain_set, 0, "Background")
-	tile_set.add_terrain(terrain_set)
-	tile_set.set_terrain_name(terrain_set, 1, "Foreground")
-	return terrain_set
+static func create_false_terrain_set(tile_set: TileSet, terrain_name: String) -> int:
+	if tile_set.get_terrain_sets_count() == 0:
+		tile_set.add_terrain_set()
+		tile_set.set_terrain_set_mode(0, TileSet.TERRAIN_MODE_MATCH_CORNERS)
+	var terrain_offset = tile_set.get_terrains_count(0)
+	tile_set.add_terrain(0)
+	tile_set.set_terrain_name(0, terrain_offset + 0, "BG - %s" % terrain_name)
+	tile_set.add_terrain(0)
+	tile_set.set_terrain_name(0, terrain_offset + 1, "FG - %s" % terrain_name)
+	return terrain_offset
 
 
 static func write_preset(
 	atlas: TileSetAtlasSource,
 	neighborhood: Array,
 	preset: Dictionary,
-	terrain_set: int,
-	terrain_background: int = 0,
-	terrain_foreground: int = 1,
+	terrain_background: int,
+	terrain_foreground: int,
 ) -> void:
 	print('writing')
 	clear_and_resize_atlas(atlas, preset.size)
@@ -227,16 +262,19 @@ static func write_preset(
 			var tile: Vector2i = sequence[i]
 			atlas.create_tile(tile)
 			var data := atlas.get_tile_data(tile, 0)
-			data.terrain_set = terrain_set
+			data.terrain_set = 0
 			for neighbor in filter:
-				data.set_terrain_peering_bit(neighbor, i & 1)
+				data.set_terrain_peering_bit(
+					neighbor,
+					[terrain_background, terrain_foreground][i & 1]
+				)
 				i >>= 1
 	# Set terrains
 	var first_sequence: Array = sequences.front()
 	var tile_bg: Vector2i = first_sequence.front()
 	var tile_fg: Vector2i = first_sequence.back()
-	atlas.get_tile_data(tile_bg, 0).terrain = 0
-	atlas.get_tile_data(tile_fg, 0).terrain = 1
+	atlas.get_tile_data(tile_bg, 0).terrain = terrain_background
+	atlas.get_tile_data(tile_fg, 0).terrain = terrain_foreground
 
 
 static func clear_and_resize_atlas(atlas: TileSetAtlasSource, size: Vector2i):

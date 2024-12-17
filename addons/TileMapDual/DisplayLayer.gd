@@ -1,26 +1,21 @@
 class_name DisplayLayer
 extends TileMapLayer
 
-@export var dual_to_display: Array
-@export var display_to_dual: Array
+
+var dual_to_display: Array
+var display_to_dual: Array
+var offset: Vector2
 
 
-"""
-
-func _init(fields: Dictionary) -> void:
-	layout = AtlasLayout.new(fields.layout)
+func _init(tile_set: TileSet, fields: Dictionary) -> void:
+	print('initializing Layer...')
+	self.tile_set = tile_set
+	tile_set.changed.connect(_changed_tile_set)
 	offset = fields.offset
 	dual_to_display = fields.dual_to_display
 	display_to_dual = fields.display_to_dual
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-"""
+func _changed_tile_set() -> void:
+	print('layer changed')
+	position = offset * Vector2(tile_set.tile_size)
