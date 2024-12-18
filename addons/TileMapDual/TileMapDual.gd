@@ -12,6 +12,35 @@ func _ready() -> void:
 	else: # Run in-game using signals for better performance
 		set_process(false)
 		changed.connect(_changed, 1)
+	tileset_deleted.connect(_tileset_deleted)
+	tileset_added.connect(_tileset_added)
+	tileset_resized.connect(_tileset_resized)
+	tileset_reshaped.connect(_tileset_reshaped)
+	atlas_added.connect(_atlas_added)
+	terrains_changed.connect(_terrains_changed)
+
+
+func _tileset_deleted():
+	print('SIGNAL EMITTED: tileset_deleted(%s)' % {})
+	_display.queue_free()
+
+func _tileset_added(tile_set: TileSet):
+	print('SIGNAL EMITTED: tileset_added(%s)' % {'tile_set': tile_set})
+	_display = Display.new(tile_set)
+	add_child(_display)
+
+func _tileset_resized(new_size: Vector2i):
+	print('SIGNAL EMITTED: tileset_resized(%s)' % {'new_size': new_size})
+
+func _tileset_reshaped(new_grid: Display.GridShape):
+	print('SIGNAL EMITTED: tileset_reshaped(%s)' % {'new_grid': new_grid})
+
+func _atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource):
+	print('SIGNAL EMITTED: atlas_added(%s)' % {'tile_set': tile_set, 'source_id': source_id, 'atlas': atlas})
+	TerrainDual.write_default_preset(tile_set, atlas)
+
+func _terrains_changed(tile_set: TileSet):
+	print('SIGNAL EMITTED: terrains_changed(%s)' % {'tile_set': tile_set})
 
 
 ## Sets up the Dual-Grid illusion.
@@ -36,7 +65,6 @@ func _changed() -> void:
 	_update_tilemap()
 
 
-# TODO: use signals to tell when something has been added or deleted
 var _cached_tile_set = null
 signal tileset_deleted
 signal tileset_added(tile_set: TileSet)
@@ -47,16 +75,11 @@ func _update_full_tileset() -> void:
 	if _cached_tile_set != null:
 		_cached_tile_set.changed.disconnect(_changed_tile_set)
 		tileset_deleted.emit()
-		# TODO: use the signal
-		_display.queue_free()
 		#_update_full_tilemap()
 	if tile_set != null:
 		tile_set.changed.connect(_changed_tile_set, 1)
 		tile_set.emit_changed()
 		tileset_added.emit(tile_set)
-		# TODO: use the signal
-		_display = Display.new(tile_set)
-		add_child(_display)
 	_cached_tile_set = tile_set
 
 
@@ -91,9 +114,6 @@ func _update_tile_set_atlases():
 		return
 	_cached_source_count = source_count
 	
-	print('actually changing')
-	
-	var changed = func(): terrains_changed.emit(tile_set)
 	# Process the new atlases in the TileSet
 	var sids := Set.new()
 	for i in source_count:
@@ -111,11 +131,8 @@ func _update_tile_set_atlases():
 			continue
 		var atlas: TileSetAtlasSource = source
 		atlas_added.emit(tile_set, sid, atlas)
-		atlas.changed.connect(changed)
-		# TODO: use the signal
-		print('writing')
-		TerrainDual.write_default_preset(tile_set, atlas)
-	changed.call()
+		atlas.changed.connect(func(): terrains_changed.emit(tile_set))
+	terrains_changed.emit(tile_set)
 	_cached_sids = sids
 
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
