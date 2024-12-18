@@ -6,7 +6,7 @@ const TODO = null
 
 
 var tile_set: TileSet
-var grid: Grid
+var grid: GridShape
 func _init(tile_set: TileSet) -> void:
 	print('initializing Display...')
 	self.tile_set = tile_set
@@ -28,22 +28,22 @@ func _changed_tile_set():
 
 ## Returns what kind of grid a TileSet is.
 ## Defaults to SQUARE.
-static func tileset_grid(tile_set: TileSet) -> Grid:
+static func tileset_grid(tile_set: TileSet) -> GridShape:
 	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
 	match tile_set.tile_shape:
 		TileSet.TileShape.TILE_SHAPE_SQUARE:
-			return Grid.SQUARE
+			return GridShape.SQUARE
 		TileSet.TileShape.TILE_SHAPE_ISOMETRIC:
-			return Grid.ISO
+			return GridShape.ISO
 		TileSet.TileShape.TILE_SHAPE_HALF_OFFSET_SQUARE:
-			return Grid.HALF_OFF_HORI if hori else Grid.HALF_OFF_VERT
+			return GridShape.HALF_OFF_HORI if hori else GridShape.HALF_OFF_VERT
 		TileSet.TileShape.TILE_SHAPE_HEXAGON:
-			return Grid.HEX_HORI if hori else Grid.HEX_VERT
+			return GridShape.HEX_HORI if hori else GridShape.HEX_VERT
 		_:
-			return Grid.SQUARE
+			return GridShape.SQUARE
 
 
-enum Grid {
+enum GridShape {
 	SQUARE,
 	ISO,
 	HALF_OFF_HORI,
@@ -53,9 +53,9 @@ enum Grid {
 }
 
 
-## How to deal with every available Grid.
+## How to deal with every available GridShape.
 const GRIDS: Dictionary = {
-	Grid.SQUARE: [
+	GridShape.SQUARE: [
 		{ # []
 			'offset': Vector2(-0.5, -0.5),
 			'dual_to_display': [
@@ -72,7 +72,7 @@ const GRIDS: Dictionary = {
 			],
 		}
 	],
-	Grid.ISO: [
+	GridShape.ISO: [
 		{ # <>
 			'offset': Vector2(0, -0.5),
 			'dual_to_display': [
@@ -89,7 +89,7 @@ const GRIDS: Dictionary = {
 			],
 		}
 	],
-	Grid.HALF_OFF_HORI: [
+	GridShape.HALF_OFF_HORI: [
 		{ # v
 			'offset': TODO,
 			'dual_to_display': [
@@ -109,7 +109,7 @@ const GRIDS: Dictionary = {
 			],
 		},
 	],
-	Grid.HALF_OFF_VERT: [
+	GridShape.HALF_OFF_VERT: [
 		{ # >
 			'offset': TODO,
 			'dual_to_display': [
@@ -129,7 +129,7 @@ const GRIDS: Dictionary = {
 			],
 		},
 	],
-	Grid.HEX_HORI: [
+	GridShape.HEX_HORI: [
 		{
 			'offset': TODO,
 			'dual_to_display': [
@@ -148,7 +148,7 @@ const GRIDS: Dictionary = {
 			],
 		},
 	],
-	Grid.HEX_VERT: [
+	GridShape.HEX_VERT: [
 		{
 			'offset': Vector2(-0.25 / sqrt(3), -0.25),
 			'dual_to_display': [

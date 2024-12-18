@@ -4,6 +4,7 @@ class_name TileMapDual
 extends TileMapLayer
 
 
+var _display: Display = null
 func _ready() -> void:
 	#_create_display_tilemaps()
 	if Engine.is_editor_hint() and false:
@@ -36,43 +37,51 @@ func _changed() -> void:
 
 
 # TODO: use signals to tell when something has been added or deleted
-signal tileset_resized(new_size: Vector2i)
-signal tileset_reshaped(new_grid: Display.Grid)
-signal tileset_deleted
-signal tileset_added
-signal atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource)
-signal terrains_changed(tile_set: TileSet)
-signal world_tiles_changed(changed: Array[Vector2i])
-
 var _cached_tile_set = null
-var _display: Display = null
+signal tileset_deleted
+signal tileset_added(tile_set: TileSet)
 func _update_full_tileset() -> void:
 	# Check if tile_set has been added, replaced, or deleted
 	if tile_set == _cached_tile_set:
 		return
-	print('tile set replaced')
 	if _cached_tile_set != null:
 		_cached_tile_set.changed.disconnect(_changed_tile_set)
+		tileset_deleted.emit()
+		# TODO: use the signal
 		_display.queue_free()
 		#_update_full_tilemap()
 	if tile_set != null:
-		_display = Display.new(tile_set)
-		add_child(_display)
 		tile_set.changed.connect(_changed_tile_set, 1)
 		tile_set.emit_changed()
+		tileset_added.emit(tile_set)
+		# TODO: use the signal
+		_display = Display.new(tile_set)
+		add_child(_display)
 	_cached_tile_set = tile_set
 
 
-var _cached_source_count: int = 0
-var _cached_shape: Display.Grid
+var _cached_tile_size: Vector2i
+signal tileset_resized(new_size: Vector2i)
+var _cached_grid: Display.GridShape
+signal tileset_reshaped(new_grid: Display.GridShape)
 func _changed_tile_set() -> void:
-	print('tile set changed')
+	var new_size = tile_set.tile_size
+	if _cached_tile_size != new_size:
+		tileset_resized.emit(new_size)
+		_cached_tile_size = new_size
+	var new_grid = Display.tileset_grid(tile_set)
+	if _cached_grid != new_grid:
+		tileset_reshaped.emit(new_grid)
+		_cached_grid = new_grid
 	_update_tile_set_atlases()
 
 
 ## Configures all tile set atlases
 # TODO: detect automatic tile creation
+var _cached_source_count: int = 0
 var _cached_sids := Set.new()
+signal atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource)
+signal terrains_changed(tile_set: TileSet)
 func _update_tile_set_atlases():
 	# Update all tileset sources
 	var source_count := tile_set.get_source_count()
@@ -84,6 +93,7 @@ func _update_tile_set_atlases():
 	
 	print('actually changing')
 	
+	var changed = func(): terrains_changed.emit(tile_set)
 	# Process the new atlases in the TileSet
 	var sids := Set.new()
 	for i in source_count:
@@ -100,8 +110,12 @@ func _update_tile_set_atlases():
 			)
 			continue
 		var atlas: TileSetAtlasSource = source
+		atlas_added.emit(tile_set, sid, atlas)
+		atlas.changed.connect(changed)
+		# TODO: use the signal
 		print('writing')
 		TerrainDual.write_default_preset(tile_set, atlas)
+	changed.call()
 	_cached_sids = sids
 
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
@@ -112,6 +126,7 @@ var _cached_cells := Set.new()
 		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
 		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
 """
+signal world_tiles_changed(changed: Array[Vector2i])
 func _update_tilemap() -> void:
 	#var current_cells = _compute_current_cells()
 	pass
