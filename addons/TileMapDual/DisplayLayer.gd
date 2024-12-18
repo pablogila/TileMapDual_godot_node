@@ -5,17 +5,22 @@ extends TileMapLayer
 var dual_to_display: Array
 var display_to_dual: Array
 var offset: Vector2
-
-
-func _init(tile_set: TileSet, fields: Dictionary) -> void:
+func _init(tileset_watcher: TileSetWatcher, fields: Dictionary) -> void:
 	print('initializing Layer...')
-	self.tile_set = tile_set
-	tile_set.changed.connect(_changed_tile_set)
+	tileset_watcher.tileset_resized.connect(resize)
+	tileset_watcher.terrains_changed.connect(update_tiles_full)
 	offset = fields.offset
 	dual_to_display = fields.dual_to_display
 	display_to_dual = fields.display_to_dual
 
 
-func _changed_tile_set() -> void:
-	print('layer changed')
+func update_tiles_full() -> void:
+	print('Update tiles full')
+
+
+func update_tiles(tiles: Set) -> void:
+	print('Update tiles: %s' % tiles)
+
+
+func resize(tile_set: TileSet) -> void:
 	position = offset * Vector2(tile_set.tile_size)

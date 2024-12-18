@@ -3,17 +3,17 @@ extends Resource
 
 # Functions are ordered top to bottom in the transformation pipeline
 
-static func tile_set_neighborhood(tile_set: TileSet) -> Neighborhood:
-	return GRID_NEIGHBORHOODS[Display.tileset_grid(tile_set)]
+static func tileset_neighborhood(tile_set: TileSet) -> Neighborhood:
+	return GRID_NEIGHBORHOODS[Display.tileset_gridshape(tile_set)]
 
 
 const GRID_NEIGHBORHOODS = {
-	Display.Grid.SQUARE: Neighborhood.SQUARE,
-	Display.Grid.ISO: Neighborhood.ISOMETRIC,
-	Display.Grid.HALF_OFF_HORI: Neighborhood.TRIANGLE_HORIZONTAL,
-	Display.Grid.HALF_OFF_VERT: Neighborhood.TRIANGLE_VERTICAL,
-	Display.Grid.HEX_HORI: Neighborhood.TRIANGLE_HORIZONTAL,
-	Display.Grid.HEX_VERT: Neighborhood.TRIANGLE_VERTICAL,
+	Display.GridShape.SQUARE: Neighborhood.SQUARE,
+	Display.GridShape.ISO: Neighborhood.ISOMETRIC,
+	Display.GridShape.HALF_OFF_HORI: Neighborhood.TRIANGLE_HORIZONTAL,
+	Display.GridShape.HALF_OFF_VERT: Neighborhood.TRIANGLE_VERTICAL,
+	Display.GridShape.HEX_HORI: Neighborhood.TRIANGLE_HORIZONTAL,
+	Display.GridShape.HEX_VERT: Neighborhood.TRIANGLE_VERTICAL,
 }
 
 
@@ -229,7 +229,7 @@ func read_atlas(atlas: TileSetAtlasSource, sid: int) -> void:
 ## Would you like to automatically create tiles in the atlas?
 static func write_default_preset(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
 	print('writing default')
-	var neighborhood := tile_set_neighborhood(tile_set)
+	var neighborhood := tileset_neighborhood(tile_set)
 	var terrain_offset := create_false_terrain_set(
 		tile_set,
 		atlas.texture.resource_path.get_file()
