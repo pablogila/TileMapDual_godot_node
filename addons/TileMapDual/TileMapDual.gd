@@ -8,13 +8,26 @@ var _tileset_watcher: TileSetWatcher
 var _display: Display
 func _ready() -> void:
 	_tileset_watcher = TileSetWatcher.new(tile_set)
-	_display = Display.new(_tileset_watcher)
 	_tileset_watcher.atlas_added.connect(_atlas_added)
+	_tileset_watcher.tileset_created.connect(_tileset_created)
+	_tileset_watcher.tileset_deleted.connect(_tileset_deleted)
 	if Engine.is_editor_hint() and false:
 		set_process(true)
 	else: # Run in-game using signals for better performance
 		set_process(false)
 		changed.connect(_changed, 1)
+
+
+func _tileset_created(tile_set: TileSet):
+	print('create')
+	_display = Display.new(_tileset_watcher)
+
+func _tileset_deleted():
+	_display.queue_free()
+	_display = null
+
+func _atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource):
+	TerrainDual.write_default_preset(tile_set, atlas)
 
 
 ## Sets up the Dual-Grid illusion.
@@ -28,17 +41,11 @@ func _process(_delta) -> void: # Only used inside the editor
 	call_deferred('_changed')
 
 
-func _atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource):
-	TerrainDual.write_default_preset(tile_set, atlas)
-
-
 ## Called by signals when the tileset changes,
 ## or by _process inside the editor.
 func _changed() -> void:
-	_tileset_watcher
+	_tileset_watcher.update(tile_set)
 	_update_tilemap()
-
-
 
 
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing

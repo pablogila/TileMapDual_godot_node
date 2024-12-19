@@ -22,5 +22,5 @@ func update_tiles(tiles: Set) -> void:
 	print('Update tiles: %s' % tiles)
 
 
-func resize(tile_set: TileSet) -> void:
-	position = offset * Vector2(tile_set.tile_size)
+func resize(tile_set: TileSet, new_size: Vector2i) -> void:
+	position = offset * Vector2(new_size)
