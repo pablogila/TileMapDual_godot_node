@@ -36,6 +36,7 @@ func _process(_delta) -> void: # Only used inside the editor
 ## or by _process inside the editor.
 func _changed() -> void:
 	_tileset_watcher.update(tile_set)
+	_display.update(self)
 	_update_tilemap()
 
 

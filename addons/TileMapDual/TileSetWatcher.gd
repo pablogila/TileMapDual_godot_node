@@ -1,6 +1,8 @@
 class_name TileSetWatcher
 extends Resource
 
+var tile_size: Vector2i
+var grid_shape: Display.GridShape
 func _init(tile_set: TileSet) -> void:
 	tileset_deleted.connect(_tileset_deleted)
 	tileset_created.connect(_tileset_created)
@@ -53,8 +55,6 @@ func update(tile_set: TileSet) -> void:
 	emit_changed()
 
 
-var tile_size: Vector2i
-var grid_shape: Display.GridShape
 func _update_tileset() -> void:
 	var tile_size = tile_set.tile_size
 	if self.tile_size != tile_size:

@@ -30,6 +30,13 @@ func _tileset_reshaped():
 	_tileset_deleted()
 
 
+## Updates the display based on the cells found in the TileMapLayer.
+func update(layer: TileMapLayer):
+	#var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
+	#var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
+	pass
+
+
 ## Returns what kind of grid a TileSet is.
 ## Defaults to SQUARE.
 static func tileset_gridshape(tile_set: TileSet) -> GridShape:
