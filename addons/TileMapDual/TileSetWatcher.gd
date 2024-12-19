@@ -1,7 +1,6 @@
 class_name TileSetWatcher
 extends Resource
 
-var tile_set: TileSet
 func _init(tile_set: TileSet) -> void:
 	tileset_deleted.connect(_tileset_deleted)
 	tileset_created.connect(_tileset_created)
@@ -16,27 +15,28 @@ signal tileset_deleted
 func _tileset_deleted():
 	print('SIGNAL EMITTED: tileset_deleted(%s)' % {})
 
-signal tileset_created(tile_set: TileSet)
-func _tileset_created(tile_set: TileSet):
-	print('SIGNAL EMITTED: tileset_created(%s)' % {'tile_set': tile_set})
+signal tileset_created
+func _tileset_created():
+	print('SIGNAL EMITTED: tileset_created(%s)' % {})
 
-signal tileset_resized(tile_set: TileSet, new_size: Vector2i)
-func _tileset_resized(tile_set: TileSet, new_size: Vector2i):
-	print('SIGNAL EMITTED: tileset_resized(%s)' % {'tile_set': tile_set, 'new_size': new_size})
+signal tileset_resized
+func _tileset_resized():
+	print('SIGNAL EMITTED: tileset_resized(%s)' % {})
 
-signal tileset_reshaped(tile_set: TileSet, new_grid: Display.GridShape)
-func _tileset_reshaped(tile_set: TileSet, new_grid: Display.GridShape):
-	print('SIGNAL EMITTED: tileset_reshaped(%s)' % {'tile_set': tile_set, 'new_grid': new_grid})
+signal tileset_reshaped
+func _tileset_reshaped():
+	print('SIGNAL EMITTED: tileset_reshaped(%s)' % {})
 
-signal atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource)
-func _atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource):
-	print('SIGNAL EMITTED: atlas_added(%s)' % {'tile_set': tile_set, 'source_id': source_id, 'atlas': atlas})
+signal atlas_added(source_id: int, atlas: TileSetAtlasSource)
+func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
+	print('SIGNAL EMITTED: atlas_added(%s)' % {'source_id': source_id, 'atlas': atlas})
 
-signal terrains_changed(tile_set: TileSet)
-func _terrains_changed(tile_set: TileSet):
-	print('SIGNAL EMITTED: terrains_changed(%s)' % {'tile_set': tile_set})
+signal terrains_changed
+func _terrains_changed():
+	print('SIGNAL EMITTED: terrains_changed(%s)' % {})
 
 
+var tile_set: TileSet
 func update(tile_set: TileSet) -> void:
 	# Check if tile_set has been added, replaced, or deleted
 	if tile_set == self.tile_set:
@@ -46,24 +46,24 @@ func update(tile_set: TileSet) -> void:
 		tileset_deleted.emit()
 		#_update_full_tilemap()
 	self.tile_set = tile_set
-	if tile_set != null:
-		tile_set.changed.connect(_update_tileset, 1)
-		tile_set.emit_changed()
-		tileset_created.emit(tile_set)
+	if self.tile_set != null:
+		self.tile_set.changed.connect(_update_tileset, 1)
+		self.tile_set.emit_changed()
+		tileset_created.emit()
 	emit_changed()
 
 
-var _cached_tile_size: Vector2i
-var _cached_grid: Display.GridShape
+var tile_size: Vector2i
+var grid_shape: Display.GridShape
 func _update_tileset() -> void:
-	var new_size = tile_set.tile_size
-	if _cached_tile_size != new_size:
-		_cached_tile_size = new_size
-		tileset_resized.emit(tile_set, new_size)
-	var new_gridshape = Display.tileset_gridshape(tile_set)
-	if _cached_grid != new_gridshape:
-		_cached_grid = new_gridshape
-		tileset_reshaped.emit(tile_set, new_gridshape)
+	var tile_size = tile_set.tile_size
+	if self.tile_size != tile_size:
+		self.tile_size = tile_size
+		tileset_resized.emit()
+	var grid_shape = Display.tileset_gridshape(tile_set)
+	if self.grid_shape != grid_shape:
+		self.grid_shape = grid_shape
+		tileset_reshaped.emit()
 	_update_tileset_atlases()
 
 
@@ -97,7 +97,7 @@ func _update_tileset_atlases():
 			)
 			continue
 		var atlas: TileSetAtlasSource = source
-		atlas_added.emit(tile_set, sid, atlas)
-		atlas.changed.connect(func(): terrains_changed.emit(tile_set))
-	terrains_changed.emit(tile_set)
+		atlas_added.emit(sid, atlas)
+		atlas.changed.connect(func(): terrains_changed.emit())
+	terrains_changed.emit()
 	_cached_sids = sids

@@ -9,8 +9,7 @@ var _display: Display
 func _ready() -> void:
 	_tileset_watcher = TileSetWatcher.new(tile_set)
 	_tileset_watcher.atlas_added.connect(_atlas_added)
-	_tileset_watcher.tileset_created.connect(_tileset_created)
-	_tileset_watcher.tileset_deleted.connect(_tileset_deleted)
+	_display = Display.new(_tileset_watcher)
 	if Engine.is_editor_hint() and false:
 		set_process(true)
 	else: # Run in-game using signals for better performance
@@ -18,16 +17,8 @@ func _ready() -> void:
 		changed.connect(_changed, 1)
 
 
-func _tileset_created(tile_set: TileSet):
-	print('create')
-	_display = Display.new(_tileset_watcher)
-
-func _tileset_deleted():
-	_display.queue_free()
-	_display = null
-
-func _atlas_added(tile_set: TileSet, source_id: int, atlas: TileSetAtlasSource):
-	TerrainDual.write_default_preset(tile_set, atlas)
+func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
+	TerrainDual.write_default_preset(_tileset_watcher.tile_set, atlas)
 
 
 ## Sets up the Dual-Grid illusion.

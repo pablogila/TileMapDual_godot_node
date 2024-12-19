@@ -1,3 +1,4 @@
+## Manages up to 2 DisplayLayer children.
 class_name Display
 extends Node
 
@@ -6,18 +7,33 @@ const TODO = null
 
 
 var grid: GridShape
+var _tileset_watcher: TileSetWatcher
+## Creates a new Display that updates when the TileSet updates.
 func _init(tileset_watcher: TileSetWatcher) -> void:
 	print('initializing Display...')
-	grid = tileset_gridshape(tileset_watcher.tile_set)
-	for layer_config in GRIDS[grid]:
+	_tileset_watcher = tileset_watcher
+	tileset_watcher.tileset_created.connect(_tileset_created)
+	tileset_watcher.tileset_deleted.connect(_tileset_deleted)
+	tileset_watcher.tileset_reshaped.connect(_tileset_reshaped)
+	
+func _tileset_created():
+	for layer_config in GRIDS[_tileset_watcher.grid_shape]:
 		print('layer_config: %s' % layer_config)
-		add_child(DisplayLayer.new(tileset_watcher, layer_config))
+		add_child(DisplayLayer.new(_tileset_watcher, layer_config))
+
+func _tileset_deleted():
+	for child in get_children(true):
+		child.queue_free()
+
+func _tileset_reshaped():
+	_tileset_created()
+	_tileset_deleted()
 
 
 ## Returns what kind of grid a TileSet is.
 ## Defaults to SQUARE.
 static func tileset_gridshape(tile_set: TileSet) -> GridShape:
-	var hori: bool = tile_set.tile_offset_axis == TileSet.TileOffsetAxis.TILE_OFFSET_AXIS_HORIZONTAL
+	var hori: bool = tile_set.tile_offset_axis == TileSet.TILE_OFFSET_AXIS_HORIZONTAL
 	match tile_set.tile_shape:
 		TileSet.TileShape.TILE_SHAPE_SQUARE:
 			return GridShape.SQUARE
@@ -31,6 +47,7 @@ static func tileset_gridshape(tile_set: TileSet) -> GridShape:
 			return GridShape.SQUARE
 
 
+## Every meningfully different TileSet.tile_shape * TileSet.tile_offset_axis combination.
 enum GridShape {
 	SQUARE,
 	ISO,
