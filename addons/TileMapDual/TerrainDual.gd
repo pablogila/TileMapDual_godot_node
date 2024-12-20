@@ -28,7 +28,7 @@ enum Neighborhood {
 
 
 ## Maps a Neighborhood to a set of atlas terrain neighbors.
-const NEIGHBORHOOD_FILTERS := {
+const NEIGHBORHOOD_LAYERS := {
 	Neighborhood.SQUARE: [
 		[ # []
 			TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER,
@@ -173,32 +173,58 @@ const NEIGHBORS: Array[TileSet.CellNeighbor] = [
 ]
 
 
+class TerrainLayer:
+	extends Resource
+
+	var filter: Array = []
+	var rules: Dictionary = {}
+	func _init(filter: Array) -> void:
+
+		self.filter = filter
+
+	func read_tile(data: TileData, mapping: Dictionary) -> void:
+		var condition := filter.map(data.get_terrain_peering_bit)
+		# Skip tiles with no peering bits in this filter
+		# They might be used for a different layer,
+		# or may have no peering bits at all, which will just be ignored by all layers
+		if filter.all(func(neighbor): neighbor == -1):
+			return
+		if condition in rules:
+			var prev_mapping = rules[condition]
+			push_warning(
+				"2 different tiles in this TileSet have the same Terrain neighborhood:\n" +
+				"1st: %s\n" % [prev_mapping] +
+				"2nd: %s" % [mapping]
+			)
+		rules[condition] = mapping
+
+
 var neighborhood: Neighborhood
 var terrains: Dictionary
-# TODO: make this an object to clarify its data structure
-var terrain_rules: Array[Dictionary]
+var layers: Array
 var _tileset_watcher: TileSetWatcher
 func _init(tileset_watcher: TileSetWatcher) -> void:
 	# TODO: don't use a watcher; have the parent update the terrain manually
 	_tileset_watcher = tileset_watcher
 	_tileset_watcher.terrains_changed.connect(_changed)
+	_changed()
 
 
 func _changed():
+	print('SIGNAL EMITTED: changed(%s)' % {})
 	read_tileset(_tileset_watcher.tile_set)
+	emit_changed()
 
 
 func read_tileset(tile_set: TileSet) -> void:
 	terrains = {}
-	terrain_rules = []
+	layers = []
 	neighborhood = Neighborhood.SQUARE
 	if tile_set == null:
 		return
 
 	neighborhood = tileset_neighborhood(tile_set)
-	terrain_rules = NEIGHBORHOOD_FILTERS[neighborhood].map(
-		func(filter): return {'filter': filter, 'rules': []}
-	)
+	layers = NEIGHBORHOOD_LAYERS[neighborhood].map(TerrainLayer.new)
 	for i in tile_set.get_source_count():
 		var sid := tile_set.get_source_id(i)
 		var src := tile_set.get_source(i)
@@ -218,6 +244,7 @@ func read_atlas(atlas: TileSetAtlasSource, sid: int) -> void:
 				continue
 			read_tile(atlas, sid, tile)
 
+
 func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 	var data := atlas.get_tile_data(tile, 0)
 	var mapping := { 'sid': sid, 'tile': tile }
@@ -231,27 +258,10 @@ func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 				"2nd: %s" % [mapping] 
 			)
 		terrains[data.terrain] = tile
-	var filters = NEIGHBORHOOD_FILTERS[neighborhood]
-	for i in terrain_rules.size():
-		var layer := terrain_rules[i]
-		var filter: Array = layer.filter
-		var rules: Dictionary = layer.rules
-		var condition := filter.map(data.get_terrain_peering_bit)
-		# Skip tiles with no peering bits in this filter
-		# They might be used for a different layer,
-		# or may have no peering bits at all, which will just be ignored by all layers
-		if filter.all(func(neighbor): neighbor == -1):
-			continue
-		if condition in rules:
-			var prev_mapping = rules[condition]
-			push_warning(
-				"2 different tiles in this TileSet have the same Terrain neighborhood:\n" +
-				"1st: %s\n" % [prev_mapping] +
-				"2nd: %s" % [mapping]
-				# TODO: wow that's a lot of indent
-				# maybe this should be extracted into a function
-			)
-		rules[condition] = mapping
+	var filters = NEIGHBORHOOD_LAYERS[neighborhood]
+	for i in layers.size():
+		var layer: TerrainLayer = layers[i]
+		layer.read_tile(data, mapping)
 
 
 ## Would you like to automatically create tiles in the atlas?
@@ -264,7 +274,7 @@ static func write_default_preset(tile_set: TileSet, atlas: TileSetAtlasSource) -
 	)
 	write_preset(
 		atlas,
-		NEIGHBORHOOD_FILTERS[neighborhood],
+		NEIGHBORHOOD_LAYERS[neighborhood],
 		neighborhood_preset(neighborhood),
 		terrain_offset + 0,
 		terrain_offset + 1,

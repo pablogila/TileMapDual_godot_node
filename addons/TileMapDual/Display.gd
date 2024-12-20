@@ -6,20 +6,22 @@ extends Node
 const TODO = null
 
 
-var grid: GridShape
+var terrain: TerrainDual
 var _tileset_watcher: TileSetWatcher
 ## Creates a new Display that updates when the TileSet updates.
 func _init(tileset_watcher: TileSetWatcher) -> void:
 	print('initializing Display...')
 	_tileset_watcher = tileset_watcher
-	tileset_watcher.tileset_created.connect(_tileset_created)
-	tileset_watcher.tileset_deleted.connect(_tileset_deleted)
-	tileset_watcher.tileset_reshaped.connect(_tileset_reshaped)
+	terrain = TerrainDual.new(tileset_watcher)
+	terrain.changed.connect(_tileset_reshaped)
 	
 func _tileset_created():
-	for layer_config in GRIDS[_tileset_watcher.grid_shape]:
+	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
+	var grid: Array = GRIDS[_tileset_watcher.grid_shape]
+	for i in grid.size():
+		var layer_config: Dictionary = grid[i]
 		print('layer_config: %s' % layer_config)
-		add_child(DisplayLayer.new(_tileset_watcher, layer_config))
+		add_child(DisplayLayer.new(_tileset_watcher, layer_config, terrain.layers[i]))
 
 func _tileset_deleted():
 	for child in get_children(true):

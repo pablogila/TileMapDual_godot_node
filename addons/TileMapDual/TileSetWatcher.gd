@@ -15,10 +15,12 @@ func _init(tile_set: TileSet) -> void:
 
 signal tileset_deleted
 func _tileset_deleted():
+	tileset_reshaped.emit()
 	print('SIGNAL EMITTED: tileset_deleted(%s)' % {})
 
 signal tileset_created
 func _tileset_created():
+	tileset_reshaped.emit()
 	print('SIGNAL EMITTED: tileset_created(%s)' % {})
 
 signal tileset_resized
@@ -27,10 +29,12 @@ func _tileset_resized():
 
 signal tileset_reshaped
 func _tileset_reshaped():
+	terrains_changed.emit()
 	print('SIGNAL EMITTED: tileset_reshaped(%s)' % {})
 
 signal atlas_added(source_id: int, atlas: TileSetAtlasSource)
 func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
+	terrains_changed.emit()
 	print('SIGNAL EMITTED: atlas_added(%s)' % {'source_id': source_id, 'atlas': atlas})
 
 signal terrains_changed
