@@ -10,7 +10,7 @@ func _ready() -> void:
 	_tileset_watcher = TileSetWatcher.new(tile_set)
 	_tileset_watcher.atlas_added.connect(_atlas_added)
 	_display = Display.new(_tileset_watcher)
-	if Engine.is_editor_hint() and false:
+	if Engine.is_editor_hint():
 		set_process(true)
 	else: # Run in-game using signals for better performance
 		set_process(false)
@@ -28,7 +28,12 @@ func _make_self_invisible() -> void:
 	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
 
+var _frame_skipper = 0
 func _process(_delta) -> void: # Only used inside the editor
+	if _frame_skipper > 0:
+		_frame_skipper -= 1
+		return
+	_frame_skipper = 20
 	call_deferred('_changed')
 
 

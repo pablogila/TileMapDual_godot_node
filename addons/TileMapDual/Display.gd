@@ -18,9 +18,11 @@ func _init(tileset_watcher: TileSetWatcher) -> void:
 
 signal world_tiles_changed(changed: Array)
 func _world_tiles_changed(changed: Array):
-	print('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
+	push_warning('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
 
 func _tileset_created():
+	# TODO: later
+	return
 	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
 	var grid: Array = GRIDS[_tileset_watcher.grid_shape]
 	for i in grid.size():
@@ -33,8 +35,8 @@ func _tileset_deleted():
 		child.queue_free()
 
 func _tileset_reshaped():
-	_tileset_created()
 	_tileset_deleted()
+	_tileset_created()
 
 
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
@@ -42,18 +44,29 @@ func _tileset_reshaped():
 var _cached_cells := {}
 ## Updates the display based on the cells found in the TileMapLayer.
 func update(layer: TileMapLayer):
+	if _tileset_watcher.tile_set == null:
+		return
 	var updated := []
 	for cell in layer.get_used_cells():
+		var cached: Dictionary
+		if cell in _cached_cells:
+			cached = _cached_cells[cell]
+		else:
+			cached = {'sid': -1, 'tile': Vector2i(-1, -1)}
+		var sid := layer.get_cell_source_id(cell)
+		if sid == -1:
+			push_warning('asdf')
+			continue
+		var tile := layer.get_cell_atlas_coords(cell)
+		# NOTE: Godot crashes on the following line when the tile data is invalid
 		var data := layer.get_cell_tile_data(cell)
-		var cached = _cached_cells[cell]
-		cached = cached if cached else {'sid': -1, 'tile': Vector2i(-1, -1)}
 		# Invalid terrains should be reset to the previous known value
 		# They will be treated as unchanged
+		if data == null:
+			continue
 		if data.terrain == -1 or data.terrain_set != 0:
 			layer.set_cell(cell, cached.sid, cached.tile)
 			continue
-		var sid := layer.get_cell_source_id(cell)
-		var tile := layer.get_cell_atlas_coords(cell)
 		var is_unchanged = cached.sid == sid and cached.tile == tile
 		if is_unchanged:
 			continue

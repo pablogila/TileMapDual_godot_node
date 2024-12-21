@@ -204,7 +204,6 @@ var terrains: Dictionary
 var layers: Array
 var _tileset_watcher: TileSetWatcher
 func _init(tileset_watcher: TileSetWatcher) -> void:
-	# TODO: don't use a watcher; have the parent update the terrain manually
 	_tileset_watcher = tileset_watcher
 	_tileset_watcher.terrains_changed.connect(_changed)
 	_changed()
