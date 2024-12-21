@@ -179,7 +179,6 @@ class TerrainLayer:
 	var filter: Array = []
 	var rules: Dictionary = {}
 	func _init(filter: Array) -> void:
-
 		self.filter = filter
 
 	func read_tile(data: TileData, mapping: Dictionary) -> void:
@@ -187,12 +186,13 @@ class TerrainLayer:
 		# Skip tiles with no peering bits in this filter
 		# They might be used for a different layer,
 		# or may have no peering bits at all, which will just be ignored by all layers
-		if filter.all(func(neighbor): neighbor == -1):
+		if condition.all(func(neighbor): return neighbor == -1):
 			return
 		if condition in rules:
 			var prev_mapping = rules[condition]
 			push_warning(
 				"2 different tiles in this TileSet have the same Terrain neighborhood:\n" +
+				"Condition: %s\n" % [condition] +
 				"1st: %s\n" % [prev_mapping] +
 				"2nd: %s" % [mapping]
 			)
@@ -227,7 +227,7 @@ func read_tileset(tile_set: TileSet) -> void:
 	layers = NEIGHBORHOOD_LAYERS[neighborhood].map(TerrainLayer.new)
 	for i in tile_set.get_source_count():
 		var sid := tile_set.get_source_id(i)
-		var src := tile_set.get_source(i)
+		var src := tile_set.get_source(sid)
 		if src is not TileSetAtlasSource:
 			continue
 		read_atlas(src, sid)

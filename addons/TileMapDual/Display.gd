@@ -14,7 +14,12 @@ func _init(tileset_watcher: TileSetWatcher) -> void:
 	_tileset_watcher = tileset_watcher
 	terrain = TerrainDual.new(tileset_watcher)
 	terrain.changed.connect(_tileset_reshaped)
-	
+	world_tiles_changed.connect(_world_tiles_changed)
+
+signal world_tiles_changed(changed: Array)
+func _world_tiles_changed(changed: Array):
+	print('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
+
 func _tileset_created():
 	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
 	var grid: Array = GRIDS[_tileset_watcher.grid_shape]
@@ -32,12 +37,34 @@ func _tileset_reshaped():
 	_tileset_deleted()
 
 
+# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
+## {Vector2i: {'sid': int, 'tile': Vector2i}}
+var _cached_cells := {}
 ## Updates the display based on the cells found in the TileMapLayer.
 func update(layer: TileMapLayer):
-	#var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
-	#var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
-	pass
-
+	var updated := []
+	for cell in layer.get_used_cells():
+		var data := layer.get_cell_tile_data(cell)
+		var cached = _cached_cells[cell]
+		cached = cached if cached else {'sid': -1, 'tile': Vector2i(-1, -1)}
+		# Invalid terrains should be reset to the previous known value
+		# They will be treated as unchanged
+		if data.terrain == -1 or data.terrain_set != 0:
+			layer.set_cell(cell, cached.sid, cached.tile)
+			continue
+		var sid := layer.get_cell_source_id(cell)
+		var tile := layer.get_cell_atlas_coords(cell)
+		var is_unchanged = cached.sid == sid and cached.tile == tile
+		if is_unchanged:
+			continue
+		updated.push_back(cell)
+		var is_empty = sid == -1 or tile == Vector2i(-1, -1)
+		if is_empty:
+			_cached_cells.erase(cell)
+		else:
+			_cached_cells[cell] = {'sid': sid, 'tile': tile}
+	if not updated.is_empty():
+		world_tiles_changed.emit(updated)
 
 ## Returns what kind of grid a TileSet is.
 ## Defaults to SQUARE.

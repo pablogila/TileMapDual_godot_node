@@ -37,19 +37,6 @@ func _process(_delta) -> void: # Only used inside the editor
 func _changed() -> void:
 	_tileset_watcher.update(tile_set)
 	_display.update(self)
-	_update_tilemap()
-
-
-# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
-var _cached_cells := Set.new()
-"""
-		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
-		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
-"""
-signal world_tiles_changed(changed: Array[Vector2i])
-func _update_tilemap() -> void:
-	#var current_cells = _compute_current_cells()
-	pass
 
 """
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
