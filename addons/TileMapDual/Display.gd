@@ -10,7 +10,7 @@ var terrain: TerrainDual
 var _tileset_watcher: TileSetWatcher
 ## Creates a new Display that updates when the TileSet updates.
 func _init(tileset_watcher: TileSetWatcher) -> void:
-	print('initializing Display...')
+	#print('initializing Display...')
 	_tileset_watcher = tileset_watcher
 	terrain = TerrainDual.new(tileset_watcher)
 	terrain.changed.connect(_tileset_reshaped)
@@ -18,16 +18,16 @@ func _init(tileset_watcher: TileSetWatcher) -> void:
 
 signal world_tiles_changed(changed: Array)
 func _world_tiles_changed(changed: Array):
-	print('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
+	#print('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
 	for child in get_children(true):
 		child.update_tiles(cached_cells, changed)
 
 func _tileset_created():
-	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
+	#print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
 	var grid: Array = GRIDS[_tileset_watcher.grid_shape]
 	for i in grid.size():
 		var layer_config: Dictionary = grid[i]
-		print('layer_config: %s' % layer_config)
+		#print('layer_config: %s' % layer_config)
 		var layer := DisplayLayer.new(_tileset_watcher, layer_config, terrain.layers[i])
 		add_child(layer)
 
@@ -101,7 +101,7 @@ func update(layer: TileMapLayer):
 	var updated := current.diff(cached_cells)
 	cached_cells = current
 	if not updated.is_empty():
-		print(updated)
+		#print(updated)
 		world_tiles_changed.emit(updated)
 
 
