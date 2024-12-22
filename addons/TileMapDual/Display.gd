@@ -18,7 +18,9 @@ func _init(tileset_watcher: TileSetWatcher) -> void:
 
 signal world_tiles_changed(changed: Array)
 func _world_tiles_changed(changed: Array):
-	push_warning('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
+	print('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
+	for child in get_children(true):
+		child.update_tiles(changed)
 
 func _tileset_created():
 	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
@@ -26,7 +28,8 @@ func _tileset_created():
 	for i in grid.size():
 		var layer_config: Dictionary = grid[i]
 		print('layer_config: %s' % layer_config)
-		add_child(DisplayLayer.new(_tileset_watcher, layer_config, terrain.layers[i]))
+		var layer := DisplayLayer.new(_tileset_watcher, layer_config, terrain.layers[i])
+		add_child(layer)
 
 func _tileset_deleted():
 	for child in get_children(true):
@@ -86,7 +89,6 @@ class CellCache:
 		return out
 
 
-# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
 ## {Vector2i: {'sid': int, 'tile': Vector2i}}
 var _cached_cells := CellCache.new()
 ## Updates the display based on the cells found in the TileMapLayer.
@@ -98,6 +100,7 @@ func update(layer: TileMapLayer):
 	var updated := current.diff(_cached_cells)
 	_cached_cells = current
 	if not updated.is_empty():
+		print(updated)
 		world_tiles_changed.emit(updated)
 
 

@@ -71,7 +71,6 @@ func _update_tileset() -> void:
 	_update_tileset_atlases()
 
 
-
 ## Configures all tile set atlases
 # TODO: detect automatic tile creation
 var _cached_source_count: int = 0
