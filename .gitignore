@@ -3,4 +3,4 @@
 /android/
 
 # we dont need to commit this every time
-examples/test.tscn
+test/

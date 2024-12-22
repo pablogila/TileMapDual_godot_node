@@ -54,11 +54,12 @@ func update(layer: TileMapLayer):
 		else:
 			cached = {'sid': -1, 'tile': Vector2i(-1, -1)}
 		var sid := layer.get_cell_source_id(cell)
-		if sid == -1:
-			push_warning('asdf')
+		if not _tileset_watcher.tile_set.has_source(sid):
 			continue
+		var src = _tileset_watcher.tile_set.get_source(sid)
 		var tile := layer.get_cell_atlas_coords(cell)
-		# NOTE: Godot crashes on the following line when the tile data is invalid
+		if not src.has_tile(tile):
+			continue
 		var data := layer.get_cell_tile_data(cell)
 		# Invalid terrains should be reset to the previous known value
 		# They will be treated as unchanged
@@ -73,6 +74,7 @@ func update(layer: TileMapLayer):
 		updated.push_back(cell)
 		var is_empty = sid == -1 or tile == Vector2i(-1, -1)
 		if is_empty:
+			push_error()
 			_cached_cells.erase(cell)
 		else:
 			_cached_cells[cell] = {'sid': sid, 'tile': tile}

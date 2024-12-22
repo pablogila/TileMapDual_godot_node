@@ -18,7 +18,8 @@ func _ready() -> void:
 
 
 func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
-	TerrainDual.write_default_preset(_tileset_watcher.tile_set, atlas)
+	#TerrainDual.write_default_preset(_tileset_watcher.tile_set, atlas)
+	pass
 
 
 ## Sets up the Dual-Grid illusion.
@@ -28,12 +29,13 @@ func _make_self_invisible() -> void:
 	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
 
-var _frame_skipper = 0
-func _process(_delta) -> void: # Only used inside the editor
-	if _frame_skipper > 0:
-		_frame_skipper -= 1
+var _timer: float = 0.0
+func _process(delta: float) -> void: # Only used inside the editor
+	if _timer > 0:
+		_timer -= delta
 		return
-	_frame_skipper = 20
+	print('hit')
+	_timer = 1
 	call_deferred('_changed')
 
 
