@@ -144,10 +144,10 @@ const GRIDS: Dictionary = {
 				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER],
 			],
 			'display_to_dual': [
-				[],
-				[TileSet.CELL_NEIGHBOR_LEFT_SIDE],
-				[TileSet.CELL_NEIGHBOR_TOP_SIDE],
 				[TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER],
+				[TileSet.CELL_NEIGHBOR_TOP_SIDE],
+				[TileSet.CELL_NEIGHBOR_LEFT_SIDE],
+				[],
 			],
 		}
 	],
