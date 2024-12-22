@@ -4,128 +4,50 @@ class_name TileMapDual
 extends TileMapLayer
 
 
-var _atlas_id: int
-
-var _tile_empty = Vector2i(0, 3)
-var _tile_full = Vector2i(2, 1)
-
-
+var _tileset_watcher: TileSetWatcher
+var _display: Display
 func _ready() -> void:
-	#add_child(DisplayLayers.new(null), false, Node.INTERNAL_MODE_FRONT)
-	#_create_display_tilemaps()
-	if Engine.is_editor_hint() and false:
+	_tileset_watcher = TileSetWatcher.new(tile_set)
+	_tileset_watcher.atlas_added.connect(_atlas_added)
+	_display = Display.new(_tileset_watcher)
+	add_child(_display)
+	if Engine.is_editor_hint():
 		set_process(true)
 	else: # Run in-game using signals for better performance
 		set_process(false)
 		changed.connect(_changed, 1)
 
 
-func _process(_delta) -> void: # Only used inside the editor
+func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
+	#TerrainDual.write_default_preset(_tileset_watcher.tile_set, atlas)
+	pass
+
+
+## Sets up the Dual-Grid illusion.
+## Called on ready.
+func _make_self_invisible() -> void:
+	material = CanvasItemMaterial.new()
+	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+
+
+@export var timer_cooldown: float = 1.0
+var _timer: float = 0.0
+func _process(delta: float) -> void: # Only used inside the editor
+	if timer_cooldown < 0.0:
+		return
+	if _timer > 0:
+		_timer -= delta
+		return
+	print('hit')
+	_timer = timer_cooldown
 	call_deferred('_changed')
-
-
-func _input(event: InputEvent) -> void:
-	print(event)
 
 
 ## Called by signals when the tileset changes,
 ## or by _process inside the editor.
 func _changed() -> void:
-	_update_full_tileset()
-	#_update_tilemap()
-
-var _cached_tile_set = null
-func _update_full_tileset() -> void:
-	# Check if tile_set has been added, replaced, or deleted
-	if tile_set == _cached_tile_set:
-		return
-	if _cached_tile_set != null:
-		_cached_tile_set.changed.disconnect(_changed_tile_set)
-		#_update_full_tilemap()
-	if tile_set != null:
-		tile_set.changed.connect(_changed_tile_set, 1)
-		tile_set.emit_changed()
-	_cached_tile_set = tile_set
-
-
-var _cached_source_count: int = 0
-func _changed_tile_set() -> void:
-	print('change detected')
-	_update_tile_set_atlases()
-
-
-## Configures all tile set atlases
-# TODO: detect automatic tile creation
-func _update_tile_set_atlases():
-	# Update all tileset sources
-	var source_count := tile_set.get_source_count()
-	var terrain_set_count := tile_set.get_terrain_sets_count()
-	# Only if an asset was added or removed
-	if _cached_source_count == source_count:
-		return
-	_cached_source_count = source_count
-	
-	print('actually changing')
-	# Get all the atlases in the TileSet
-	var atlases: Array[TileSetAtlasSource] = []
-	for i in source_count:
-		var sid: int = tile_set.get_source_id(i)
-		var source: TileSetSource = tile_set.get_source(sid)
-		# We only support atlases
-		if source is not TileSetAtlasSource:
-			push_warning(
-				"Non-Atlas TileSet found at index %i, source id %i.\n" +
-				"Dual Grids only support Atlas TileSets."
-				% [i, source]
-			)
-			continue
-		var atlas: TileSetAtlasSource = source
-		atlases.push_back(atlas)
-
-	# Update all atlases and configure their terrains
-	var data: TileData
-	for i in atlases.size():
-		var atlas: TileSetAtlasSource = atlases[i]
-		# TODO: further testing
-		TerrainDual.write_default_preset(tile_set, atlas)
-		var dual := TerrainDual.new(atlas)
-		for key in dual.terrain:
-			print(key, dual.terrain[key])
-
-## Sets up the Dual-Grid illusion.
-## Called on ready.
-func _create_display_tilemaps() -> void:
-	_make_self_invisible()
-	_add_display_tilemap()
-
-func _make_self_invisible() -> void:
-	material = CanvasItemMaterial.new()
-	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
-
-# TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
-var display_tilemaps: Array[TileMapLayer] = []
-
-
-func _add_display_tilemap() -> TileMapLayer:
-	var layer = TileMapLayer.new()
-	display_tilemaps.push_back(layer)
-	add_child(layer)
-	return layer
-
-func _remove_display_tilemap() -> TileMapLayer:
-	var layer = display_tilemaps.pop_back()
-	layer.queue_free()
-	return layer
-
-
-var _cached_cells := Set.new()
-"""
-		var _new_emptied_cells: Array = parent.get_used_cells_by_id(-1, empty_tile)
-		var _new_filled_cells: Array = parent.get_used_cells_by_id(-1, full_tile)
-"""
-func _update_cells() -> void:
-	#var current_cells = _compute_current_cells()
-	pass
+	_tileset_watcher.update(tile_set)
+	_display.update(self)
 
 """
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
@@ -272,3 +194,5 @@ func draw(cell: Vector2i, tile: int = 1, atlas_id: int = 0) -> void:
 	set_cell(cell, atlas_id, tile_to_use)
 	update_tile(cell)
 """
+func draw(cell: Vector2i, tile: int = 1, atlas_id: int = 0) -> void:
+	pass
