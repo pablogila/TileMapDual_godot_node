@@ -85,7 +85,7 @@ func _update_tileset_atlases():
 	if _cached_source_count == source_count:
 		return
 	_cached_source_count = source_count
-	
+
 	# Process the new atlases in the TileSet
 	var sids := Set.new()
 	for i in source_count:

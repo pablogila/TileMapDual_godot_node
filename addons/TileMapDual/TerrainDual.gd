@@ -256,7 +256,7 @@ func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 			push_warning(
 				"2 different tiles in this TileSet have the same Terrain type:\n" +
 				"1st: %s\n" % [prev_mapping] +
-				"2nd: %s" % [mapping] 
+				"2nd: %s" % [mapping]
 			)
 		terrains[data.terrain] = tile
 	var filters = NEIGHBORHOOD_LAYERS[neighborhood]

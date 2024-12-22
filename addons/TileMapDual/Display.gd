@@ -211,20 +211,28 @@ const GRIDS: Dictionary = {
 	],
 	GridShape.HEX_HORI: [
 		{
-			'offset': TODO,
+			'offset': Vector2(0.0, -3.0 / 8.0),
 			'dual_to_display': [
-				TODO,
+				[],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE],
 			],
 			'display_to_dual': [
-				TODO,
+				[],
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE],
+				[TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE],
 			],
 		}, {
-			'offset': TODO,
+			'offset': Vector2(-0.5, -3.0 / 8.0),
 			'dual_to_display': [
-				TODO,
+				[],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE],
+				[TileSet.CELL_NEIGHBOR_RIGHT_SIDE],
 			],
 			'display_to_dual': [
-				TODO,
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE],
+				[TileSet.CELL_NEIGHBOR_LEFT_SIDE],
+				[],
 			],
 		},
 	],

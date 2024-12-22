@@ -33,7 +33,7 @@ func union(other: Set) -> Set:
 	var out = self.duplicate()
 	out.union_in_place(other.data)
 	return out
-	
+
 ## Removes an Array's items or Dict's keys from the Set.
 func diff_in_place(other: Variant):
 	for item in other:
@@ -43,7 +43,7 @@ func diff(other: Set) -> Set:
 	var out = self.duplicate()
 	out.diff_in_place(other.data)
 	return out
-	
+
 ## Given an Array or Dict, <read the code>
 func xor_in_place(other: Variant):
 	for item in other:

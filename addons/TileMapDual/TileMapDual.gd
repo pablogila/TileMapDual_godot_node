@@ -113,8 +113,8 @@ func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
 
 	# HACK: redirect to hex grid algorithm
 	#if self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_HEXAGON:
-		
-	
+
+
 	var __NEIGHBORS = _NEIGHBORS[self.tile_set.tile_shape]
 	var _top_left = world_cell
 	var _low_left = display_tilemap.get_neighbor_cell(world_cell, __NEIGHBORS[_direction.BOTTOM])
