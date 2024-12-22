@@ -21,8 +21,6 @@ func _world_tiles_changed(changed: Array):
 	push_warning('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
 
 func _tileset_created():
-	# TODO: later
-	return
 	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
 	var grid: Array = GRIDS[_tileset_watcher.grid_shape]
 	for i in grid.size():
@@ -39,47 +37,69 @@ func _tileset_reshaped():
 	_tileset_created()
 
 
+class CellCache:
+	extends Resource
+
+	var cells := {}
+	func _init() -> void:
+		pass
+
+	## Computes a new CellCache based on the current layer data.
+	## Needs the old CellCache in case corrections need to made due to accidents.
+	func compute(tile_set: TileSet, layer: TileMapLayer, cache: CellCache) -> void:
+		if tile_set == null:
+			push_error('Attempted to construct CellCache while tile set was null')
+			return
+		for cell in layer.get_used_cells():
+			# Invalid cells will be treated as empty and ignored
+			var sid := layer.get_cell_source_id(cell)
+			if not tile_set.has_source(sid):
+				continue
+			var src = tile_set.get_source(sid)
+			var tile := layer.get_cell_atlas_coords(cell)
+			if not src.has_tile(tile):
+				continue
+			var data := layer.get_cell_tile_data(cell)
+			if data == null:
+				continue
+			# Accidental cells should be reset to their previous value
+			# They will be treated as unchanged
+			if data.terrain == -1 or data.terrain_set != 0:
+				if cell not in cache.cells:
+					layer.erase_cell(cell)
+					continue
+				var cached: Dictionary = cache.cells[cell]
+				sid = cached.sid
+				tile = cached.tile
+				layer.set_cell(cell, cached.sid, cached.tile)
+			cells[cell] = {'sid': sid, 'tile': tile}
+
+	## Returns the difference between two tile caches
+	func diff(other: CellCache) -> Array[Vector2i]:
+		var out: Array[Vector2i] = []
+		for key in self.cells:
+			if key not in other.cells:
+				out.push_back(key)
+		for key in other.cells:
+			if key not in self.cells:
+				out.push_back(key)
+		return out
+
+
 # TODO: write the map diff algorithm and connect it to the display dual grid neighbor thing
 ## {Vector2i: {'sid': int, 'tile': Vector2i}}
-var _cached_cells := {}
+var _cached_cells := CellCache.new()
 ## Updates the display based on the cells found in the TileMapLayer.
 func update(layer: TileMapLayer):
 	if _tileset_watcher.tile_set == null:
 		return
-	var updated := []
-	for cell in layer.get_used_cells():
-		var cached: Dictionary
-		if cell in _cached_cells:
-			cached = _cached_cells[cell]
-		else:
-			cached = {'sid': -1, 'tile': Vector2i(-1, -1)}
-		var sid := layer.get_cell_source_id(cell)
-		if not _tileset_watcher.tile_set.has_source(sid):
-			continue
-		var src = _tileset_watcher.tile_set.get_source(sid)
-		var tile := layer.get_cell_atlas_coords(cell)
-		if not src.has_tile(tile):
-			continue
-		var data := layer.get_cell_tile_data(cell)
-		# Invalid terrains should be reset to the previous known value
-		# They will be treated as unchanged
-		if data == null:
-			continue
-		if data.terrain == -1 or data.terrain_set != 0:
-			layer.set_cell(cell, cached.sid, cached.tile)
-			continue
-		var is_unchanged = cached.sid == sid and cached.tile == tile
-		if is_unchanged:
-			continue
-		updated.push_back(cell)
-		var is_empty = sid == -1 or tile == Vector2i(-1, -1)
-		if is_empty:
-			push_error()
-			_cached_cells.erase(cell)
-		else:
-			_cached_cells[cell] = {'sid': sid, 'tile': tile}
+	var current := CellCache.new()
+	current.compute(_tileset_watcher.tile_set, layer, _cached_cells)
+	var updated := current.diff(_cached_cells)
+	_cached_cells = current
 	if not updated.is_empty():
 		world_tiles_changed.emit(updated)
+
 
 ## Returns what kind of grid a TileSet is.
 ## Defaults to SQUARE.

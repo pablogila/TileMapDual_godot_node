@@ -182,6 +182,8 @@ class TerrainLayer:
 		self.filter = filter
 
 	func read_tile(data: TileData, mapping: Dictionary) -> void:
+		if data.terrain_set != 0:
+			return
 		var condition := filter.map(data.get_terrain_peering_bit)
 		# Skip tiles with no peering bits in this filter
 		# They might be used for a different layer,
