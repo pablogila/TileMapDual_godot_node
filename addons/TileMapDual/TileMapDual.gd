@@ -11,6 +11,7 @@ func _ready() -> void:
 	_tileset_watcher.atlas_added.connect(_atlas_added)
 	_display = Display.new(_tileset_watcher)
 	add_child(_display)
+	_make_self_invisible()
 	if Engine.is_editor_hint():
 		set_process(true)
 	else: # Run in-game using signals for better performance

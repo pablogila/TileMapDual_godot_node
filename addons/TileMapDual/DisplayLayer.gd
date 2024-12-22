@@ -40,11 +40,15 @@ func update_tile(cache: Display.CellCache, cell: Vector2i) -> void:
 		#i += 1
 
 	var get_cell_at_path := func(path): return get_terrain_at(cache, follow_path(cell, path))
-	var neighborhood := display_to_dual.map(get_cell_at_path)
-	if neighborhood not in _terrain.rules:
+	var normalize_terrain := func(terrain): return terrain if terrain != -1 else 0
+	var true_neighborhood := display_to_dual.map(get_cell_at_path)
+	var is_empty := true_neighborhood.all(func(terrain): return terrain == -1)
+	var terrain_neighborhood = true_neighborhood.map(normalize_terrain)
+	var invalid_neighborhood = terrain_neighborhood not in _terrain.rules
+	if is_empty or invalid_neighborhood:
 		erase_cell(cell)
 		return
-	var mapping: Dictionary = _terrain.rules[neighborhood]
+	var mapping: Dictionary = _terrain.rules[terrain_neighborhood]
 	var sid: int = mapping.sid
 	var tile: Vector2i = mapping.tile
 	push_warning(sid, tile)
@@ -53,7 +57,7 @@ func update_tile(cache: Display.CellCache, cell: Vector2i) -> void:
 
 func get_terrain_at(cache: Display.CellCache, cell: Vector2i) -> int:
 	if cell not in cache.cells:
-		return 0
+		return -1
 	return cache.cells[cell].terrain
 
 
