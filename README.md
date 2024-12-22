@@ -27,7 +27,17 @@ Just copy the `addons/TileMapDual` folder to your Godot project, and enable it o
 
 ## Usage
 
-You have to create a `TileMapDual` node with your own 2x2 tileset, following the [standard godot tileset](https://user-images.githubusercontent.com/47016402/87044518-ee28fa80-c1f6-11ea-86f5-de53e86fcbb6.png).
+You have to create a `TileMapDual` node with your own tileset, and set it up with the appropriate tile shape and orientation, tile and sprite sizes, and terrains.
+
+- Note: Automatic terrain generation is currently disabled because it kept double generating terrains
+
+
+It's a bit complicated, but here is how to set up a Hexagonal Vertical spritesheet:
+
+
+https://github.com/user-attachments/assets/3fa6b674-83b4-4c8c-b341-d1105679a4c8
+
+
 And that's it! You can now start sketching your level with the fully-filled tile, indicated here:  
 
 ![](docs/reference_tileset_standard.png)
