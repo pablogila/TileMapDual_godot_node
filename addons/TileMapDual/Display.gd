@@ -20,7 +20,7 @@ signal world_tiles_changed(changed: Array)
 func _world_tiles_changed(changed: Array):
 	print('SIGNAL EMITTED: world_tiles_changed(%s)' % {'changed': changed})
 	for child in get_children(true):
-		child.update_tiles(changed)
+		child.update_tiles(cached_cells, changed)
 
 func _tileset_created():
 	print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
@@ -75,7 +75,7 @@ class CellCache:
 				sid = cached.sid
 				tile = cached.tile
 				layer.set_cell(cell, cached.sid, cached.tile)
-			cells[cell] = {'sid': sid, 'tile': tile}
+			cells[cell] = {'sid': sid, 'tile': tile, 'terrain': data.terrain}
 
 	## Returns the difference between two tile caches
 	func diff(other: CellCache) -> Array[Vector2i]:
@@ -90,15 +90,15 @@ class CellCache:
 
 
 ## {Vector2i: {'sid': int, 'tile': Vector2i}}
-var _cached_cells := CellCache.new()
+var cached_cells := CellCache.new()
 ## Updates the display based on the cells found in the TileMapLayer.
 func update(layer: TileMapLayer):
 	if _tileset_watcher.tile_set == null:
 		return
 	var current := CellCache.new()
-	current.compute(_tileset_watcher.tile_set, layer, _cached_cells)
-	var updated := current.diff(_cached_cells)
-	_cached_cells = current
+	current.compute(_tileset_watcher.tile_set, layer, cached_cells)
+	var updated := current.diff(cached_cells)
+	cached_cells = current
 	if not updated.is_empty():
 		print(updated)
 		world_tiles_changed.emit(updated)
@@ -140,14 +140,14 @@ const GRIDS: Dictionary = {
 			'dual_to_display': [
 				[],
 				[TileSet.CELL_NEIGHBOR_RIGHT_SIDE],
-				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER],
 				[TileSet.CELL_NEIGHBOR_BOTTOM_SIDE],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER],
 			],
 			'display_to_dual': [
 				[],
 				[TileSet.CELL_NEIGHBOR_LEFT_SIDE],
-				[TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER],
 				[TileSet.CELL_NEIGHBOR_TOP_SIDE],
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER],
 			],
 		}
 	],
@@ -157,14 +157,14 @@ const GRIDS: Dictionary = {
 			'dual_to_display': [
 				[], # TOP
 				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE], # RIGHT
-				[TileSet.CELL_NEIGHBOR_BOTTOM_CORNER], # BOTTOM
 				[TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE], # LEFT
+				[TileSet.CELL_NEIGHBOR_BOTTOM_CORNER], # BOTTOM
 			],
 			'display_to_dual': [
 				[TileSet.CELL_NEIGHBOR_TOP_CORNER], # TOP
 				[TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE], # RIGHT
-				[], # BOTTOM
 				[TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE], # LEFT
+				[], # BOTTOM
 			],
 		}
 	],
