@@ -33,12 +33,6 @@ func update_tiles(cache: Display.CellCache, updated_cells: Array) -> void:
 
 
 func update_tile(cache: Display.CellCache, cell: Vector2i) -> void:
-	#push_error('printing terrain')
-	#var i = 0
-	#for rule in _terrain.rules:
-		#push_warning('%s: rule: %s -> %s' % [i, rule, _terrain.rules[rule]])
-		#i += 1
-
 	var get_cell_at_path := func(path): return get_terrain_at(cache, follow_path(cell, path))
 	var normalize_terrain := func(terrain): return terrain if terrain != -1 else 0
 	var true_neighborhood := display_to_dual.map(get_cell_at_path)
@@ -51,7 +45,6 @@ func update_tile(cache: Display.CellCache, cell: Vector2i) -> void:
 	var mapping: Dictionary = _terrain.rules[terrain_neighborhood]
 	var sid: int = mapping.sid
 	var tile: Vector2i = mapping.tile
-	push_warning(sid, tile)
 	set_cell(cell, sid, tile)
 
 

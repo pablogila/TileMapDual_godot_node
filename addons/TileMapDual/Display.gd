@@ -80,11 +80,11 @@ class CellCache:
 	## Returns the difference between two tile caches
 	func diff(other: CellCache) -> Array[Vector2i]:
 		var out: Array[Vector2i] = []
-		for key in self.cells:
-			if key not in other.cells:
+		for key in cells:
+			if key not in other.cells or cells[key].terrain != other.cells[key].terrain:
 				out.push_back(key)
 		for key in other.cells:
-			if key not in self.cells:
+			if key not in cells:
 				out.push_back(key)
 		return out
 

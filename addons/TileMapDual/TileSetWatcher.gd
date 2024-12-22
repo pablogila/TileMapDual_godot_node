@@ -49,6 +49,8 @@ func update(tile_set: TileSet) -> void:
 		return
 	if self.tile_set != null:
 		self.tile_set.changed.disconnect(_update_tileset)
+		_cached_source_count = 0
+		_cached_sids.clear()
 		tileset_deleted.emit()
 		#_update_full_tilemap()
 	self.tile_set = tile_set
