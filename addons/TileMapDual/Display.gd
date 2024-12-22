@@ -38,6 +38,7 @@ func _tileset_deleted():
 func _tileset_reshaped():
 	_tileset_deleted()
 	_tileset_created()
+	push_warning('reshaped')
 
 
 class CellCache:
@@ -229,20 +230,28 @@ const GRIDS: Dictionary = {
 	],
 	GridShape.HEX_VERT: [
 		{
-			'offset': Vector2(-0.25 / sqrt(3), -0.25),
+			'offset': Vector2(-3.0 / 8.0, 0.0),
 			'dual_to_display': [
-				TODO,
+				[],
+				[TileSet.CELL_NEIGHBOR_TOP_RIGHT_SIDE],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE],
 			],
 			'display_to_dual': [
-				TODO,
+				[],
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_SIDE],
 			],
 		}, {
-			'offset': Vector2(-0.25 / sqrt(3), -0.75),
+			'offset': Vector2(-3.0 / 8.0, -0.5),
 			'dual_to_display': [
-				TODO,
+				[],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE],
+				[TileSet.CELL_NEIGHBOR_BOTTOM_SIDE],
 			],
 			'display_to_dual': [
-				TODO,
+				[TileSet.CELL_NEIGHBOR_TOP_LEFT_SIDE],
+				[TileSet.CELL_NEIGHBOR_TOP_SIDE],
+				[],
 			],
 		},
 	],

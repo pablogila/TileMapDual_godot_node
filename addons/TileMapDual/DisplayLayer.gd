@@ -24,6 +24,7 @@ func _init(
 
 
 func update_tiles(cache: Display.CellCache, updated_cells: Array) -> void:
+	push_warning('updating tiles')
 	var to_update := Set.new()
 	for path: Array in dual_to_display:
 		for cell: Vector2i in updated_cells:
