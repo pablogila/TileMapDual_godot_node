@@ -19,8 +19,12 @@ func _init(
 	offset = fields.offset
 	_tileset_watcher = tileset_watcher
 	_terrain = layer
-	tileset_watcher.tileset_resized.connect(reposition)
+	tileset_watcher.tileset_resized.connect(reposition, 1)
 	reposition()
+
+
+func update_tiles_all(cache: Display.CellCache) -> void:
+	update_tiles(cache, cache.cells.keys())
 
 
 func update_tiles(cache: Display.CellCache, updated_cells: Array) -> void:

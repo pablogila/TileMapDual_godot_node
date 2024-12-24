@@ -13,8 +13,8 @@ func _init(tileset_watcher: TileSetWatcher) -> void:
 	#print('initializing Display...')
 	_tileset_watcher = tileset_watcher
 	terrain = TerrainDual.new(tileset_watcher)
-	terrain.changed.connect(_tileset_reshaped)
-	world_tiles_changed.connect(_world_tiles_changed)
+	terrain.changed.connect(_tileset_reshaped, 1)
+	world_tiles_changed.connect(_world_tiles_changed, 1)
 
 signal world_tiles_changed(changed: Array)
 func _world_tiles_changed(changed: Array):
@@ -30,6 +30,7 @@ func _tileset_created():
 		#print('layer_config: %s' % layer_config)
 		var layer := DisplayLayer.new(_tileset_watcher, layer_config, terrain.layers[i])
 		add_child(layer)
+		layer.update_tiles_all(cached_cells)
 
 func _tileset_deleted():
 	for child in get_children(true):

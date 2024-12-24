@@ -4,12 +4,12 @@ extends Resource
 var tile_size: Vector2i
 var grid_shape: Display.GridShape
 func _init(tile_set: TileSet) -> void:
-	tileset_deleted.connect(_tileset_deleted)
-	tileset_created.connect(_tileset_created)
-	tileset_resized.connect(_tileset_resized)
-	tileset_reshaped.connect(_tileset_reshaped)
-	atlas_added.connect(_atlas_added)
-	terrains_changed.connect(_terrains_changed)
+	tileset_deleted.connect(_tileset_deleted, 1)
+	tileset_created.connect(_tileset_created, 1)
+	tileset_resized.connect(_tileset_resized, 1)
+	tileset_reshaped.connect(_tileset_reshaped, 1)
+	atlas_added.connect(_atlas_added, 1)
+	terrains_changed.connect(_terrains_changed, 1)
 	update(tile_set)
 
 
@@ -105,6 +105,7 @@ func _update_tileset_atlases():
 			continue
 		var atlas: TileSetAtlasSource = source
 		atlas_added.emit(sid, atlas)
-		atlas.changed.connect(func(): terrains_changed.emit())
+		atlas.changed.connect(func(): terrains_changed.emit(), 1)
+	#push_error('update atlases')
 	terrains_changed.emit()
 	_cached_sids = sids
