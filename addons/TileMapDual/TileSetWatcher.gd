@@ -13,65 +13,113 @@ func _init(tile_set: TileSet) -> void:
 	update(tile_set)
 
 
+var _flag_tileset_deleted := false
 signal tileset_deleted
 func _tileset_deleted():
 	#print('SIGNAL EMITTED: tileset_deleted(%s)' % {})
-	tileset_reshaped.emit()
+	#tileset_reshaped.emit()
+	pass
 
+var _flag_tileset_created := false
 signal tileset_created
 func _tileset_created():
 	#print('SIGNAL EMITTED: tileset_created(%s)' % {})
-	tileset_reshaped.emit()
+	#tileset_reshaped.emit()
+	pass
 
+var _flag_tileset_resized := false
 signal tileset_resized
 func _tileset_resized():
 	#print('SIGNAL EMITTED: tileset_resized(%s)' % {})
 	pass
 
+var _flag_tileset_reshaped := false
 signal tileset_reshaped
 func _tileset_reshaped():
 	#print('SIGNAL EMITTED: tileset_reshaped(%s)' % {})
-	terrains_changed.emit()
+	#terrains_changed.emit()
+	pass
 
+var _flag_atlas_added := false
 signal atlas_added(source_id: int, atlas: TileSetAtlasSource)
 func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
+	_flag_atlas_added = true
 	#print('SIGNAL EMITTED: atlas_added(%s)' % {'source_id': source_id, 'atlas': atlas})
-	terrains_changed.emit()
+	#terrains_changed.emit()
+	pass
 
+var _flag_terrains_changed := false
 signal terrains_changed
 func _terrains_changed():
 	#print('SIGNAL EMITTED: terrains_changed(%s)' % {})
 	pass
 
 
-var tile_set: TileSet
 func update(tile_set: TileSet) -> void:
-	# Check if tile_set has been added, replaced, or deleted
+	check_tile_set(tile_set)
+	check_flags()
+
+
+## Emit updates if the corresponding flags were set.
+## Must only be run once per frame.
+func check_flags() -> void:
+	if _flag_tileset_changed:
+		_update_tileset()
+	if _flag_tileset_deleted:
+		_flag_tileset_deleted = false
+		_flag_tileset_reshaped = true
+		tileset_deleted.emit()
+	if _flag_tileset_created:
+		_flag_tileset_created = false
+		_flag_tileset_reshaped = true
+		tileset_created.emit()
+	if _flag_tileset_resized:
+		_flag_tileset_resized = false
+		tileset_resized.emit()
+	if _flag_tileset_reshaped:
+		_flag_tileset_reshaped = false
+		_flag_terrains_changed = true
+		tileset_reshaped.emit()
+	if _flag_atlas_added:
+		_flag_atlas_added = false
+		_flag_terrains_changed = true
+	if _flag_terrains_changed:
+		_flag_terrains_changed = false
+		terrains_changed.emit()
+
+
+var tile_set: TileSet
+## Check if tile_set has been added, replaced, or deleted.
+func check_tile_set(tile_set: TileSet) -> void:
 	if tile_set == self.tile_set:
 		return
 	if self.tile_set != null:
-		self.tile_set.changed.disconnect(_update_tileset)
+		self.tile_set.changed.disconnect(_set_tileset_changed)
 		_cached_source_count = 0
 		_cached_sids.clear()
-		tileset_deleted.emit()
-		#_update_full_tilemap()
+		_flag_tileset_deleted = true
 	self.tile_set = tile_set
 	if self.tile_set != null:
-		self.tile_set.changed.connect(_update_tileset, 1)
+		self.tile_set.changed.connect(_set_tileset_changed, 1)
 		self.tile_set.emit_changed()
-		tileset_created.emit()
+		_flag_tileset_created = true
 	emit_changed()
+
+
+var _flag_tileset_changed := false
+func _set_tileset_changed() -> void:
+	_flag_tileset_changed = true
 
 
 func _update_tileset() -> void:
 	var tile_size = tile_set.tile_size
 	if self.tile_size != tile_size:
 		self.tile_size = tile_size
-		tileset_resized.emit()
+		_flag_tileset_resized = true
 	var grid_shape = Display.tileset_gridshape(tile_set)
 	if self.grid_shape != grid_shape:
 		self.grid_shape = grid_shape
-		tileset_reshaped.emit()
+		_flag_tileset_reshaped = true
 	_update_tileset_atlases()
 
 
@@ -105,7 +153,7 @@ func _update_tileset_atlases():
 			continue
 		var atlas: TileSetAtlasSource = source
 		atlas_added.emit(sid, atlas)
-		atlas.changed.connect(func(): terrains_changed.emit(), 1)
+		atlas.changed.connect(func(): _flag_terrains_changed = true, 1)
 	#push_error('update atlases')
-	terrains_changed.emit()
+	_flag_terrains_changed = true
 	_cached_sids = sids
