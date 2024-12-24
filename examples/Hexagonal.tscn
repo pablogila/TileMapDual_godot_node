@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://addons/TileMapDual/CursorDual.gd" id="3_u8pmr"]
 [ext_resource type="Script" path="res://addons/TileMapDual/TileMapDual.gd" id="5_k08c7"]
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_gpjre"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_jxego"]
 light_mode = 2
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hm71k"]
@@ -108,7 +108,7 @@ sources/1 = SubResource("TileSetAtlasSource_hm71k")
 [node name="Hexagonal" type="Node2D"]
 
 [node name="TileMapDual" type="TileMapLayer" parent="."]
-material = SubResource("CanvasItemMaterial_gpjre")
+material = SubResource("CanvasItemMaterial_jxego")
 tile_set = SubResource("TileSet_q5s0a")
 script = ExtResource("5_k08c7")
 timer_cooldown = 0.0

@@ -207,7 +207,7 @@ var layers: Array
 var _tileset_watcher: TileSetWatcher
 func _init(tileset_watcher: TileSetWatcher) -> void:
 	_tileset_watcher = tileset_watcher
-	_tileset_watcher.terrains_changed.connect(_changed)
+	_tileset_watcher.terrains_changed.connect(_changed, 1)
 	_changed()
 
 

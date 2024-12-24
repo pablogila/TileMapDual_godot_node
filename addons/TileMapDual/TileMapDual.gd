@@ -8,7 +8,7 @@ var _tileset_watcher: TileSetWatcher
 var _display: Display
 func _ready() -> void:
 	_tileset_watcher = TileSetWatcher.new(tile_set)
-	_tileset_watcher.atlas_added.connect(_atlas_added)
+	_tileset_watcher.atlas_added.connect(_atlas_added, 1)
 	_display = Display.new(_tileset_watcher)
 	add_child(_display)
 	_make_self_invisible()
