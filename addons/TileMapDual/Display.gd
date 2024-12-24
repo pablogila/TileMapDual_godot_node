@@ -22,7 +22,7 @@ func _world_tiles_changed(changed: Array):
 	for child in get_children(true):
 		child.update_tiles(cached_cells, changed)
 
-func _tileset_created():
+func _create_layers():
 	#print('GRID SHAPE: %s' % _tileset_watcher.grid_shape)
 	var grid: Array = GRIDS[_tileset_watcher.grid_shape]
 	for i in grid.size():
@@ -32,13 +32,13 @@ func _tileset_created():
 		add_child(layer)
 		layer.update_tiles_all(cached_cells)
 
-func _tileset_deleted():
+func _delete_layers():
 	for child in get_children(true):
 		child.queue_free()
 
 func _tileset_reshaped():
-	_tileset_deleted()
-	_tileset_created()
+	_delete_layers()
+	_create_layers()
 	push_warning('reshaped')
 
 
