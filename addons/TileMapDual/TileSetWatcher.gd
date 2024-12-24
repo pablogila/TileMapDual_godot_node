@@ -15,31 +15,33 @@ func _init(tile_set: TileSet) -> void:
 
 signal tileset_deleted
 func _tileset_deleted():
-	print('SIGNAL EMITTED: tileset_deleted(%s)' % {})
+	#print('SIGNAL EMITTED: tileset_deleted(%s)' % {})
 	tileset_reshaped.emit()
 
 signal tileset_created
 func _tileset_created():
-	print('SIGNAL EMITTED: tileset_created(%s)' % {})
+	#print('SIGNAL EMITTED: tileset_created(%s)' % {})
 	tileset_reshaped.emit()
 
 signal tileset_resized
 func _tileset_resized():
-	print('SIGNAL EMITTED: tileset_resized(%s)' % {})
+	#print('SIGNAL EMITTED: tileset_resized(%s)' % {})
+	pass
 
 signal tileset_reshaped
 func _tileset_reshaped():
-	print('SIGNAL EMITTED: tileset_reshaped(%s)' % {})
+	#print('SIGNAL EMITTED: tileset_reshaped(%s)' % {})
 	terrains_changed.emit()
 
 signal atlas_added(source_id: int, atlas: TileSetAtlasSource)
 func _atlas_added(source_id: int, atlas: TileSetAtlasSource):
-	print('SIGNAL EMITTED: atlas_added(%s)' % {'source_id': source_id, 'atlas': atlas})
+	#print('SIGNAL EMITTED: atlas_added(%s)' % {'source_id': source_id, 'atlas': atlas})
 	terrains_changed.emit()
 
 signal terrains_changed
 func _terrains_changed():
-	print('SIGNAL EMITTED: terrains_changed(%s)' % {})
+	#print('SIGNAL EMITTED: terrains_changed(%s)' % {})
+	pass
 
 
 var tile_set: TileSet
@@ -85,13 +87,13 @@ func _update_tileset_atlases():
 	if _cached_source_count == source_count:
 		return
 	_cached_source_count = source_count
-	
+
 	# Process the new atlases in the TileSet
 	var sids := Set.new()
 	for i in source_count:
 		var sid: int = tile_set.get_source_id(i)
 		sids.insert(sid)
-		print('checking')
+		#print('checking')
 		if _cached_sids.has(sid):
 			continue
 		var source: TileSetSource = tile_set.get_source(sid)

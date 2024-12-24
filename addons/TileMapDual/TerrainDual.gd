@@ -212,7 +212,7 @@ func _init(tileset_watcher: TileSetWatcher) -> void:
 
 
 func _changed():
-	print('SIGNAL EMITTED: changed(%s)' % {})
+	#print('SIGNAL EMITTED: changed(%s)' % {})
 	read_tileset(_tileset_watcher.tile_set)
 	emit_changed()
 
@@ -256,9 +256,9 @@ func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 			push_warning(
 				"2 different tiles in this TileSet have the same Terrain type:\n" +
 				"1st: %s\n" % [prev_mapping] +
-				"2nd: %s" % [mapping] 
+				"2nd: %s" % [mapping]
 			)
-		terrains[data.terrain] = tile
+		terrains[data.terrain] = mapping
 	var filters = NEIGHBORHOOD_LAYERS[neighborhood]
 	for i in layers.size():
 		var layer: TerrainLayer = layers[i]
@@ -267,7 +267,7 @@ func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 
 ## Would you like to automatically create tiles in the atlas?
 static func write_default_preset(tile_set: TileSet, atlas: TileSetAtlasSource) -> void:
-	print('writing default')
+	#print('writing default')
 	var neighborhood := tileset_neighborhood(tile_set)
 	var terrain_offset := create_false_terrain_set(
 		tile_set,
@@ -301,7 +301,7 @@ static func write_preset(
 	terrain_background: int,
 	terrain_foreground: int,
 ) -> void:
-	print('writing')
+	#print('writing')
 	clear_and_resize_atlas(atlas, preset.size)
 	# Set peering bits
 	var sequences: Array = preset.sequences

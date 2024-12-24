@@ -12,7 +12,7 @@ func _init(
 	fields: Dictionary,
 	layer: TerrainDual.TerrainLayer
 ) -> void:
-	print('initializing Layer...')
+	#print('initializing Layer...')
 	tile_set = tileset_watcher.tile_set
 	dual_to_display = fields.dual_to_display
 	display_to_dual = fields.display_to_dual
@@ -24,6 +24,7 @@ func _init(
 
 
 func update_tiles(cache: Display.CellCache, updated_cells: Array) -> void:
+	#push_warning('updating tiles')
 	var to_update := Set.new()
 	for path: Array in dual_to_display:
 		for cell: Vector2i in updated_cells:
