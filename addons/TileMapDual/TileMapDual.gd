@@ -31,15 +31,15 @@ func _make_self_invisible() -> void:
 	material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 
 
-@export var timer_cooldown: float = 1.0
+@export var map_refresh_cooldown: float = 0.0
 var _timer: float = 0.0
 func _process(delta: float) -> void: # Only used inside the editor
-	if timer_cooldown < 0.0:
+	if map_refresh_cooldown < 0.0:
 		return
 	if _timer > 0:
 		_timer -= delta
 		return
-	_timer = timer_cooldown
+	_timer = map_refresh_cooldown
 	call_deferred('_changed')
 
 
