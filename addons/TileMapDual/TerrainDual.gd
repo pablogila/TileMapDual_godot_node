@@ -183,23 +183,43 @@ class TerrainLayer:
 
 	func read_tile(data: TileData, mapping: Dictionary) -> void:
 		if data.terrain_set != 0:
+			# This was already handled as an error in the parent TerrainDual
 			return
 		var condition := filter.map(data.get_terrain_peering_bit)
 		# Skip tiles with no peering bits in this filter
 		# They might be used for a different layer,
 		# or may have no peering bits at all, which will just be ignored by all layers
-		if condition.all(func(neighbor): return neighbor == -1):
+		if condition.any(func(neighbor): return neighbor == -1):
+			if condition.any(func(neighbor): return neighbor != -1):
+				push_warning(
+					"Invalid Tile Neighbors at %s.\n" % [mapping] +
+					"Expected neighbors: %s" % [filter.map(neighbor_name)]
+				)
 			return
 		if condition in rules:
 			var prev_mapping = rules[condition]
 			push_warning(
 				"2 different tiles in this TileSet have the same Terrain neighborhood:\n" +
-				"Condition: %s\n" % [condition] +
+				"Condition: %s\n" % [_condition_to_dict(condition)] +
 				"1st: %s\n" % [prev_mapping] +
 				"2nd: %s" % [mapping]
 			)
 		rules[condition] = mapping
 
+	func _condition_to_dict(condition: Array) -> Dictionary:
+		return arrays_to_dict(filter.map(neighbor_name), condition)
+
+	## NOTE: this does not belong here
+	static func arrays_to_dict(keys: Array, values: Array) -> Dictionary:
+		var out := {}
+		for i in keys.size():
+			out[keys[i]] = values[i]
+		return out
+
+	## NOTE: this does not belong here
+	static func neighbor_name(neighbor: TileSet.CellNeighbor) -> String:
+		const DIRECTIONS := ['E', 'SE', 'S', 'SW', 'W', 'NW', 'N', 'NE']
+		return DIRECTIONS[neighbor >> 1]
 
 var neighborhood: Neighborhood
 var terrains: Dictionary
@@ -249,6 +269,11 @@ func read_atlas(atlas: TileSetAtlasSource, sid: int) -> void:
 func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 	var data := atlas.get_tile_data(tile, 0)
 	var mapping := { 'sid': sid, 'tile': tile }
+	var terrain_set := data.terrain_set
+	if terrain_set != 0:
+		push_warning(
+			"The tile at %s has a terrain set of %d. Only terrain set 0 is supported." % [mapping, terrain_set]
+		)
 	var terrain := data.terrain
 	if terrain != -1:
 		if terrain in terrains:
@@ -258,7 +283,7 @@ func read_tile(atlas: TileSetAtlasSource, sid: int, tile: Vector2i) -> void:
 				"1st: %s\n" % [prev_mapping] +
 				"2nd: %s" % [mapping]
 			)
-		terrains[data.terrain] = mapping
+		terrains[terrain] = mapping
 	var filters = NEIGHBORHOOD_LAYERS[neighborhood]
 	for i in layers.size():
 		var layer: TerrainLayer = layers[i]

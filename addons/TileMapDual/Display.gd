@@ -39,7 +39,6 @@ func _delete_layers():
 func _tileset_reshaped():
 	_delete_layers()
 	_create_layers()
-	push_warning('reshaped')
 
 
 class CellCache:

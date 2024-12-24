@@ -50,13 +50,12 @@ func _changed() -> void:
 	_display.update(self)
 
 
-## Public method to add and remove tiles, as
-## TileMapDual.draw(cell, tile, atlas_id).
+## Public method to add and remove tiles.
+##
 ## 'cell' is a vector with the cell position.
-## 'tile' is 1 to draw the full tile (default), 0 to draw the empty tile,
-## and -1 to completely remove the tile.
-## 'atlas_id' is the atlas id of the tileset to modify, 0 by default.
-## This method replaces the deprecated 'fill_tile' and 'erase_tile' methods.
+## 'terrain' is which terrain type to draw.
+## terrain -1 completely removes the tile,
+## and by default, terrain 0 is the empty tile.
 func draw(cell: Vector2i, terrain: int = 1) -> void:
 	var terrains := _display.terrain.terrains
 	if terrain not in terrains:
