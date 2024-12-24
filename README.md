@@ -38,6 +38,14 @@ It's a bit complicated, but here is how to set up a Hexagonal Vertical spriteshe
 https://github.com/user-attachments/assets/3fa6b674-83b4-4c8c-b341-d1105679a4c8
 
 
+You can even edit the terrain configuration in real-time:
+
+
+
+https://github.com/user-attachments/assets/5331582b-f480-4b88-873a-a3a2cd38920b
+
+
+
 # Important Note: The rest of this README may be outdated.
 
 And that's it! You can now start sketching your level with the fully-filled tile, indicated here:  
