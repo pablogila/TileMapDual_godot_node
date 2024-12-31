@@ -3,6 +3,13 @@
 class_name TileMapDual
 extends TileMapLayer
 
+## Canvas materials or shaders for the display tilemap must be defined here.
+@export_category('Material')
+## Shader material for the display tilemap.
+@export var shader_material: ShaderMaterial = null
+## Canvas material for the display tilemap.
+## If shader_material is present, canvas_material will be ignored.
+@export var canvas_material: CanvasItemMaterial = null
 
 var display_tilemap: TileMapLayer = null
 var _filled_cells = []
@@ -114,9 +121,9 @@ func _set_display_tilemap() -> void:
 	if not self.tile_set:
 		return
 	# Make TileMapDual invisible without disabling it
-	if not self.material:
-		self.material = CanvasItemMaterial.new()
-		self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+	#if not self.material:  # Let's remove the IF to try to solve #19
+	self.material = CanvasItemMaterial.new()
+	self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
 	# Add the display TileMapLayer
 	if not get_node_or_null('WorldTileMap'):
 		display_tilemap = TileMapLayer.new()
@@ -125,6 +132,11 @@ func _set_display_tilemap() -> void:
 	# Both tilemaps must be the same
 	if display_tilemap.tile_set != self.tile_set:
 		display_tilemap.tile_set = self.tile_set
+	# Apply shaders to try to solve #19
+	if shader_material != null:
+		display_tilemap.material = shader_material
+	elif canvas_material != null:
+		display_tilemap.material = canvas_material
 	# Displace the display TileMapLayer
 	update_geometry()
 	display_tilemap.clear()
