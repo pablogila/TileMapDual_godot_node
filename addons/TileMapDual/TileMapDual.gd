@@ -122,8 +122,8 @@ func _set_display_tilemap() -> void:
 		return
 	# Make TileMapDual invisible without disabling it
 	#if not self.material:  # Let's remove the IF to try to solve #19
-	self.material = CanvasItemMaterial.new()
-	self.material.light_mode = CanvasItemMaterial.LightMode.LIGHT_MODE_LIGHT_ONLY
+	self.material = null
+	self.self_modulate.a = 0.0
 	# Add the display TileMapLayer
 	if not get_node_or_null('WorldTileMap'):
 		display_tilemap = TileMapLayer.new()
