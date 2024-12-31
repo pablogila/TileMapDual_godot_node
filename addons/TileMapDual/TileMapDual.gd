@@ -5,11 +5,9 @@ extends TileMapLayer
 
 ## Canvas materials or shaders for the display tilemap must be defined here.
 @export_category('Material')
-## Shader material for the display tilemap.
-@export var shader_material: ShaderMaterial = null
-## Canvas material for the display tilemap.
-## If shader_material is present, canvas_material will be ignored.
-@export var canvas_material: CanvasItemMaterial = null
+## Material for the display tilemap.
+@export_custom(PROPERTY_HINT_RESOURCE_TYPE, "ShaderMaterial,CanvasItemMaterial")
+var _material: Material = null
 
 var display_tilemap: TileMapLayer = null
 var _filled_cells = []
@@ -133,10 +131,8 @@ func _set_display_tilemap() -> void:
 	if display_tilemap.tile_set != self.tile_set:
 		display_tilemap.tile_set = self.tile_set
 	# Apply shaders to try to solve #19
-	if shader_material != null:
-		display_tilemap.material = shader_material
-	elif canvas_material != null:
-		display_tilemap.material = canvas_material
+	if _material != null:
+		display_tilemap.material = _material
 	# Displace the display TileMapLayer
 	update_geometry()
 	display_tilemap.clear()
