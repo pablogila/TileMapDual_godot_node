@@ -4,10 +4,10 @@ class_name TileMapDual
 extends TileMapLayer
 
 ## Canvas materials or shaders for the display tilemap must be defined here.
-@export_category('Material')
+#@export_category('Material')
 ## Material for the display tilemap.
-@export_custom(PROPERTY_HINT_RESOURCE_TYPE, "ShaderMaterial,CanvasItemMaterial")
-var _material: Material = null
+#@export_custom(PROPERTY_HINT_RESOURCE_TYPE, "ShaderMaterial,CanvasItemMaterial")
+#var _material: Material = null
 
 var display_tilemap: TileMapLayer = null
 var _filled_cells: Dictionary = {}
@@ -26,6 +26,7 @@ var _should_check_cells: bool = false
 var _checked_cells: Dictionary = {}
 var is_isometric: bool = false
 var _atlas_id: int
+var _modulated_alpha: float
 
 ## We will use a bit-wise logic, so that a summation over all sketched
 ## neighbours provides a unique key, assigned to the corresponding
@@ -118,24 +119,45 @@ func _process(_delta): # Only used inside the editor
 func _set_display_tilemap() -> void:
 	if not self.tile_set:
 		return
-	# Make TileMapDual invisible without disabling it
-	#if not self.material:  # Let's remove the IF to try to solve #19
-	self.material = null
-	self.self_modulate.a = 0.0
 	# Add the display TileMapLayer
 	if not get_node_or_null('WorldTileMap'):
 		display_tilemap = TileMapLayer.new()
 		display_tilemap.name = "WorldTileMap"
 		add_child(display_tilemap)
-	# Both tilemaps must be the same
-	if display_tilemap.tile_set != self.tile_set:
-		display_tilemap.tile_set = self.tile_set
+	# Both tilemaps must be the same, so we copy all relevant properties
+	# Tilemap
+	display_tilemap.tile_set = self.tile_set
+	# Rendering
+	display_tilemap.y_sort_origin = self.y_sort_origin
+	display_tilemap.x_draw_order_reversed = self.x_draw_order_reversed
+	display_tilemap.rendering_quadrant_size = self.rendering_quadrant_size
+	# Physics
+	display_tilemap.collision_enabled = self.collision_enabled
+	display_tilemap.use_kinematic_bodies = self.use_kinematic_bodies
+	display_tilemap.collision_visibility_mode = self.collision_visibility_mode
+	# Navigation
+	display_tilemap.navigation_enabled = self.navigation_enabled
+	display_tilemap.navigation_visibility_mode = self.navigation_visibility_mode
+	# Canvas item properties
+	display_tilemap.show_behind_parent = self.show_behind_parent
+	display_tilemap.top_level = self.top_level
+	display_tilemap.light_mask = self.light_mask
+	display_tilemap.visibility_layer = self.visibility_layer
+	display_tilemap.y_sort_enabled = self.y_sort_enabled
+	display_tilemap.material = self.material
 	# Apply shaders to try to solve #19
-	if _material != null:
-		display_tilemap.material = _material
+	#if _material != null:
+	#	display_tilemap.material = _material
 	# Displace the display TileMapLayer
 	update_geometry()
 	display_tilemap.clear()
+	# Make TileMapDual invisible without disabling it
+	#if not self.material:  # Let's remove the IF to try to solve #19
+	#self.material = null
+	# Save the manually introduced alpha modulation:
+	if self.self_modulate.a != 0.0:
+		_modulated_alpha = self.self_modulate.a
+	self.self_modulate.a = 0.0
 
 
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
