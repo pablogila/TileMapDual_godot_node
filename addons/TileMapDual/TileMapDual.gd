@@ -5,15 +5,13 @@ extends TileMapLayer
 
 ## Canvas materials or shaders for the display tilemap must be defined here.
 @export_category('Material')
-## Shader material for the display tilemap.
-@export var shader_material: ShaderMaterial = null
-## Canvas material for the display tilemap.
-## If shader_material is present, canvas_material will be ignored.
-@export var canvas_material: CanvasItemMaterial = null
+## Material for the display tilemap.
+@export_custom(PROPERTY_HINT_RESOURCE_TYPE, "ShaderMaterial,CanvasItemMaterial")
+var _material: Material = null
 
 var display_tilemap: TileMapLayer = null
-var _filled_cells = []
-var _emptied_cells = []
+var _filled_cells: Dictionary = {}
+var _emptied_cells: Dictionary = {}
 var _tile_shape: TileSet.TileShape = TileSet.TileShape.TILE_SHAPE_SQUARE
 var _tile_size: Vector2i = Vector2i(16, 16)
 ## Coordinates for the fully-filled tile in the Atlas that
@@ -22,10 +20,10 @@ var _tile_size: Vector2i = Vector2i(16, 16)
 var full_tile: Vector2i = Vector2i(2,1)
 ## The opposed of full_tile. Used to erase sketched tiles.
 var empty_tile: Vector2i = Vector2i(0,3)
+var _should_check_cells: bool = false
 ## Prevents checking the cells more than once when the entire tileset
-## is being updated, which is indicated by _checked_cells[0]=true.
-## _checked_cells[0]=false will overpass this check. 
-var _checked_cells: Array = [false]
+## is being updated, which is indicated by `_should_check_cells`.
+var _checked_cells: Dictionary = {}
 var is_isometric: bool = false
 var _atlas_id: int
 
@@ -133,10 +131,8 @@ func _set_display_tilemap() -> void:
 	if display_tilemap.tile_set != self.tile_set:
 		display_tilemap.tile_set = self.tile_set
 	# Apply shaders to try to solve #19
-	if shader_material != null:
-		display_tilemap.material = shader_material
-	elif canvas_material != null:
-		display_tilemap.material = canvas_material
+	if _material != null:
+		display_tilemap.material = _material
 	# Displace the display TileMapLayer
 	update_geometry()
 	display_tilemap.clear()
@@ -159,11 +155,12 @@ func update_full_tileset() -> void:
 		_set_display_tilemap()
 	elif display_tilemap.tile_set != self.tile_set: # TO-DO: merge with the above
 		_set_display_tilemap()
-	_checked_cells = [true]
+	_should_check_cells = true
 	for _cell in self.get_used_cells():
 		if _is_world_tile_sketched(_cell) == 1 or _is_world_tile_sketched(_cell) == 0:
 			update_tile(_cell)
-	_checked_cells = [false]
+	_should_check_cells = false
+	_checked_cells = {}
 	# _checked_cells is only used when updating
 	# the whole tilemap to avoid repeating checks.
 	# This is skipped when updating tiles individually.
@@ -183,37 +180,31 @@ func _update_tileset() -> void:
 	elif _tile_size != self.tile_set.tile_size or _tile_shape != self.tile_set.tile_shape:
 		update_geometry()
 		return
-	var _new_emptied_cells: Array = get_used_cells_by_id(-1, empty_tile)
-	var _new_filled_cells: Array = get_used_cells_by_id(-1, full_tile)
-	var _changed_cells: Array = intersect_arrays(
-		exclude_arrays(_emptied_cells, _new_emptied_cells),
-		exclude_arrays(_filled_cells, _new_filled_cells)
-		)
+
+	var _new_emptied_cells: Dictionary = array_to_dict(get_used_cells_by_id(-1, empty_tile))
+	var _new_filled_cells: Dictionary = array_to_dict(get_used_cells_by_id(-1, full_tile))
+	var _changed_cells: Dictionary = exclude_dicts(_emptied_cells, _new_emptied_cells).merged(exclude_dicts(_filled_cells, _new_filled_cells))
+	
 	_emptied_cells = _new_emptied_cells
 	_filled_cells = _new_filled_cells
 	for _cell in _changed_cells:
 		update_tile(_cell)
 
+func array_to_dict(array: Array) -> Dictionary:
+	var dict: Dictionary = {}
+	for item in array:
+		dict[item] = true
+	return dict
 
 ## Return the values that are not shared between the arrays
-func exclude_arrays(a: Array, b: Array) -> Array:
+func exclude_dicts(a: Dictionary, b: Dictionary) -> Dictionary:
 	var result = a.duplicate()
 	for item in b:
 		if result.has(item):
 			result.erase(item)
 		else:
-			result.append(item)
+			result[item] = true
 	return result
-
-
-## Merge two arrays without duplicates
-func intersect_arrays(a: Array, b: Array) -> Array:
-	var result: Array = a.duplicate()
-	for item in b:
-		if not result.has(item):
-			result.append(item)
-	return result
-
 
 ## Takes a cell, and updates the overlapping tiles from the dual grid accordingly.
 func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
@@ -247,10 +238,10 @@ func update_tile(world_cell: Vector2i, recurse: bool = true) -> void:
 
 func _update_displayed_tile(_display_cell: Vector2i) -> void:
 	# Avoid updating cells more than necessary
-	if _checked_cells[0] == true:
+	if _should_check_cells:
 		if _display_cell in _checked_cells:
 			return
-		_checked_cells.append(_display_cell)
+		_checked_cells[_display_cell] = true
 	
 	var __NEIGHBORS = _NEIGHBORS_ISOMETRIC if is_isometric else _NEIGHBORS
 	var _top_left = display_tilemap.get_neighbor_cell(_display_cell, __NEIGHBORS[_direction.TOP_LEFT])
