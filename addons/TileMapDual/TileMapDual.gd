@@ -113,6 +113,8 @@ func _process(_delta): # Only used inside the editor
 	if not self.tile_set:
 		return
 	call_deferred('_update_tileset')
+	if display_tilemap.material != null && self.material == null: # If a material was applied originally, reapply it again upon reentry in the editor
+		self.material = display_tilemap.material
 
 
 ## Set the dual grid as a child of TileMapDual.
@@ -144,8 +146,8 @@ func _set_display_tilemap() -> void:
 	display_tilemap.light_mask = self.light_mask
 	display_tilemap.visibility_layer = self.visibility_layer
 	display_tilemap.y_sort_enabled = self.y_sort_enabled
-	display_tilemap.material = self.material
-	self.material = null # Discard the material, to prevent rendering of the material on both layers
+	display_tilemap.material = self.material # Copy the material
+	self.material = null # Discard the material for now, to prevent rendering of the material on both layers
 
 	update_geometry()
 	display_tilemap.clear()
