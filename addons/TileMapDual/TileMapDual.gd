@@ -145,15 +145,11 @@ func _set_display_tilemap() -> void:
 	display_tilemap.visibility_layer = self.visibility_layer
 	display_tilemap.y_sort_enabled = self.y_sort_enabled
 	display_tilemap.material = self.material
-	# Apply shaders to try to solve #19
-	#if _material != null:
-	#	display_tilemap.material = _material
-	# Displace the display TileMapLayer
+	self.material = null # Discard the material, to prevent rendering of the material on both layers
+
 	update_geometry()
 	display_tilemap.clear()
-	# Make TileMapDual invisible without disabling it
-	#if not self.material:  # Let's remove the IF to try to solve #19
-	#self.material = null
+	
 	# Save the manually introduced alpha modulation:
 	if self.self_modulate.a != 0.0:
 		_modulated_alpha = self.self_modulate.a
