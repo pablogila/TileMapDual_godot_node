@@ -115,6 +115,7 @@ func _process(_delta): # Only used inside the editor
 	call_deferred('_update_tileset')
 	if display_tilemap.material != null && self.material == null: # If a material was applied originally, reapply it again upon reentry in the editor
 		self.material = display_tilemap.material
+		display_tilemap.material = null # Remove the material from the display tile map, so removing the material on the TileMapDual node is possible
 
 
 ## Set the dual grid as a child of TileMapDual.
