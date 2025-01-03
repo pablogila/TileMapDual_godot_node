@@ -107,24 +107,14 @@ func _ready() -> void:
 	else: # Run in-game using signals for better performance
 		set_process(false)
 		self.changed.connect(_update_tileset, 1)
-
-
+	
 func _process(_delta): # Only used inside the editor
 	if not self.tile_set:
 		return
 	call_deferred('_update_tileset')
 
-
-## Set the dual grid as a child of TileMapDual.
-func _set_display_tilemap() -> void:
-	if not self.tile_set:
-		return
-	# Add the display TileMapLayer
-	if not get_node_or_null('WorldTileMap'):
-		display_tilemap = TileMapLayer.new()
-		display_tilemap.name = "WorldTileMap"
-		add_child(display_tilemap)
-	# Both tilemaps must be the same, so we copy all relevant properties
+## Both tilemaps must be the same, so we copy all relevant properties
+func copy_properties() -> void:
 	# Tilemap
 	display_tilemap.tile_set = self.tile_set
 	# Rendering
@@ -144,22 +134,45 @@ func _set_display_tilemap() -> void:
 	display_tilemap.light_mask = self.light_mask
 	display_tilemap.visibility_layer = self.visibility_layer
 	display_tilemap.y_sort_enabled = self.y_sort_enabled
-	display_tilemap.material = self.material
-	# Apply shaders to try to solve #19
-	#if _material != null:
-	#	display_tilemap.material = _material
-	# Displace the display TileMapLayer
+	display_tilemap.material = self.material 
+
+## Checks if all checked properties match
+func properties_match() -> bool:
+	# This is very inelegant. Please suggest a cleaner way if you know of one
+	return display_tilemap.tile_set == self.tile_set \
+	&& display_tilemap.y_sort_origin == self.y_sort_origin \
+	&& display_tilemap.x_draw_order_reversed == self.x_draw_order_reversed \
+	&& display_tilemap.rendering_quadrant_size == self.rendering_quadrant_size \
+	&& display_tilemap.collision_enabled == self.collision_enabled \
+	&& display_tilemap.use_kinematic_bodies == self.use_kinematic_bodies \
+	&& display_tilemap.collision_visibility_mode == self.collision_visibility_mode \
+	&& display_tilemap.navigation_enabled == self.navigation_enabled \
+	&& display_tilemap.navigation_visibility_mode == self.navigation_visibility_mode \
+	&& display_tilemap.show_behind_parent == self.show_behind_parent \
+	&& display_tilemap.top_level == self.top_level \
+	&& display_tilemap.light_mask == self.light_mask \
+	&& display_tilemap.visibility_layer == self.visibility_layer \
+	&& display_tilemap.y_sort_enabled == self.y_sort_enabled \
+	&& display_tilemap.material == self.material 
+
+## Set the dual grid as a child of TileMapDual.
+func _set_display_tilemap() -> void:
+	if not self.tile_set:
+		return
+		
+	# Add the display TileMapLayer
+	if not get_node_or_null(self.name + ' WorldTileMap'):
+		display_tilemap = TileMapLayer.new()
+		display_tilemap.name = self.name + " WorldTileMap"
+		self.get_parent().add_child(display_tilemap) # Add displayed tilemap outside of seperate visibility
+	
+	copy_properties() # Copy properties from TileMapDual to displated tilemap
+
 	update_geometry()
 	display_tilemap.clear()
-	# Make TileMapDual invisible without disabling it
-	#if not self.material:  # Let's remove the IF to try to solve #19
-	#self.material = null
-	# Save the manually introduced alpha modulation:
-	if self.self_modulate.a != 0.0:
-		_modulated_alpha = self.self_modulate.a
-	self.self_modulate.a = 0.0
 
-
+	self.modulate.a = 0.0
+	
 ## Update the size and shape of the tileset, displacing the display TileMapLayer accordingly.
 func update_geometry() -> void:
 	is_isometric = self.tile_set.tile_shape == TileSet.TileShape.TILE_SHAPE_ISOMETRIC
@@ -201,6 +214,9 @@ func _update_tileset() -> void:
 		return
 	elif _tile_size != self.tile_set.tile_size or _tile_shape != self.tile_set.tile_shape:
 		update_geometry()
+		return
+	elif not properties_match():
+		copy_properties()
 		return
 
 	var _new_emptied_cells: Dictionary = array_to_dict(get_used_cells_by_id(-1, empty_tile))
